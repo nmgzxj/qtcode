@@ -24,3 +24,4 @@ void Dialog::on_countBtn_clicked()
     double area = valueInt*valueInt*PI;
     ui->areaLabel_2->setText(tempStr.setNum(area));
 }
+

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/lmages">
+        <file alias="bit">bitbug_favicon.ico</file>
+        <file alias="logo">logo.icns</file>
+    </qresource>
+</RCC>

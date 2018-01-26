@@ -1,16 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-10-12T15:04:40
+# Project created by QtCreator 2017-11-08T16:20:09
 #
 #-------------------------------------------------
 
 QT       += core gui
-
-qtHaveModule(printsupport):QT += printsupport
+QT  += sql xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ImageProcessor
+TARGET = manager
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -26,8 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        imgprocessor.cpp \
-    showwidget.cpp
+        widget.cpp \
+    pieview.cpp \
+    logindialog.cpp
 
-HEADERS  += imgprocessor.h \
-    showwidget.h
+HEADERS  += widget.h \
+    connection.h \
+    pieview.h \
+    logindialog.h
+
+FORMS    += widget.ui \
+    logindialog.ui

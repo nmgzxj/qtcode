@@ -5,6 +5,11 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += xml sql
+
+RESOURCES += logo.qrc
+
+ICON = logo.icns
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,6 +29,41 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        tester.cpp
+        tester.cpp \
+    showwidget.cpp \
+    about.cpp \
+    setup.cpp \
+    util.cpp \
+    logindialog.cpp \
+    progressdlg.cpp \
+    gencode.cpp \
+    xmlstreamreader.cpp \
+    userfile.cpp \
+    rule.cpp \
+    statisticresult.cpp \
+    user.cpp \
+    xmlconfigreader.cpp
 
-HEADERS  += tester.h
+HEADERS  += tester.h \
+    showwidget.h \
+    about.h \
+    setup.h \
+    util.h \
+    logindialog.h \
+    connection.h \
+    progressdlg.h \
+    gencode.h \
+    xmlstreamreader.h \
+    userfile.h \
+    rule.h \
+    statisticresult.h \
+    user.h \
+    xmlconfigreader.h
+
+FORMS += \
+    logindialog.ui
+
+DISTFILES +=
+
+RESOURCES += \
+    logo.qrc
