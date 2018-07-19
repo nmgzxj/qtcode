@@ -7,7 +7,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     setFixedSize(400, 300);
-    setWindowTitle(tr("登录"));
+    setWindowTitle(QStringLiteral("登录"));
     ui->pwdLineEdit->setFocus();
     ui->loginBtn->setDefault(true);
 }
@@ -21,7 +21,7 @@ void LoginDialog::on_loginBtn_clicked()
 {
     if(ui->pwdLineEdit->text().isEmpty())
     {
-        QMessageBox::information(this,tr("请输入密码"),tr("请先输入密码再登录！"),QMessageBox::Ok);
+        QMessageBox::information(this,QStringLiteral("请输入密码"),QStringLiteral("请先输入密码再登录！"),QMessageBox::Ok);
         ui->pwdLineEdit->setFocus();
     }
     else
@@ -34,7 +34,7 @@ void LoginDialog::on_loginBtn_clicked()
         }
         else
         {
-            QMessageBox::warning(this,tr("密码错误"),tr("请输入正确的密码再登录！"),QMessageBox::Ok);
+            QMessageBox::warning(this,QStringLiteral("密码错误"),QStringLiteral("请输入正确的密码再登录！"),QMessageBox::Ok);
             ui->pwdLineEdit->clear();
             ui->pwdLineEdit->setFocus();
         }

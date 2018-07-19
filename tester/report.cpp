@@ -2,7 +2,6 @@
 #include "ui_report.h"
 #include "connection.h"
 #include "userfile.h"
-//test
 
 Report::Report(QWidget *parent)
     :QDialog(parent),

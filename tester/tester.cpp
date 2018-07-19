@@ -9,7 +9,7 @@ Tester::Tester(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowIcon(QIcon(":/Images/logo.icns"));
-    setWindowTitle(tr("实名制检测系统"));			//设置窗体标题
+    setWindowTitle(QStringLiteral("实名制检测系统"));			//设置窗体标题
     resize(600,600);
     showWidget =new ShowWidget(this);		//设置文本显示窗体
     setCentralWidget(showWidget);
@@ -25,7 +25,7 @@ Tester::Tester(QWidget *parent)
 void Tester::createMenus()
 {
     //文件菜单
-    fileMenu =menuBar()->addMenu(tr("文件"));			//(a)
+    fileMenu =menuBar()->addMenu(QStringLiteral("文件"));			//(a)
     fileMenu->addAction(openFileAction);				//(b)
     fileMenu->addAction(NewFileAction);
     fileMenu->addSeparator();
@@ -33,12 +33,12 @@ void Tester::createMenus()
     fileMenu->addAction(exitAction);
 
     //运行菜单
-    runMenu =menuBar()->addMenu(tr("运行"));
+    runMenu =menuBar()->addMenu(QStringLiteral("运行"));
     runMenu->addAction(startAction);
     runMenu->addAction(stopAction);
 
     //帮助菜单
-    helpMenu =menuBar()->addMenu(tr("帮助"));
+    helpMenu =menuBar()->addMenu(QStringLiteral("帮助"));
     helpMenu->addAction(helpAction);
     helpMenu->addAction(aboutAction);
 }
@@ -64,9 +64,9 @@ void Tester::createToolBars()
 void Tester::createActions()
 {
     //“打开”动作
-    openFileAction =new QAction(tr("打开"),this);//QIcon(":/Images/images/open.png"), (a) /users/zhangxianjin/qtcode/build-ImageProcessor-Desktop_Qt_5_8_0_clang_64bit-Debug
-    openFileAction->setShortcut(tr("Ctrl+O"));                    //(b)
-    openFileAction->setStatusTip(tr("打开一个文件"));               //(c)
+    openFileAction =new QAction(QStringLiteral("打开"),this);//QIcon(":/Images/images/open.png"), (a) /users/zhangxianjin/qtcode/build-ImageProcessor-Desktop_Qt_5_8_0_clang_64bit-Debug
+    openFileAction->setShortcut(QStringLiteral("Ctrl+O"));                    //(b)
+    openFileAction->setStatusTip(QStringLiteral("打开一个文件"));               //(c)
     connect(openFileAction,SIGNAL(triggered()),this,SLOT(showOpenFile()));
     //“新建”动作
     NewFileAction =new QAction(tr("新建"),this);//,QIcon(":/Images/images/new.png"),
