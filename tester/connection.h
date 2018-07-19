@@ -26,9 +26,15 @@ static bool createConnection()
 
     //创建密码表
     query.exec("create table password(pwd varchar primary key)");
-    query.exec("insert into password values('123456')");
+    query.exec("delete password");
+    query.exec("insert into password values('1')");
+
+
+    //创建原始数据表
+    query.exec("create table userData(id int primary key, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11");
     //创建字段表
     query.exec("create table autoid(id varchar primary key,col_type varchar,col_name varchar)");
+    query.exec("delete autoid");
     query.exec(QString("insert into autoid values('0','机主','姓名')"));
     query.exec(QString("insert into autoid values('01','机主','证件类型')"));
     query.exec(QString("insert into autoid values('02','机主','证件号码')"));

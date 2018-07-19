@@ -24,8 +24,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        widget.cpp
+        widget.cpp \
+    threadobject.cpp \
+    threadfromqthread.cpp
 
-HEADERS  += widget.h
+HEADERS  += widget.h \
+    threadobject.h \
+    threadfromqthread.h
 
 FORMS    += widget.ui

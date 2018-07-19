@@ -7,9 +7,9 @@
 QT       += core gui
 QT       += xml sql
 
-RESOURCES += logo.qrc
-
 ICON = logo.icns
+
+#CONFIG += console
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -42,7 +42,11 @@ SOURCES += main.cpp\
     rule.cpp \
     statisticresult.cpp \
     user.cpp \
-    xmlconfigreader.cpp
+    xmlconfigreader.cpp \
+    treeitem.cpp \
+    treemodel.cpp \
+    report.cpp \
+    setuppages.cpp
 
 HEADERS  += tester.h \
     showwidget.h \
@@ -58,10 +62,15 @@ HEADERS  += tester.h \
     rule.h \
     statisticresult.h \
     user.h \
-    xmlconfigreader.h
+    xmlconfigreader.h \
+    treeitem.h \
+    treemodel.h \
+    report.h \
+    setuppages.h
 
 FORMS += \
-    logindialog.ui
+    logindialog.ui \
+    report.ui
 
 DISTFILES +=
 

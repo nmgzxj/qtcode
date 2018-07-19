@@ -2,5 +2,8 @@
     <qresource prefix="/lmages">
         <file alias="bit">bitbug_favicon.ico</file>
         <file alias="logo">logo.icns</file>
+        <file>images/new.png</file>
+        <file>images/open.png</file>
+        <file>images/config.png</file>
     </qresource>
 </RCC>

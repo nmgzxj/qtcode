@@ -1,6 +1,8 @@
 #include "xmlstreamreader.h"
 using namespace std;
 using std::cerr;
+//暂时无用
+
 
 XmlStreamReader::XmlStreamReader()
 {

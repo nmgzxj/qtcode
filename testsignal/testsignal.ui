@@ -1,7 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>TestSignal</class>
- <widget class="QWidget" name="TestSignal" >
-  <property name="geometry" >
+ <widget class="QWidget" name="TestSignal">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,12 +10,132 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>TestSignal</string>
   </property>
+  <widget class="QPushButton" name="closeButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>100</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>关闭窗口</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="minButton">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>100</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>最小化</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>170</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ViewSlot</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="tests">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>170</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TestSlot</string>
+   </property>
+  </widget>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>closeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>TestSignal</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>110</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>124</x>
+     <y>304</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>minButton</sender>
+   <signal>clicked()</signal>
+   <receiver>TestSignal</receiver>
+   <slot>showMinimized()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>TestSignal</receiver>
+   <slot>ViewSlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>132</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>135</x>
+     <y>391</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TestSignal</sender>
+   <signal>ViewSig()</signal>
+   <receiver>TestSignal</receiver>
+   <slot>ViewSlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>273</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>344</x>
+     <y>322</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <signal>ViewSig()</signal>
+  <slot>ViewSlot()</slot>
+ </slots>
 </ui>

@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QSqlQuery>
+#include <QCryptographicHash>
 
 namespace Ui {
 class LoginDialog;

@@ -1,38 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>Report</class>
- <widget name="Report" class="QDialog">
+ <widget class="QDialog" name="Report">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>540</width>
+    <height>393</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>检测结果</string>
   </property>
-  <widget name="buttonBox" class="QDialogButtonBox">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>240</y>
-     <width>341</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>导出结果</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerItem</enum>
+     </property>
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
+     <row>
+      <property name="text">
+       <string>总量</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>全量未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>格式异常数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>字段异常数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>all.ok</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-形式合规数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件类型未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件号码未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名&amp;证件号码未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名&amp;证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件号码&amp;证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名&amp;证件号码&amp;证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件类型校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件号码校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名&amp;证件号码校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名&amp;证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-证件号码&amp;证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-用户姓名&amp;证件号码&amp;证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-形式合规数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件类型未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件号码未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名&amp;证件号码未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名&amp;证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件号码&amp;证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名&amp;证件号码&amp;证件地址未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件类型校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件号码校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名&amp;证件号码校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名&amp;证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-证件号码&amp;证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-用户姓名&amp;证件号码&amp;证件地址校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-代办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-代办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动用户-代办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人固话用户-代办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-形式合规数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-使用人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-经办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-使用人&amp;经办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-使用人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-经办人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-使用人&amp;经办人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-使用人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-经办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-使用人&amp;经办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-经办人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位移动用户-使用人&amp;经办人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位固话用户-形式合规数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位固话用户-经办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位固话用户-单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位固话用户-经办人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位固话用户-经办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位固话用户-单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>单位固话用户-经办人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-形式合规数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-经办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-经办人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人&amp;经办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人&amp;经办人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-经办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-经办人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人&amp;经办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人&amp;经办人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业移动应用-责任人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业固话应用-形式合规数据</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业固话应用-经办人信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业固话应用-经办人&amp;单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业固话应用-单位信息未登记</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业固话应用-经办人信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业固话应用-经办人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>行业固话应用-单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>个人移动一证五卡不合规</string>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>数量</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>说明</string>
+      </property>
+     </column>
+     <item row="0" column="1">
+      <property name="text">
+       <string>全部数据行数</string>
+      </property>
+     </item>
+     <item row="1" column="1">
+      <property name="text">
+       <string>未登记总行数</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
  </widget>
- <pixmapfunction/>
  <resources/>
  <connections>
   <connection>

@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
+#include "report.h"
 
 
 Tester::Tester(QWidget *parent)
@@ -18,6 +19,7 @@ Tester::Tester(QWidget *parent)
     createMenus();
     setupModel();
     setupView();
+    userfile = new UserFile();
 }
 
 void Tester::createMenus()
@@ -62,12 +64,12 @@ void Tester::createToolBars()
 void Tester::createActions()
 {
     //“打开”动作
-    openFileAction =new QAction(tr("打开"),this);//(a) QIcon("../../../open.png"), /users/zhangxianjin/qtcode/build-ImageProcessor-Desktop_Qt_5_8_0_clang_64bit-Debug
+    openFileAction =new QAction(tr("打开"),this);//QIcon(":/Images/images/open.png"), (a) /users/zhangxianjin/qtcode/build-ImageProcessor-Desktop_Qt_5_8_0_clang_64bit-Debug
     openFileAction->setShortcut(tr("Ctrl+O"));                    //(b)
     openFileAction->setStatusTip(tr("打开一个文件"));               //(c)
     connect(openFileAction,SIGNAL(triggered()),this,SLOT(showOpenFile()));
     //“新建”动作
-    NewFileAction =new QAction(tr("新建"),this);//QIcon("../../../new.png"),
+    NewFileAction =new QAction(tr("新建"),this);//,QIcon(":/Images/images/new.png"),
     NewFileAction->setShortcut(tr("Ctrl+N"));
     NewFileAction->setStatusTip(tr("新建一个文件"));
     connect(NewFileAction,SIGNAL(triggered()),this,SLOT(showNewFile()));
@@ -114,8 +116,10 @@ void Tester::showOpenFile()
 {
     QString name;
     name = QFileDialog::getOpenFileName(this,"打开",".","histogram files (*.txt)");
-    if (!name.isEmpty())
+    if (!name.isEmpty()){
+        processfilename = name;
           loadFile(name);
+    }
 //    fileName =QFileDialog::getOpenFileName(this);
 //    if(!fileName.isEmpty())
 //    {
@@ -240,29 +244,53 @@ void Tester::loadFile(QString filename)
                  }
              } while (!line.isEmpty());
            file.close();
-           processfilename = filename;
          }
     }
 }
 
 
-void Tester::startCheckFile()
+//创建线程
+void Tester::startObjThread()
 {
-    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
-    statusBar()->showMessage("start process file", 3000);
+    if(m_objThread)
+    {
+        return;
+    }
+    //    QList<QList<QString>> users = userfile->insertList(processfilename);
+    //    qDebug()<<"行数是："<<users.size();
+    //    userfile->analysisData(users);//传统方法
 
-//    QList<QList<QString>> users = userfile->insertList(processfilename);
-//    qDebug()<<"行数是："<<users.size();
-//    userfile->analysisData(users);//传统方法
+    //    userfile->insertDb(processfilename);
+//
+     userfile->printMessage();
+    userfile->setFileName(processfilename);
+    qDebug()<<"processfilename is "<<processfilename;
+        qDebug() << "Main Thread : " << QThread::currentThreadId();
+    userfile->printMessage();
+    qDebug()<<"启动文件处理线程";
 
-    userfile->insertDb(processfilename);
-    statusBar()->showMessage("all data insert table.", 3000);
+
+    m_objThread = new QThread();
+    userfile->moveToThread(m_objThread);
+    connect(m_objThread,&QThread::finished,m_objThread,&QObject::deleteLater);
+    connect(m_objThread,&QThread::finished,userfile,&QObject::deleteLater);
+    connect(this,&Tester::startObjThreadWork1,userfile,&UserFile::run);
+//    connect(this,&Tester::startObjThreadWork2,userfile,&UserFile::run);
+//       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
+//       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
+    m_objThread->start();
+
+//    while(isFinsh){
+
+//    }
+//    statusBar()->showMessage("all data insert table.", 3000);
+//    qDebug()<<"all data insert table.";
 
 //    QList<QString> users = userfile->readTable("select col1,col2 from file where col1= '丁泽富'");
-    QList<QString> users = userfile->readTable("select count(*),col1,col3 from file group by col1,col3");
-    for(int i=0;i<users.size();i++){
-        qDebug()<< users.at(i)<<"\\n";
-    }
+//    QList<QString> users = userfile->readTable("select count(*),col1,col3 from file group by col1,col3");
+//    for(int i=0;i<users.size();i++){
+//        qDebug()<< users.at(i)<<"\\n";
+//    }
 
 //    printf("start process file");
 //    std::cout<< processfilename.toStdString();
@@ -281,19 +309,38 @@ void Tester::startCheckFile()
 //        }
 //    }
 //    file.close();
+
+}
+
+void Tester::startCheckFile()
+{
+//    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+    statusBar()->showMessage("start process file", 3000);
+    qDebug()<<"开始处理文件";
+    if(m_objThread==NULL)
+        {
+            startObjThread();
+        }
+
+        emit startObjThreadWork1();//主线程通过信号换起子线程的槽函数
+//    emit startObjThreadWork2();
+
+    Report *report = new Report;
+    report->show();
 }
 
 void Tester::stopCheckFile()
 {
     statusBar()->showMessage("stop process file", 3000);
-//    printf("stop process file");
-//    std::cout<< processfilename.toStdString();
+    userfile->stop();
+//    m_objThread->quit();
+    qDebug()<<"停止处理文件";
 }
 
 void Tester::setupTester()
 {
     Setup *newSetup =new Setup;
-    newSetup->show();
+    newSetup->exec();
 }
 
 void Tester::aboutTester()
@@ -301,9 +348,9 @@ void Tester::aboutTester()
 //    About *newAbout =new About;
 //    newAbout->show();
 //    label->setText(tr("About Message Box"));
-    QMessageBox::about(this, tr("About消息框"),tr("实名制检测系统\n "
-                                                  "Version 1.0 \n"
-                                                  "本系统为实名制检查工具。"));
+//    QMessageBox::about(this, tr("About消息框"),tr("实名制检测系统\n "
+//                                                  "Version 1.0 \n"
+//                                                  "本系统为实名制检查工具。"));
 //    return;
 }
 

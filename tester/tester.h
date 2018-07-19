@@ -21,9 +21,10 @@
 #include "showwidget.h"
 #include "about.h"
 #include "setup.h"
+#include "setuppages.h"
 #include "userfile.h"
 #include <iostream>
-#include <QMessagebox>
+//#include <QMessagebox>
 #include <QDebug>
 
 class Tester : public QMainWindow
@@ -40,13 +41,16 @@ public:
     void setupModel();
     int col_num = 42; //文件列数
     int row_num = 20; //预览行数
+    void startObjThread();
+signals:
+    void startObjThreadWork1();
+    void startObjThreadWork2();
 private:
     QMenu *fileMenu;                           		//各项菜单栏
     QMenu *runMenu;
     QMenu *helpMenu;
 //    QMenu *mirrorMenu;
 //    QImage img;
-    QString fileName;
     ShowWidget *showWidget;
     QAction *openFileAction;                     	//文件菜单项
     QAction *NewFileAction;
@@ -118,6 +122,7 @@ protected slots:
 private:
     QStandardItemModel *model;
     QString processfilename;
+    QThread* m_objThread;
 
 };
 

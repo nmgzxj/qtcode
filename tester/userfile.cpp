@@ -8,6 +8,18 @@
 UserFile::UserFile()
 {
      stopped = false;
+     QList<QList<QString>> lls = xmlConfig->readAutoid();
+     QString name;
+//     report = new Report();
+     int num;
+     bool ok;
+     for(int i=0; i<lls.size(); i++){
+         name = lls.at(i).at(1);
+         num = lls.at(i).at(2).toInt(&ok,10);
+         qDebug()<<"col name is "<<name<<" num is "<<num;
+         col_name_map.insert(name,num);
+     }
+
 }
 
 //文件是否存在
@@ -22,27 +34,29 @@ bool UserFile::fileIsExists(QString filename){
 
 //创建数据库表
 bool UserFile::createTable(){
+
     QString sql = "create table file(id varchar primary key";
     for(int i=0;i<COL_NUM;i++){
         sql.append(",col").append( QString::number(i+1, 10)).append(" varchar");
     }
     sql.append(")");
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+//    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
-    db.setHostName("localhost");
-    db.setDatabaseName("data.db");
-    db.setUserName("king");
-    db.setPassword("123456");
-    if(!db.open()){
-        qDebug()<<"数据库连接出错。";
-        return false;
-    }
+//    db.setHostName("localhost");
+//    db.setDatabaseName("data.db");
+//    db.setUserName("king");
+//    db.setPassword("123456");
+//    if(!db.open()){
+//        qDebug()<<"数据库连接出错。";
+//        return false;
+//    }
 
     QSqlQuery query;
+    qDebug()<<"drop table"<<query.exec("drop table file");
     qDebug()<<"createTable()"<<sql;
     bool b = query.exec(sql);
-    db.close();
+    //db.close();
     return b;
 }
 
@@ -53,20 +67,20 @@ bool UserFile::insertDb(QString filename){
         qDebug()<< QDir::currentPath();
         return false;
     }
-//    if(!createTable()){
-//        qDebug()<<"库表创建不成功。";
-//        return false;
-//    }
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-
-    db.setHostName("localhost");
-    db.setDatabaseName("data.db");
-    db.setUserName("king");
-    db.setPassword("123456");
-    if(!db.open()){
-        writeLog("创建数据库连接出错。");
+    if(!createTable()){
+        qDebug()<<"库表创建不成功。";
         return false;
     }
+//    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+
+//    db.setHostName("localhost");
+//    db.setDatabaseName("data.db");
+//    db.setUserName("king");
+//    db.setPassword("123456");
+//    if(!db.open()){
+//        writeLog("创建数据库连接出错。");
+//        return false;
+//    }
 
     QSqlQuery query;
     QFile file(filename);
@@ -96,7 +110,7 @@ bool UserFile::insertDb(QString filename){
     else{
         qDebug()<<"文件打开错误。";
     }
-    db.close();
+//    db.close();
     return true;
 }
 
@@ -185,22 +199,683 @@ bool UserFile::readRule(){
     return false;
 }
 
-void UserFile::run()
+void UserFile::setFileName(QString fileName)
 {
-    while(!stopped)
-    {
-//        printMessage();
+    this->fileName = fileName;
+}
+
+bool isNull(QString str){
+    return (str.isNull()|str.isEmpty()|str.toUpper().compare("NULL")==0);
+}
+
+
+int UserFile::getCol_num(QString name){
+//    int rtn = ;
+    qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name);
+    return col_name_map.value(name);
+}
+
+void UserFile::savePersonMobileOwnerNameNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主姓名未登记";
+
+}
+void UserFile::savePersonMobileOwnerTypeNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主证件类型未登记";
+}
+void UserFile::savePersonMobileOwnerNumNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主证件号码未登记";
+}
+void UserFile::savePersonMobileOwnerAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主证件地址未登记";
+}
+void UserFile::savePersonMobileOwnerNameNumNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主姓名证件号码未登记";
+}
+void UserFile::savePersonMobileOwnerNameAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主姓名证件地址未登记";
+}
+void UserFile::savePersonMobileOwnerNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主证件号码地址未登记";
+}
+void UserFile::savePersonMobileOwnerNameNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户机主姓名证件号码地址未登记";
+}
+void UserFile::saveAllNotReg(QList<QString> line){
+    qDebug()<<"全量未登记";
+}
+
+/**
+ * 处理个人移动号码
+ * 		// 个人--移动电话
+        filename5pmok = str_files_out_path+ "个人移动用户-形式合规数据.ok";
+
+        filename10pm = str_files_out_path + "个人移动用户-证件类型未登记.nreg";
+        filename11pm = str_files_out_path + "个人移动用户-用户姓名未登记.nreg";
+        filename12pm = str_files_out_path + "个人移动用户-证件号码未登记.nreg";
+        filename13pm = str_files_out_path + "个人移动用户-证件地址未登记.nreg";
+        filename14pm = str_files_out_path + "个人移动用户-用户姓名&证件号码未登记.nreg";
+        filename15pm = str_files_out_path + "个人移动用户-用户姓名&证件地址未登记.nreg";
+        filename16pm = str_files_out_path + "个人移动用户-证件号码&证件地址未登记.nreg";
+        filename17pm = str_files_out_path + "个人移动用户-用户姓名&证件号码&证件地址未登记.nreg";
+
+        filename20pm = str_files_out_path + "个人移动用户-证件类型校验不合规.nck";
+        filename21pm = str_files_out_path + "个人移动用户-用户姓名校验不合规.nck";
+        filename22pm = str_files_out_path + "个人移动用户-证件号码校验不合规.nck";
+        filename23pm = str_files_out_path + "个人移动用户-证件地址校验不合规.nck";
+        filename24pm = str_files_out_path + "个人移动用户-用户姓名&证件号码校验不合规.nck";
+        filename25pm = str_files_out_path + "个人移动用户-用户姓名&证件地址校验不合规.nck";
+        filename26pm = str_files_out_path + "个人移动用户-证件号码&证件地址校验不合规.nck";
+        filename27pm = str_files_out_path + "个人移动用户-用户姓名&证件号码&证件地址校验不合规.nck";
+
+ * */
+bool UserFile::processPersonMobile(QList<QString> line){
+    bool isnt_onwer = false;
+    bool isnt_owner_name = false;
+    QString owner_name = line[getCol_num("机主姓名")];
+    qDebug()<<"processing owner_name "<<owner_name;
+    if(isNull(owner_name)){
+        savePersonMobileOwnerNameNotReg(line);//个人移动用户-用户姓名未登记
+//        report->personMobileOwnerNameNotReg+=1;
+        isnt_owner_name = true;
     }
-    stopped = false;
+    bool isnt_owner_type = false;
+    QString owner_type = line[getCol_num("机主证件类型")];
+    qDebug()<<"processing owner_type "<<owner_type;
+    if(isNull(owner_type)){
+        savePersonMobileOwnerTypeNotReg(line);//个人移动用户-证件类型未登记
+//        report->personMobileOwnerTypeNotReg+=1;
+        isnt_owner_type = true;
+    }
+    bool isnt_owner_num = false;
+    QString owner_num = line[getCol_num("机主证件号码")];
+    qDebug()<<"processing owner_num "<<owner_num;
+    if(isNull(owner_num)){
+        savePersonMobileOwnerNumNotReg(line);//个人移动用户-证件号码未登记
+        isnt_owner_num = true;
+    }
+    bool isnt_owner_add = false;
+    QString owner_add = line[getCol_num("机主证件地址")];
+    qDebug()<<"processing owner_add "<<owner_add;
+    if(isNull(owner_add)){
+        savePersonMobileOwnerAddNotReg(line);//个人移动用户-证件地址未登记
+        isnt_owner_add = true;
+    }
+
+    if(isnt_owner_name&isnt_owner_num){
+        savePersonMobileOwnerNameNumNotReg(line);//个人移动用户-用户姓名&证件号码未登记
+    }
+    if(isnt_owner_name&isnt_owner_add){
+        savePersonMobileOwnerNameAddNotReg(line);//个人移动用户-用户姓名&证件地址未登记
+    }
+    if(isnt_owner_num&isnt_owner_add){
+        savePersonMobileOwnerNumAddNotReg(line);//个人移动用户-证件号码&证件地址未登记
+    }
+    if(isnt_owner_name&isnt_owner_num&isnt_owner_add){
+        savePersonMobileOwnerNameNumAddNotReg(line);//个人移动用户-用户姓名&证件号码&证件地址未登记
+    }
+    if(isnt_owner_name||isnt_owner_num||isnt_owner_add){
+        isnt_onwer = true;
+        saveAllNotReg(line);//全量未登记
+    }
+    return isnt_onwer;
+}
+
+void savePersonFixedOwnerNameNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主姓名未登记";
+}
+void savePersonFixedOwnerTypeNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主证件类型未登记";
+}
+void savePersonFixedOwnerNumNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主证件号码未登记";
+}
+void savePersonFixedOwnerAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主证件地址未登记";
+}
+void savePersonFixedOwnerNameNumNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主姓名证件号码未登记";
+}
+void savePersonFixedOwnerNameAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主姓名证件地址未登记";
+}
+void savePersonFixedOwnerNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主证件号码地址未登记";
+}
+void savePersonFixedOwnerNameNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户机主姓名证件号码地址未登记";
+}
+
+
+/**
+ * @brief UserFile::processPersonFixed 处理个人固定电话
+ * @param line
+ * 		// 个人-固定电话
+        filename5pfok = str_files_out_path+ "个人固话用户-形式合规数据.ok";
+
+        filename10pf = str_files_out_path + "个人固话用户-证件类型未登记.nreg";
+        filename11pf = str_files_out_path + "个人固话用户-用户姓名未登记.nreg";
+        filename12pf = str_files_out_path + "个人固话用户-证件号码未登记.nreg";
+        filename13pf = str_files_out_path + "个人固话用户-证件地址未登记.nreg";
+        filename14pf = str_files_out_path + "个人固话用户-用户姓名&证件号码未登记.nreg";
+        filename15pf = str_files_out_path + "个人固话用户-用户姓名&证件地址未登记.nreg";
+        filename16pf = str_files_out_path + "个人固话用户-证件号码&证件地址未登记.nreg";
+        filename17pf = str_files_out_path + "个人固话用户-用户姓名&证件号码&证件地址未登记.nreg";
+
+        filename20pf = str_files_out_path + "个人固话用户-证件类型校验不合规.nck";
+        filename21pf = str_files_out_path + "个人固话用户-用户姓名校验不合规.nck";
+        filename22pf = str_files_out_path + "个人固话用户-证件号码校验不合规.nck";
+        filename23pf = str_files_out_path + "个人固话用户-证件地址校验不合规.nck";
+        filename24pf = str_files_out_path + "个人固话用户-用户姓名&证件号码校验不合规.nck";
+        filename25pf = str_files_out_path + "个人固话用户-用户姓名&证件地址校验不合规.nck";
+        filename26pf = str_files_out_path + "个人固话用户-证件号码&证件地址校验不合规.nck";
+        filename27pf = str_files_out_path + "个人固话用户-用户姓名&证件号码&证件地址校验不合规.nck";
+
+        filename1pma = str_files_out_path + "个人移动用户-代办人信息未登记.nreg";
+        filename1pfa = str_files_out_path + "个人固话用户-代办人信息未登记.nreg";
+        filename2pma = str_files_out_path + "个人移动用户-代办人信息校验不合规.nck";
+        filename2pfa = str_files_out_path + "个人固话用户-代办人信息校验不合规.nck";
+
+ */
+bool UserFile::processPersonFixed(QList<QString> line){
+
+    bool isnt_owner_name = false;
+    QString owner_name = line[getCol_num("机主姓名")];
+    qDebug()<<"processing owner_name "<<owner_name;
+    if(isNull(owner_name)){
+        savePersonFixedOwnerNameNotReg(line);//个人固话用户-用户姓名未登记
+        isnt_owner_name = true;
+    }
+    bool isnt_owner_type = false;
+    QString owner_type = line[getCol_num("机主证件类型")];
+    qDebug()<<"processing owner_type "<<owner_type;
+    if(isNull(owner_type)){
+        savePersonFixedOwnerTypeNotReg(line);//个人固话用户-证件类型未登记
+        isnt_owner_type = true;
+    }
+    bool isnt_owner_num = false;
+    QString owner_num = line[getCol_num("机主证件号码")];
+    qDebug()<<"processing owner_num "<<owner_num;
+    if(isNull(owner_num)){
+        savePersonFixedOwnerNumNotReg(line);//个人固话用户-证件号码未登记
+        isnt_owner_num = true;
+    }
+    bool isnt_owner_add = false;
+    QString owner_add = line[getCol_num("机主证件地址")];
+    qDebug()<<"processing owner_add "<<owner_add;
+    if(isNull(owner_add)){
+        savePersonFixedOwnerAddNotReg(line);//个人固话用户-证件地址未登记
+        isnt_owner_add = true;
+    }
+
+    if(isnt_owner_name&isnt_owner_num){
+        savePersonFixedOwnerNameNumNotReg(line);//个人固话用户-用户姓名&证件号码未登记
+    }
+    if(isnt_owner_name&isnt_owner_add){
+        savePersonFixedOwnerNameAddNotReg(line);//个人固话用户-用户姓名&证件地址未登记
+    }
+    if(isnt_owner_num&isnt_owner_add){
+        savePersonFixedOwnerNumAddNotReg(line);//个人固话用户-证件号码&证件地址未登记
+    }
+    if(isnt_owner_name&isnt_owner_num&isnt_owner_add){
+        savePersonFixedOwnerNameNumAddNotReg(line);//个人固话用户-用户姓名&证件号码&证件地址未登记
+    }
+    if(isnt_owner_name||isnt_owner_num||isnt_owner_add){
+        saveAllNotReg(line);//全量未登记
+    }
+
+}
+
+void saveUnitMobileOwnerNotReg(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人信息未登记";
+}
+
+void saveUnitMobileOwnerAgentNotReg(QList<QString> line){
+    //单位移动用户-经办人信息未登记
+}
+
+void saveUnitMobileUnitNotReg(QList<QString> line){
+    //单位移动用户-单位信息未登记
+}
+
+void saveUnitMobileOwnerUnitNotReg(QList<QString> line){
+    //单位移动用户-使用人&单位信息未登记
+}
+
+void saveUnitMobileAgentUnitNotReg(QList<QString> line){
+    //单位移动用户-经办人&单位信息未登记
+}
+
+void saveUnitMobileOwnerAgentUnitAddNotReg(QList<QString> line){
+    //单位移动用户-使用人&经办人&单位信息未登记
+}
+
+/**
+ * @brief processUnitMobile 单位移动电话
+ * @param line
+ * 		filename5umok = str_files_out_path+ "单位移动用户-形式合规数据.ok";
+
+        filename11um = str_files_out_path + "单位移动用户-使用人信息未登记.nreg";
+        filename12um = str_files_out_path + "单位移动用户-经办人信息未登记.nreg";
+        filename13um = str_files_out_path + "单位移动用户-单位信息未登记.nreg";
+        filename14um = str_files_out_path + "单位移动用户-使用人&经办人信息未登记.nreg";
+        filename15um = str_files_out_path + "单位移动用户-使用人&单位信息未登记.nreg";
+        filename16um = str_files_out_path + "单位移动用户-经办人&单位信息未登记.nreg";
+        filename17um = str_files_out_path + "单位移动用户-使用人&经办人&单位信息未登记.nreg";
+
+        filename21um = str_files_out_path + "单位移动用户-使用人信息校验不合规.nck";
+        filename22um = str_files_out_path + "单位移动用户-经办人信息校验不合规.nck";
+        filename23um = str_files_out_path + "单位移动用户-单位信息校验不合规.nck";
+        filename24um = str_files_out_path + "单位移动用户-使用人&经办人信息校验不合规.nck";
+        filename25um = str_files_out_path + "单位移动用户-使用人&单位信息校验不合规.nck";
+        filename26um = str_files_out_path + "单位移动用户-经办人&单位信息校验不合规.nck";
+        filename27um = str_files_out_path + "单位移动用户-使用人&经办人&单位信息校验不合规.nck";
+ */
+bool UserFile::processUnitMobile(QList<QString> line){
+    bool isnt_owner_info = false;
+    if(processPersonMobile(line)){
+        saveUnitMobileOwnerNotReg(line);//单位移动用户-使用人信息未登记
+        isnt_owner_info = true;
+    }
+    bool isnt_agent_info = false;
+    if(isNull(line[getCol_num("代（经）办人姓名")])|
+       isNull(line[getCol_num("代（经）办人证件类型")])|
+       isNull(line[getCol_num("代（经）办人证件号码")])|
+       isNull(line[getCol_num("代（经）办人证件地址")])|
+       isNull(line[getCol_num("代（经）办人通讯地址")])){
+        saveUnitMobileOwnerAgentNotReg(line);//单位移动用户-经办人信息未登记
+        isnt_agent_info = true;
+
+    }
+    bool isnt_unit_info = false;
+    if(isNull(line[getCol_num("单位名称")])|
+       isNull(line[getCol_num("单位证件号码")])|
+       isNull(line[getCol_num("单位证件类型")])|
+       isNull(line[getCol_num("单位证件地址")])|
+       isNull(line[getCol_num("单位通讯地址")])){
+        saveUnitMobileUnitNotReg(line);//单位移动用户-单位信息未登记
+        isnt_unit_info = true;
+
+    }
+
+    if(isnt_owner_info&isnt_agent_info){
+        saveUnitMobileOwnerAgentNotReg(line);//单位移动用户-使用人&经办人信息未登记
+    }
+    if(isnt_owner_info&isnt_unit_info){
+        saveUnitMobileOwnerUnitNotReg(line);//单位移动用户-使用人&单位信息未登记
+    }
+    if(isnt_agent_info&isnt_unit_info){
+        saveUnitMobileAgentUnitNotReg(line);//单位移动用户-经办人&单位信息未登记
+    }
+    if(isnt_owner_info&isnt_agent_info&isnt_unit_info){
+        saveUnitMobileOwnerAgentUnitAddNotReg(line);//单位移动用户-使用人&经办人&单位信息未登记
+    }
+    if(isnt_owner_info||isnt_agent_info||isnt_unit_info){
+        saveAllNotReg(line);//全量未登记
+    }
+
+
+}
+
+void UserFile::saveUnitFixedOwnerNotReg(QList<QString> line){
+    //单位固话用户-使用人信息未登记
+}
+void UserFile::saveUnitFixedAgentNotReg(QList<QString> line){
+    //单位固话用户-经办人信息未登记
+}
+void UserFile::saveUnitFixedUnitNotReg(QList<QString> line){
+    //单位固话用户-单位信息未登记
+}
+void UserFile::saveUnitFixedOwnerAgentNotReg(QList<QString> line){
+    //单位固话用户-使用人&经办人信息未登记
+}
+void UserFile::saveUnitFixedOwnerUnitNotReg(QList<QString> line){
+    //单位固话用户-使用人&单位信息未登记
+}
+void UserFile::saveUnitFixedAgentUnitNotReg(QList<QString> line){
+    //单位固话用户-经办人&单位信息未登记
+}
+void UserFile::saveUnitFixedOwnerAgentUnitAddNotReg(QList<QString> line){
+    //单位固话用户-使用人&经办人&单位信息未登记
+}
+
+/**
+ * @brief processUnitFixed
+ * @param line
+ * 		// 单位--固定电话
+        filename5ufok = str_files_out_path+ "单位固话用户-形式合规数据.ok";
+
+        filename21uf = str_files_out_path + "单位固话用户-200.nck";
+        filename22uf = str_files_out_path + "单位固话用户-经办人信息校验不合规.nck";
+        filename23uf = str_files_out_path + "单位固话用户-单位信息校验不合规.nck";
+        filename24uf = str_files_out_path + "单位固话用户-220.nck";
+        filename25uf = str_files_out_path + "单位固话用户-202.nck";
+        filename26uf = str_files_out_path + "单位固话用户-经办人&单位信息校验不合规.nck";
+        filename27uf = str_files_out_path + "单位固话用户-222.nck";
+ */
+bool UserFile::processUnitFixed(QList<QString> line){
+    bool isnt_owner_info = false;
+    if(processPersonFixed(line)){
+        saveUnitFixedOwnerNotReg(line);//单位固话用户-使用人信息未登记
+        isnt_owner_info = true;
+    }
+    bool isnt_agent_info = false;
+    if(isNull(line[getCol_num("代（经）办人姓名")])|
+       isNull(line[getCol_num("代（经）办人证件类型")])|
+       isNull(line[getCol_num("代（经）办人证件号码")])|
+       isNull(line[getCol_num("代（经）办人证件地址")])|
+       isNull(line[getCol_num("代（经）办人通讯地址")])){
+        saveUnitFixedAgentNotReg(line);//单位固话用户-经办人信息未登记
+        isnt_agent_info = true;
+
+    }
+    bool isnt_unit_info = false;
+    if(isNull(line[getCol_num("单位名称")])|
+       isNull(line[getCol_num("单位证件号码")])|
+       isNull(line[getCol_num("单位证件类型")])|
+       isNull(line[getCol_num("单位证件地址")])|
+       isNull(line[getCol_num("单位通讯地址")])){
+        saveUnitFixedUnitNotReg(line);//单位固话用户-单位信息未登记
+        isnt_unit_info = true;
+
+    }
+
+    if(isnt_owner_info&isnt_agent_info){
+        saveUnitFixedOwnerAgentNotReg(line);//单位固话用户-使用人&经办人信息未登记
+    }
+    if(isnt_owner_info&isnt_unit_info){
+        saveUnitFixedOwnerUnitNotReg(line);//单位固话用户-使用人&单位信息未登记
+    }
+    if(isnt_agent_info&isnt_unit_info){
+        saveUnitFixedAgentUnitNotReg(line);//单位固话用户-经办人&单位信息未登记
+    }
+    if(isnt_owner_info&isnt_agent_info&isnt_unit_info){
+        saveUnitFixedOwnerAgentUnitAddNotReg(line);//单位固话用户-使用人&经办人&单位信息未登记
+    }
+    if(isnt_owner_info||isnt_agent_info||isnt_unit_info){
+        saveAllNotReg(line);//全量未登记
+    }
+
+
+}
+void UserFile::saveTradeMobileAgentNotReg(QList<QString> line){
+    //行业移动应用-经办人信息未登记
+}
+void UserFile::saveTradeMobileUnitNotReg(QList<QString> line){
+    //行业移动应用-单位信息未登记
+}
+void UserFile::saveTradeMobileLiableNotReg(QList<QString> line){
+    //行业移动应用-责任人信息未登记
+}
+void UserFile::saveTradeMobileAgentUnitNotReg(QList<QString> line){
+    //行业移动应用-经办人&单位信息未登记
+}
+void UserFile::saveTradeMobileLiableAgentNotReg(QList<QString> line){
+    //行业移动应用-责任人&经办人信息未登记
+}
+void UserFile::saveTradeMobileLiableUnitNotReg(QList<QString> line){
+    //行业移动应用-责任人&单位信息未登记
+}
+void UserFile::saveTradeMobileLiableAgentUnitAddNotReg(QList<QString> line){
+    //行业移动应用-责任人&经办人&单位信息未登记
+}
+/**
+ * @brief processTradeMobile
+ * @param line
+ * 		// 行业--移动 应用
+        filename5imok = str_files_out_path+ "行业移动应用-形式合规数据.ok";
+
+        filename21im = str_files_out_path + "行业移动应用-经办人信息校验不合规.nck";
+        filename24im = str_files_out_path + "行业移动应用-经办人&单位信息校验不合规.nck";
+        filename25im = str_files_out_path + "行业移动应用-责任人&经办人信息校验不合规.nck";
+        filename26im = str_files_out_path + "行业移动应用-责任人&经办人&单位信息校验不合规.nck";
+        filename27im = str_files_out_path + "行业移动应用-单位信息校验不合规.nck";
+        filename28im = str_files_out_path + "行业移动应用-责任人信息校验不合规.nck";
+        filename29im = str_files_out_path + "行业移动应用-责任人&单位信息校验不合规.nck";
+ */
+bool UserFile::processTradeMobile(QList<QString> line){
+
+    bool isnt_agent_info = false;
+    if(isNull(line[getCol_num("代（经）办人姓名")])|
+       isNull(line[getCol_num("代（经）办人证件类型")])|
+       isNull(line[getCol_num("代（经）办人证件号码")])|
+       isNull(line[getCol_num("代（经）办人证件地址")])|
+       isNull(line[getCol_num("代（经）办人通讯地址")])){
+        saveTradeMobileAgentNotReg(line);//行业移动应用-经办人信息未登记
+        isnt_agent_info = true;
+
+    }
+    bool isnt_unit_info = false;
+    if(isNull(line[getCol_num("单位名称")])|
+       isNull(line[getCol_num("单位证件号码")])|
+       isNull(line[getCol_num("单位证件类型")])|
+       isNull(line[getCol_num("单位证件地址")])|
+       isNull(line[getCol_num("单位通讯地址")])){
+        saveTradeMobileUnitNotReg(line);//行业移动应用-单位信息未登记
+        isnt_unit_info = true;
+
+    }
+    bool isnt_liable_info = false;
+    if(isNull(line[getCol_num("责任人姓名")])|
+       isNull(line[getCol_num("责任人证件类型")])|
+       isNull(line[getCol_num("责任人证件号码")])|
+       isNull(line[getCol_num("责任人证件地址")])|
+       isNull(line[getCol_num("责任人通讯地址")])){
+        saveTradeMobileLiableNotReg(line);//行业移动应用-责任人信息未登记
+        isnt_liable_info = true;
+
+    }
+
+    if(isnt_agent_info&isnt_unit_info){
+        saveTradeMobileAgentUnitNotReg(line);//行业移动应用-经办人&单位信息未登记
+    }
+    if(isnt_liable_info&isnt_agent_info){
+        saveTradeMobileLiableAgentNotReg(line);//行业移动应用-责任人&经办人信息未登记
+    }
+    if(isnt_liable_info&isnt_unit_info){
+        saveTradeMobileLiableUnitNotReg(line);//行业移动应用-责任人&单位信息未登记
+    }
+    if(isnt_liable_info&isnt_agent_info&isnt_unit_info){
+        saveTradeMobileLiableAgentUnitAddNotReg(line);//行业移动应用-责任人&经办人&单位信息未登记
+    }
+    if(isnt_liable_info||isnt_agent_info||isnt_unit_info){
+        saveAllNotReg(line);//全量未登记
+    }
+}
+
+void UserFile::saveTradeFixedAgentNotReg(QList<QString> line){
+    //行业固话应用-经办人信息未登记
+}
+void UserFile::saveTradeFixedUnitNotReg(QList<QString> line){
+    //行业固话应用-单位信息未登记
+}
+void UserFile::saveTradeFixedAgentUnitNotReg(QList<QString> line){
+    //行业固话应用-经办人&单位信息未登记
+}
+
+/**
+ * @brief processTradeFixed
+ * @param line
+ * 		// 行业--固定 应用
+        filename5ifok = str_files_out_path+ "行业固话应用-形式合规数据.ok";
+
+        filename21if = str_files_out_path + "行业固话应用-经办人信息校验不合规.nck";
+        filename24if = str_files_out_path + "行业固话应用-经办人&单位信息校验不合规.nck";
+        filename27if = str_files_out_path + "行业固话应用-单位信息校验不合规.nck";
+
+        //filename_photo_2 = str_files_out_path + "现场照片核对记录-2.photo";
+        //filename_photo_1 = "e:/" + "现场照片核对记录-1.photo";
+
+        //filename_oneday_data = str_files_out_path + "抽取的一天的全量数据-1.data";
+        //filename_oneday_data2 = "e:/" + "抽取的一天的全量数据-2.data";
+
+        filename_one2five_pm = str_files_out_path + "个人移动一证五卡不合规.nck";
+ */
+bool UserFile::processTradeFixed(QList<QString> line){
+
+    bool isnt_agent_info = false;
+    if(isNull(line[getCol_num("代（经）办人姓名")])|
+       isNull(line[getCol_num("代（经）办人证件类型")])|
+       isNull(line[getCol_num("代（经）办人证件号码")])|
+       isNull(line[getCol_num("代（经）办人证件地址")])|
+       isNull(line[getCol_num("代（经）办人通讯地址")])){
+        saveTradeFixedAgentNotReg(line);//行业固话应用-经办人信息未登记
+        isnt_agent_info = true;
+
+    }
+    bool isnt_unit_info = false;
+    if(isNull(line[getCol_num("单位名称")])|
+       isNull(line[getCol_num("单位证件号码")])|
+       isNull(line[getCol_num("单位证件类型")])|
+       isNull(line[getCol_num("单位证件地址")])|
+       isNull(line[getCol_num("单位通讯地址")])){
+        saveTradeFixedUnitNotReg(line);//行业固话应用-单位信息未登记
+        isnt_unit_info = true;
+
+    }
+    if(isnt_agent_info&isnt_unit_info){
+        saveTradeFixedAgentUnitNotReg(line);//行业固话应用-经办人&单位信息未登记
+    }
+    if(isnt_agent_info||isnt_unit_info){
+        saveAllNotReg(line);//全量未登记
+    }
+
+
+
+}
+/**
+ * @brief processLine
+ * @param line 单行文本数据
+
+   //  0 个人移动， 1个人固话
+   //  2单位移动， 3单位固话
+   //  4行业移动，5行业固话
+   //  6个人移动代办，7个人固话代办
+        // 全量（个人+单位）
+        filename2 = str_files_out_path + "全量形式不合规.nck";
+        filename3 = str_files_out_path + "idcard.overdue";
+        filename4 = str_files_out_path + "格式异常数据.abnormal";
+        filename44 = str_files_out_path + "字段异常数据.abnormal";
+        filename5 = str_files_out_path+ "all.ok";
+        filename6 = str_files_out_path + "待挖掘记录-" + head_loop_num + ".txt";
+
+        filename55 = str_files_out_path + "tian.mao";
+ */
+void UserFile::processLine(QList<QString> line){
+    QString user_category = line[getCol_num("用户类型")];
+    QString business_type = line[getCol_num("用户业务类型")];
+    qDebug()<<"user_category is "<<user_category;
+    qDebug()<<"business_type is "<<business_type;
+    if(user_category=="个人客户"&&business_type=="移动手机号码"){//个人移动用户
+        processPersonMobile(line);
+    }
+    else if(user_category=="个人客户"&&business_type=="2"){//个人固话用户
+        processPersonFixed(line);
+    }
+    else if(user_category=="2"&&business_type=="移动手机号码"){//单位移动用户
+        processUnitMobile(line);
+    }
+    else if(user_category=="2"&&business_type=="2"){//单位固话用户
+        processUnitFixed(line);
+    }
+    else if(user_category=="3"&&business_type=="移动手机号码"){//行业移动用户
+        processTradeMobile(line);
+    }
+    else if(user_category=="3"&&business_type=="2"){//行业固话用户
+        processTradeFixed(line);
+    }
+}
+
+/*
+ * 代办人，机主年龄段可以配置
+ * 用户业务类型和用户类型可配置。
+ * 数据加翻页
+ */
+
+void processOneCard(QList<QList<QString>> lines){
+    qDebug()<<"processing 一证五号。";
+}
+
+void UserFile::run(){
+    QList<QList<QString>> lines =  insertList(this->fileName);//文件数据装入内存
+    int line_id = 0;
+    while (!m_isStop&&line_id<lines.size()) {//按行处理数据
+        QThread::sleep(1);
+        qDebug()<<"I'm here!";
+        if(lines[line_id].size()==COL_NUM)
+            processLine(lines[line_id]);
+        else
+            qDebug()<<line_id<<"行数据列数不对";
+        line_id++;
+    }
+    if(!m_isStop){
+        processOneCard(lines);
+    }
+    isFinsh = true;
+//        Report *report = new Report;
+//        report->show();
+
+}
+//void UserFile::run1()
+//{
+//    qDebug()<<"file name is:"<<fileName;
+
+//    int i=0;
+//    while(i<2)
+//    {
+//        printMessage();
+//        QThread::sleep(1);
+//        i++;
+//    }
+//////    stopped = false;
+//    {
+//        QMutexLocker locker(&m_stopMutex);
+//        m_isStop = false;
+//    }
+//    int count = 0;
+//    QString str = QString("%1->%2,thread id:%3").arg(__FILE__).arg(__FUNCTION__).arg((int)(size_t)QThread::currentThreadId());
+////    emit message(str);
+//    int process = 0;
+//    while(1)
+//    {
+//        {
+//            QMutexLocker locker(&m_stopMutex);
+//            if(m_isStop)
+//                return;
+//        }
+//        printMessage();
+//        if(m_runCount == count)
+//        {
+//            break;
+//        }
+//        QThread::sleep(1);
+
+//        int pro = ((float)count / m_runCount) * 100;
+//        qDebug()<<"pro is "<<pro;
+//        if(pro != process)
+//        {
+////            qDebug()<<"process is "<<process;
+//            printMessage();
+//            process = pro;
+//            printMessage();
+////            emit progress(((float)count / m_runCount) * 100);
+////            emit message(QString("Object::run times:%1,m_runCount:%2").arg(count).arg(m_runCount2));
+//        }
+//        ++count;
+//    }
+//}
+
+void UserFile::printMessage(){
+    qDebug()<<QString("%1->%2,thread id:%3").arg(__FUNCTION__).arg(__FILE__).arg((int)(size_t)QThread::currentThreadId());
 }
 
 void UserFile::stop()
 {
     stopped = true;
+    m_isStop = true;
 }
 
 
-enum col_name
+enum col_name11
 {
     owner_name,  //"机主", "姓名"
     owner_type,  //"机主", "证件类型"
@@ -254,9 +929,6 @@ enum col_name
 
 };
 
-bool isNull(QString str){
-    return (str.isNull()|str.isEmpty()|str.toUpper().compare("NULL")==0);
-}
 
 //分析文件
 bool UserFile::analysisData(QList<QList<QString>> list){
