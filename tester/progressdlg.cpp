@@ -7,23 +7,23 @@ ProgressDlg::ProgressDlg(QWidget *parent)
 {
     QFont font("ZYSong18030",12);
     setFont(font);
-    setWindowTitle(tr("Progress"));
+    setWindowTitle(QStringLiteral("Progress"));
 
     FileNum = new QLabel;
-    FileNum->setText(tr("文件数目："));
+    FileNum->setText(QStringLiteral("文件数目："));
     FileNumLineEdit = new QLineEdit;
-    FileNumLineEdit->setText(tr("100000"));
+    FileNumLineEdit->setText(QStringLiteral("100000"));
 
     ProgressType = new QLabel;
-    ProgressType->setText(tr("显示类型："));
+    ProgressType->setText(QStringLiteral("显示类型："));
     comboBox = new QComboBox;
-    comboBox->addItem(tr("ProgressBar"));
-    comboBox->addItem((tr("progressDialog")));
+    comboBox->addItem(QStringLiteral("ProgressBar"));
+    comboBox->addItem((QStringLiteral("progressDialog")));
 
     progressBar = new QProgressBar;
 
     startBtn = new QPushButton();
-    startBtn->setText(tr("开始"));
+    startBtn->setText(QStringLiteral("开始"));
 
     mainLayout = new QGridLayout(this);
     mainLayout->addWidget(FileNum,0,0);
@@ -61,9 +61,9 @@ void ProgressDlg::startProgress()
         progressDialog->setFont(font);
         progressDialog->setWindowModality(Qt::WindowModal);     //(d)
         progressDialog->setMinimumDuration(5);					//(e)
-        progressDialog->setWindowTitle(tr("Please Wait"));		//(f)
-        progressDialog->setLabelText(tr("Copying..."));         //(g)
-        progressDialog->setCancelButtonText(tr("Cancel"));		//(h)
+        progressDialog->setWindowTitle(QStringLiteral("Please Wait"));		//(f)
+        progressDialog->setLabelText(QStringLiteral("Copying..."));         //(g)
+        progressDialog->setCancelButtonText(QStringLiteral("Cancel"));		//(h)
         progressDialog->setRange(0,num);	  //设置进度对话框的步进范围
         for(int i=1;i<num+1;i++)
         {

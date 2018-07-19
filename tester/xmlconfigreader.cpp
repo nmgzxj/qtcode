@@ -8,6 +8,11 @@
 #include <iostream>
 #include <QDomElement>
 
+XMLConfigReader::XMLConfigReader(){
+    PATH=QCoreApplication::applicationDirPath();//"/Users/zhangxianjin/qtcode/testXml";
+    qDebug()<<"PATH="+PATH;
+}
+
 //读取数据列配置
 QList<QList<QString>> XMLConfigReader::readAutoid(){
     enum ExitCode
@@ -19,7 +24,7 @@ QList<QList<QString>> XMLConfigReader::readAutoid(){
         FileFailure
     };
     QTextStream errorStream(stderr);
-    QString inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
     QFile file(inputFilePath);
     if (!QFile::exists(inputFilePath))
     {
@@ -71,123 +76,123 @@ void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QStrin
 {
     if("业务类型移动"==*var){
         *child = "移动";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-businesstype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-businesstype.xml";
     }
     else if("业务类型固定"==*var){
         *child = "固定";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-businesstype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-businesstype.xml";
     }
     else if("业务状态非实名停机"==*var){
         *child = "非实名停机";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-businesstype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-businesstype.xml";
     }
     else if("业务状态不在网"==*var){
         *child = "不在网";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-businesstype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-businesstype.xml";
     }
     else if("个人证件居民身份证"==*var){
         *child = "居民身份证";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件临时居民身份证"==*var){
         *child = "临时居民身份证";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件户口薄"==*var){
         *child = "户口薄";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件中国人民解放军军人身份证件"==*var){
         *child = "中国人民解放军军人身份证件";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件中国人民武装警察身份证件"==*var){
         *child = "中国人民武装警察身份证件";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件港澳居民来往内地通行证"==*var){
         *child = "港澳居民来往内地通行证";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件台湾居民来往大陆通行证"==*var){
         *child = "台湾居民来往大陆通行证";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件外国公民护照"==*var){
         *child = "外国公民护照";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件法律、行政法规和国家规定的其他有效身份证件"==*var){
         *child = "法律、行政法规和国家规定的其他有效身份证件";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人证件非法律、行政法规和国家规定的有效身份证件"==*var){
         *child = "非法律、行政法规和国家规定的有效身份证件";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("单位证件组织机构代码证"==*var){
         *child = "组织机构代码证";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("单位证件营业执照"==*var){
         *child = "营业执照";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("单位证件事业单位法人证书或者社会团体法人登记证书"==*var){
         *child = "事业单位法人证书或者社会团体法人登记证书";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("单位证件法律、行政法规和国家规定的其他有效证件或者证明文件"==*var){
         *child = "法律、行政法规和国家规定的其他有效证件或者证明文件";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("单位证件非法律、行政法规和国家规定的有效身份证件"==*var){
         *child = "非法律、行政法规和国家规定的有效身份证件";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-cardtype.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/config/config-cardtype.xml";
     }
     else if("个人用户姓名comon-rule"==*var){
         *child = "common-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-name-person.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-name-person.xml";
      }
     else if("个人用户姓名match-rule"==*var){
         *child = "match-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-name-person.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-name-person.xml";
      }
     else if("行业用户姓名comon-rule"==*var){
         *child = "common-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-name-unit.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-name-unit.xml";
      }
     else if("行业用户姓名match-rule"==*var){
         *child = "match-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-name-unit.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-name-unit.xml";
      }
     else if("证件号码comon-rule"==*var){
         *child = "common-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-cardnum-person-unit.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-cardnum-person-unit.xml";
      }
     else if("证件号码match-rule"==*var){
         *child = "match-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-cardnum-person-unit.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-cardnum-person-unit.xml";
      }
     else if("证件地址addr-rule"==*var){
         *child = "addr-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-addr-person-unit.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-addr-person-unit.xml";
      }
     else if("证件地址match-rule"==*var){
         *child = "match-rule";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-addr-person-unit.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-addr-person-unit.xml";
      }
     else if("重号率阈值"==*var){
         *child = "重号率阈值";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-common.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-common.xml";
      }
     else if("个人用户规则"==*var){
         *child = "个人用户规则";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-common.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-common.xml";
      }
     else if("单位/行业用户规则"==*var){
         *child = "单位/行业用户规则";
-        *inputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-common.xml";
+        *inputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-common.xml";
      }
 }
 
@@ -246,7 +251,7 @@ QList<QString> XMLConfigReader::readValue(QString var){
 
 void XMLConfigReader::deleteAutoid(QString item){
     qDebug()<<"=========================in deleteAutoid =======================";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
     QTextStream errorStream(stderr);
 
     QFile file(outputFilePath);
@@ -289,7 +294,7 @@ void XMLConfigReader::deleteAutoid(QString item){
 
 void XMLConfigReader::addAutoid(QString parent, QString item, int offset){
     qDebug()<<"=========================in addAutoid =======================";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
 
 
     QFile file(outputFilePath);
@@ -357,7 +362,7 @@ void XMLConfigReader::addAutoid(QString parent, QString item, int offset){
 
 void XMLConfigReader::updateAutoid(QString parent, QList<QList<QString>> items, int offset){
     qDebug()<<"=========================in updateAutoid =======================";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
 
     qDebug()<<"parent is "<<parent;
     for(int i=0; i<items.size(); i++){
@@ -552,7 +557,7 @@ void XMLConfigReader::writeValue(QString menu,QList<QString> value){
 void XMLConfigReader::writeSystemValue(QString dataRange, QString compliantDate, QString onecard2fiveDate, QString randomDate){
     qDebug()<<"调用writeSystemValue函数：";
     qDebug()<<"保存的值为"<<dataRange<<compliantDate<<onecard2fiveDate<<randomDate;
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-system.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-system.xml";
 
 
     QFile file(outputFilePath);
@@ -613,7 +618,7 @@ void XMLConfigReader::writeSystemValue(QString dataRange, QString compliantDate,
 QMap<QString,QString> XMLConfigReader::readSystemValue(){
     qDebug()<<"调用readSystemValue函数：";
 //    qDebug()<<"保存的值为"<<dataRange<<compliantDate<<onecard2fiveDate<<randomDateLabel;
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-system.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-system.xml";
     QMap<QString,QString> rtn_map;
 
 
@@ -684,7 +689,7 @@ QMap<QString,QString> XMLConfigReader::readSystemValue(){
 void XMLConfigReader::writeWorkingpathValue(QString workingpath){
     qDebug()<<"调用 writeWorkingpathValue 函数：";
     qDebug()<<"保存的值为"<<workingpath;
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-workingpath.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-workingpath.xml";
 
 
     QFile file(outputFilePath);
@@ -724,7 +729,7 @@ void XMLConfigReader::writeWorkingpathValue(QString workingpath){
  */
 QMap<QString,QString> XMLConfigReader::readWorkingpathValue(){
     qDebug()<<"调用 writeWorkingpathValue 函数：";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-workingpath.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-workingpath.xml";
     QMap<QString,QString> rtn_map;
 
     QFile file(outputFilePath);
@@ -760,7 +765,7 @@ QMap<QString,QString> XMLConfigReader::readWorkingpathValue(){
 void XMLConfigReader::writeDelimiterValue(QString delimiter){
     qDebug()<<"调用 writeDelimiterValue 函数：";
     qDebug()<<"保存的值为"<<delimiter;
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
 
 
     QFile file(outputFilePath);
@@ -800,7 +805,7 @@ void XMLConfigReader::writeDelimiterValue(QString delimiter){
  */
 QMap<QString,QString> XMLConfigReader::readDelimiterValue(){
     qDebug()<<"调用 readDelimiterValue 函数：";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
     QMap<QString,QString> rtn_map;
 
     QFile file(outputFilePath);
@@ -836,7 +841,7 @@ QMap<QString,QString> XMLConfigReader::readDelimiterValue(){
 void XMLConfigReader::writeItemnumValue(QString itemnum){
     qDebug()<<"调用 writeItemnumValue 函数：";
     qDebug()<<"保存的值为"<<itemnum;
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
 
 
     QFile file(outputFilePath);
@@ -876,7 +881,7 @@ void XMLConfigReader::writeItemnumValue(QString itemnum){
  */
 QMap<QString,QString> XMLConfigReader::readItemnumValue(){
     qDebug()<<"调用 readItemnumValue 函数：";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
     QMap<QString,QString> rtn_map;
 
     QFile file(outputFilePath);
@@ -912,7 +917,7 @@ QMap<QString,QString> XMLConfigReader::readItemnumValue(){
 void XMLConfigReader::writeDateformatValue(QString dateformat){
     qDebug()<<"调用 writeDateformatValue 函数：";
     qDebug()<<"保存的值为"<<dateformat;
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
 
 
     QFile file(outputFilePath);
@@ -952,7 +957,7 @@ void XMLConfigReader::writeDateformatValue(QString dateformat){
  */
 QMap<QString,QString> XMLConfigReader::readDateformatValue(){
     qDebug()<<"调用 readDateformatValue 函数：";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/config/config-autoid.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/config/config-autoid.xml";
     QMap<QString,QString> rtn_map;
 
     QFile file(outputFilePath);
@@ -987,7 +992,7 @@ QMap<QString,QString> XMLConfigReader::readDateformatValue(){
  */
 void XMLConfigReader::writeCommonRuleValue(QMap<QString, QString> map){
     qDebug()<<"调用 writeCommonRule 函数：";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-common.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-common.xml";
 
 
     QFile file(outputFilePath);
@@ -1156,7 +1161,7 @@ void XMLConfigReader::writeCommonRuleValue(QMap<QString, QString> map){
  */
 QMap<QString,QString> XMLConfigReader::readCommonRuleValue(QList<QString> queryList){
     qDebug()<<"调用 readCommonRuleValue 函数：";
-    QString outputFilePath = "/Users/zhangxianjin/qtcode/testXml/rule/rule-common.xml";
+    QString outputFilePath = QCoreApplication::applicationDirPath()+"/rule/rule-common.xml";
     QMap<QString,QString> rtn_map;
 
     QFile file(outputFilePath);

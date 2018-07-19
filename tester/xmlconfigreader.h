@@ -1,9 +1,11 @@
-#ifndef XMLCONFIGREADER_H
+﻿#ifndef XMLCONFIGREADER_H
 #define XMLCONFIGREADER_H
 #include <QString>
 #include <QList>
 #include <QStringList>
 #include <QMap>
+//QString QCoreApplication::applicationDirPath()
+
 
 class XMLConfigReader
 {
@@ -29,6 +31,7 @@ public:
     QMap<QString,QString> readDateformatValue();
     void writeCommonRuleValue(QMap<QString,QString> map);
     QMap<QString,QString> readCommonRuleValue(QList<QString> queryList);
+    QString PATH;
 
 };
 

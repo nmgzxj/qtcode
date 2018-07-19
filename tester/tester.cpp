@@ -69,37 +69,37 @@ void Tester::createActions()
     openFileAction->setStatusTip(QStringLiteral("打开一个文件"));               //(c)
     connect(openFileAction,SIGNAL(triggered()),this,SLOT(showOpenFile()));
     //“新建”动作
-    NewFileAction =new QAction(tr("新建"),this);//,QIcon(":/Images/images/new.png"),
-    NewFileAction->setShortcut(tr("Ctrl+N"));
-    NewFileAction->setStatusTip(tr("新建一个文件"));
+    NewFileAction =new QAction(QStringLiteral("新建"),this);//,QIcon(":/Images/images/new.png"),
+    NewFileAction->setShortcut(QStringLiteral("Ctrl+N"));
+    NewFileAction->setStatusTip(QStringLiteral("新建一个文件"));
     connect(NewFileAction,SIGNAL(triggered()),this,SLOT(showNewFile()));
     //“设置”动作
-    setupAction =new QAction(tr("设置"),this);//QIcon("../../../new.png"),
-    setupAction->setShortcut(tr("Ctrl+S"));
-    setupAction->setStatusTip(tr("设置运行参数"));
+    setupAction =new QAction(QStringLiteral("设置"),this);//QIcon("../../../new.png"),
+    setupAction->setShortcut(QStringLiteral("Ctrl+S"));
+    setupAction->setStatusTip(QStringLiteral("设置运行参数"));
     connect(setupAction,SIGNAL(triggered()),this,SLOT(setupTester()));
     //“开始”动作
-    startAction =new QAction(tr("开始"),this);//QIcon("../../../new.png"),
-    startAction->setShortcut(tr("Ctrl+R"));
-    startAction->setStatusTip(tr("开始检查"));
+    startAction =new QAction(QStringLiteral("开始"),this);//QIcon("../../../new.png"),
+    startAction->setShortcut(QStringLiteral("Ctrl+R"));
+    startAction->setStatusTip(QStringLiteral("开始检查"));
     connect(startAction,SIGNAL(triggered()),this,SLOT(startCheckFile()));
     //“停止”动作
-    stopAction =new QAction(tr("停止"),this);//QIcon("../../../new.png"),
-    stopAction->setShortcut(tr("Ctrl+C"));
-    stopAction->setStatusTip(tr("停止检查"));
+    stopAction =new QAction(QStringLiteral("停止"),this);//QIcon("../../../new.png"),
+    stopAction->setShortcut(QStringLiteral("Ctrl+C"));
+    stopAction->setStatusTip(QStringLiteral("停止检查"));
     connect(stopAction,SIGNAL(triggered()),this,SLOT(stopCheckFile()));
     //“退出”动作
-    exitAction =new QAction(tr("退出"),this);
-    exitAction->setShortcut(tr("Ctrl+Q"));
-    exitAction->setStatusTip(tr("退出程序"));
+    exitAction =new QAction(QStringLiteral("退出"),this);
+    exitAction->setShortcut(QStringLiteral("Ctrl+Q"));
+    exitAction->setStatusTip(QStringLiteral("退出程序"));
     connect(exitAction,SIGNAL(triggered()),this,SLOT(close()));
     //“帮助”动作
-    helpAction =new QAction(tr("帮助"),this);
-    exitAction->setShortcut(tr("Ctrl+H"));
+    helpAction =new QAction(QStringLiteral("帮助"),this);
+    exitAction->setShortcut(QStringLiteral("Ctrl+H"));
     helpAction->setStatusTip("程序使用说明");
     connect(helpAction,SIGNAL(triggered()),this,SLOT(helpTester()));
     //“关于”动作
-    aboutAction =new QAction(tr("关于"),this);
+    aboutAction =new QAction(QStringLiteral("关于"),this);
     aboutAction->setStatusTip("关于本程序");
     connect(aboutAction,SIGNAL(triggered()),this,SLOT(aboutTester()));
 }
@@ -140,58 +140,58 @@ void Tester::setupModel()
 {//设置列名
     model = new QStandardItemModel(10,41,this);
     //机主
-    model->setHeaderData(0,Qt::Horizontal,tr("姓名"));
-    model->setHeaderData(1,Qt::Horizontal,tr("证件类型"));
-    model->setHeaderData(2,Qt::Horizontal,tr("证件号码"));
-    model->setHeaderData(3,Qt::Horizontal,tr("证件地址"));
-    model->setHeaderData(4,Qt::Horizontal,tr("通讯地址"));
-    model->setHeaderData(5,Qt::Horizontal,tr("装机地址"));
+    model->setHeaderData(0,Qt::Horizontal,QStringLiteral("姓名"));
+    model->setHeaderData(1,Qt::Horizontal,QStringLiteral("证件类型"));
+    model->setHeaderData(2,Qt::Horizontal,QStringLiteral("证件号码"));
+    model->setHeaderData(3,Qt::Horizontal,QStringLiteral("证件地址"));
+    model->setHeaderData(4,Qt::Horizontal,QStringLiteral("通讯地址"));
+    model->setHeaderData(5,Qt::Horizontal,QStringLiteral("装机地址"));
     //代（经）办人
-    model->setHeaderData(6,Qt::Horizontal,tr("姓名"));
-    model->setHeaderData(7,Qt::Horizontal,tr("证件类型"));
-    model->setHeaderData(8,Qt::Horizontal,tr("证件号码"));
-    model->setHeaderData(9,Qt::Horizontal,tr("证件地址"));
-    model->setHeaderData(10,Qt::Horizontal,tr("通讯地址"));
+    model->setHeaderData(6,Qt::Horizontal,QStringLiteral("姓名"));
+    model->setHeaderData(7,Qt::Horizontal,QStringLiteral("证件类型"));
+    model->setHeaderData(8,Qt::Horizontal,QStringLiteral("证件号码"));
+    model->setHeaderData(9,Qt::Horizontal,QStringLiteral("证件地址"));
+    model->setHeaderData(10,Qt::Horizontal,QStringLiteral("通讯地址"));
     //责任人
-    model->setHeaderData(11,Qt::Horizontal,tr("姓名"));
-    model->setHeaderData(12,Qt::Horizontal,tr("证件类型"));
-    model->setHeaderData(13,Qt::Horizontal,tr("证件号码"));
-    model->setHeaderData(14,Qt::Horizontal,tr("证件地址"));
-    model->setHeaderData(15,Qt::Horizontal,tr("通讯地址"));
+    model->setHeaderData(11,Qt::Horizontal,QStringLiteral("姓名"));
+    model->setHeaderData(12,Qt::Horizontal,QStringLiteral("证件类型"));
+    model->setHeaderData(13,Qt::Horizontal,QStringLiteral("证件号码"));
+    model->setHeaderData(14,Qt::Horizontal,QStringLiteral("证件地址"));
+    model->setHeaderData(15,Qt::Horizontal,QStringLiteral("通讯地址"));
     //单位或行业
-    model->setHeaderData(16,Qt::Horizontal,tr("单位名称"));
-    model->setHeaderData(17,Qt::Horizontal,tr("单位证件号码"));
-    model->setHeaderData(18,Qt::Horizontal,tr("单位证件类型"));
-    model->setHeaderData(19,Qt::Horizontal,tr("单位证件地址"));
-    model->setHeaderData(20,Qt::Horizontal,tr("单位通讯地址"));
-    model->setHeaderData(21,Qt::Horizontal,tr("单位装机地址"));
+    model->setHeaderData(16,Qt::Horizontal,QStringLiteral("单位名称"));
+    model->setHeaderData(17,Qt::Horizontal,QStringLiteral("单位证件号码"));
+    model->setHeaderData(18,Qt::Horizontal,QStringLiteral("单位证件类型"));
+    model->setHeaderData(19,Qt::Horizontal,QStringLiteral("单位证件地址"));
+    model->setHeaderData(20,Qt::Horizontal,QStringLiteral("单位通讯地址"));
+    model->setHeaderData(21,Qt::Horizontal,QStringLiteral("单位装机地址"));
     //电话卡信息
-    model->setHeaderData(22,Qt::Horizontal,tr("MSISDN号码"));
-    model->setHeaderData(23,Qt::Horizontal,tr("登记激活时间"));
-    model->setHeaderData(24,Qt::Horizontal,tr("号码状态"));
-    model->setHeaderData(25,Qt::Horizontal,tr("用户业务类型"));
+    model->setHeaderData(22,Qt::Horizontal,QStringLiteral("MSISDN号码"));
+    model->setHeaderData(23,Qt::Horizontal,QStringLiteral("登记激活时间"));
+    model->setHeaderData(24,Qt::Horizontal,QStringLiteral("号码状态"));
+    model->setHeaderData(25,Qt::Horizontal,QStringLiteral("用户业务类型"));
     //营业网点信息
-    model->setHeaderData(26,Qt::Horizontal,tr("网点编号"));
-    model->setHeaderData(27,Qt::Horizontal,tr("网点名称"));
-    model->setHeaderData(28,Qt::Horizontal,tr("网点地址"));
-    model->setHeaderData(29,Qt::Horizontal,tr("网点所在区县"));
-    model->setHeaderData(30,Qt::Horizontal,tr("网点类型"));
-    model->setHeaderData(31,Qt::Horizontal,tr("开通商编号"));
+    model->setHeaderData(26,Qt::Horizontal,QStringLiteral("网点编号"));
+    model->setHeaderData(27,Qt::Horizontal,QStringLiteral("网点名称"));
+    model->setHeaderData(28,Qt::Horizontal,QStringLiteral("网点地址"));
+    model->setHeaderData(29,Qt::Horizontal,QStringLiteral("网点所在区县"));
+    model->setHeaderData(30,Qt::Horizontal,QStringLiteral("网点类型"));
+    model->setHeaderData(31,Qt::Horizontal,QStringLiteral("开通商编号"));
     //支付信息
-    model->setHeaderData(32,Qt::Horizontal,tr("交易流水账单号"));
-    model->setHeaderData(33,Qt::Horizontal,tr("交易平台用户账号"));
-    model->setHeaderData(34,Qt::Horizontal,tr("用户交易的银行卡卡号或第三方支付账号名称"));
-    model->setHeaderData(35,Qt::Horizontal,tr("支付时间"));
-    model->setHeaderData(36,Qt::Horizontal,tr("机主证件电子复印件图片名称"));
-    model->setHeaderData(37,Qt::Horizontal,tr("代办人证件电子复印件图片名称"));
+    model->setHeaderData(32,Qt::Horizontal,QStringLiteral("交易流水账单号"));
+    model->setHeaderData(33,Qt::Horizontal,QStringLiteral("交易平台用户账号"));
+    model->setHeaderData(34,Qt::Horizontal,QStringLiteral("用户交易的银行卡卡号或第三方支付账号名称"));
+    model->setHeaderData(35,Qt::Horizontal,QStringLiteral("支付时间"));
+    model->setHeaderData(36,Qt::Horizontal,QStringLiteral("机主证件电子复印件图片名称"));
+    model->setHeaderData(37,Qt::Horizontal,QStringLiteral("代办人证件电子复印件图片名称"));
     //用户类型
-    model->setHeaderData(38,Qt::Horizontal,tr("用户类型"));
+    model->setHeaderData(38,Qt::Horizontal,QStringLiteral("用户类型"));
     //渠道类型
-    model->setHeaderData(39,Qt::Horizontal,tr("渠道类型"));
+    model->setHeaderData(39,Qt::Horizontal,QStringLiteral("渠道类型"));
     //使用状态
-    model->setHeaderData(40,Qt::Horizontal,tr("使用状态"));
+    model->setHeaderData(40,Qt::Horizontal,QStringLiteral("使用状态"));
     //预留字段
-    model->setHeaderData(41,Qt::Horizontal,tr("预留字段"));
+    model->setHeaderData(41,Qt::Horizontal,QStringLiteral("预留字段"));
 
 }
 

@@ -27,9 +27,9 @@ ColumnPage::ColumnPage(QWidget *parent): QWidget(parent)
     QTableWidgetItem *item2 = new QTableWidgetItem;
 //    QTableWidgetItem *item3 = new QTableWidgetItem;
 //    item0->setText("是否显示");
-    item0->setText("父列名");
-    item1->setText("列名");
-    item2->setText("列号");
+    item0->setText(QStringLiteral("父列名"));
+    item1->setText(QStringLiteral("列名"));
+    item2->setText(QStringLiteral("列号"));
     table->setHorizontalHeaderItem(0, item0);
     table->setHorizontalHeaderItem(1, item1);
     table->setHorizontalHeaderItem(2, item2);
@@ -199,7 +199,7 @@ void ColumnPage::autoidSave(){
 
 RulePage::RulePage(QWidget *parent) : QWidget(parent)
 {
-    QLabel *serverLabel = new QLabel(tr("RulePage:"));
+    QLabel *serverLabel = new QLabel(QStringLiteral("RulePage:"));
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(serverLabel);
     mainLayout->addStretch(1);
@@ -208,13 +208,13 @@ RulePage::RulePage(QWidget *parent) : QWidget(parent)
 
 SystemPage::SystemPage(QWidget *parent) : QWidget(parent)
 {
-    dataRangeLabel = new QLabel(tr("数据范围:"));
+    dataRangeLabel = new QLabel(QStringLiteral("数据范围:"));
     dataRangeEdit = new QLineEdit;
-    compliantDateLabel = new QLabel(tr("合规性检查日期:"));
+    compliantDateLabel = new QLabel(QStringLiteral("合规性检查日期:"));
     compliantDateEdit = new QLineEdit;
-    onecard2fiveDateLabel = new QLabel(tr("一证五号时间节点:"));
+    onecard2fiveDateLabel = new QLabel(QStringLiteral("一证五号时间节点:"));
     onecard2fiveDateEdit = new QLineEdit;
-    randomDateLabel = new QLabel(tr("随机日期:"));
+    randomDateLabel = new QLabel(QStringLiteral("随机日期:"));
     randomDateEdit = new QLineEdit;
     saveButton = new QPushButton;
     saveButton->setText("save");
@@ -263,7 +263,7 @@ void SystemPage::save(){
 
 WorkPathPage::WorkPathPage(QWidget *parent) : QWidget(parent)
 {
-    workPathLabel = new QLabel(tr("工作路径:"));
+    workPathLabel = new QLabel(QStringLiteral("工作路径:"));
     workPathEdit = new QLineEdit;
     saveButton = new QPushButton;
     saveButton->setText("save");
@@ -300,7 +300,7 @@ void WorkPathPage::save(){
 
 DelimiterPage::DelimiterPage(QWidget *parent) : QWidget(parent)
 {
-    delimiterLabel = new QLabel(tr("字段间分隔符:"));
+    delimiterLabel = new QLabel(QStringLiteral("字段间分隔符:"));
     delimiterEdit = new QLineEdit;
     saveButton = new QPushButton;
     saveButton->setText("save");
@@ -337,7 +337,7 @@ void DelimiterPage::save(){
 
 ItemnumPage::ItemnumPage(QWidget *parent) : QWidget(parent)
 {
-    itemnumLabel = new QLabel(tr("字段个数:"));
+    itemnumLabel = new QLabel(QStringLiteral("字段个数:"));
     itemnumEdit = new QLineEdit;
     saveButton = new QPushButton;
     saveButton->setText("save");
@@ -374,7 +374,7 @@ void ItemnumPage::save(){
 
 DateformatPage::DateformatPage(QWidget *parent) : QWidget(parent)
 {
-    dateformatLabel = new QLabel(tr("时间格式:"));
+    dateformatLabel = new QLabel(QStringLiteral("时间格式:"));
     dateformatEdit = new QLineEdit;
     saveButton = new QPushButton;
     saveButton->setText("save");
@@ -420,53 +420,53 @@ CommonRulePage::CommonRulePage(QWidget *parent) : QWidget(parent)
 //    QRegExp regcharnum("[a-zA-Z0-9]+$");//只能输入字符和数字
 //    QValidator *validatorCharNum = new QRegExpValidator(regcharnum);
 
-    maxlimitLabel = new QLabel(tr("重号率阈值:"));
+    maxlimitLabel = new QLabel(QStringLiteral("重号率阈值:"));
     maxlimitEdit = new QLineEdit;
     maxlimitEdit->setValidator(validatorNumDash);
-    personNameLen_minLabel = new QLabel(tr("姓名最短:"));
+    personNameLen_minLabel = new QLabel(QStringLiteral("姓名最短:"));
     personNameLen_minEdit = new QLineEdit;
     personNameLen_minEdit->setValidator(validatorNumDash);
-    personNameLen_maxLabel = new QLabel(tr("最长:"));
+    personNameLen_maxLabel = new QLabel(QStringLiteral("最长:"));
     personNameLen_maxEdit = new QLineEdit;
     personNameLen_maxEdit->setValidator(validatorNumDash);
-    personNamePermit_charLabel = new QLabel(tr("姓名允许字符:"));
+    personNamePermit_charLabel = new QLabel(QStringLiteral("姓名允许字符:"));
     personNamePermit_charEdit = new QLineEdit;
 
-    personCardtypeTime_intervalLabel = new QLabel(tr("证件类型临界点:"));
+    personCardtypeTime_intervalLabel = new QLabel(QStringLiteral("证件类型临界点:"));
     personCardtypeTime_intervalEdit = new QLineEdit;
     personCardtypeTime_intervalEdit->setValidator(new QIntValidator(19000101,20190101));
-    personCard_numLen_minLabel = new QLabel(tr("证件号码最短:"));
+    personCard_numLen_minLabel = new QLabel(QStringLiteral("证件号码最短:"));
     personCard_numLen_minEdit = new QLineEdit;
     personCard_numLen_minEdit->setValidator(validatorNumDash);
-    personCard_numLen_maxLabel = new QLabel(tr("最长:"));
+    personCard_numLen_maxLabel = new QLabel(QStringLiteral("最长:"));
     personCard_numLen_maxEdit = new QLineEdit;
     personCard_numLen_maxEdit->setValidator(validatorNumDash);
-    personCard_addLen_minLabel = new QLabel(tr("证件地址最短:"));
+    personCard_addLen_minLabel = new QLabel(QStringLiteral("证件地址最短:"));
     personCard_addLen_minEdit = new QLineEdit;
     personCard_addLen_minEdit->setValidator(validatorNumDash);
-    personCard_addLen_maxLabel = new QLabel(tr("最长:"));
+    personCard_addLen_maxLabel = new QLabel(QStringLiteral("最长:"));
     personCard_addLen_maxEdit = new QLineEdit;
     personCard_addLen_maxEdit->setValidator(validatorNumDash);
 
-    unitNameLen_minLabel = new QLabel(tr("名称最短:"));
+    unitNameLen_minLabel = new QLabel(QStringLiteral("名称最短:"));
     unitNameLen_minEdit = new QLineEdit;
     unitNameLen_minEdit->setValidator(validatorNumDash);
-    unitNameLen_maxLabel = new QLabel(tr("名称最长:"));
+    unitNameLen_maxLabel = new QLabel(QStringLiteral("名称最长:"));
     unitNameLen_maxEdit = new QLineEdit;
     unitNameLen_maxEdit->setValidator(validatorNumDash);
-    unitCardtypeTime_intervalLabel = new QLabel(tr("证件类型临界点:"));
+    unitCardtypeTime_intervalLabel = new QLabel(QStringLiteral("证件类型临界点:"));
     unitCardtypeTime_intervalEdit = new QLineEdit;
     unitCardtypeTime_intervalEdit->setValidator(new QIntValidator(19000101,20190101));
-    unitCard_numLen_minLabel = new QLabel(tr("证件号码最短:"));
+    unitCard_numLen_minLabel = new QLabel(QStringLiteral("证件号码最短:"));
     unitCard_numLen_minEdit = new QLineEdit;
     unitCard_numLen_minEdit->setValidator(validatorNumDash);
-    unitCard_numLen_maxLabel = new QLabel(tr("最长:"));
+    unitCard_numLen_maxLabel = new QLabel(QStringLiteral("最长:"));
     unitCard_numLen_maxEdit = new QLineEdit;
     unitCard_numLen_maxEdit->setValidator(validatorNumDash);
-    unitCard_addLen_minLabel = new QLabel(tr("证件地址最短:"));
+    unitCard_addLen_minLabel = new QLabel(QStringLiteral("证件地址最短:"));
     unitCard_addLen_minEdit = new QLineEdit;
     unitCard_addLen_minEdit->setValidator(validatorNumDash);
-    unitCard_addLen_maxLabel = new QLabel(tr("最长:"));
+    unitCard_addLen_maxLabel = new QLabel(QStringLiteral("最长:"));
     unitCard_addLen_maxEdit = new QLineEdit;
     unitCard_addLen_maxEdit->setValidator(validatorNumDash);
 
@@ -591,7 +591,7 @@ void CommonRulePage::save(){
 
 UserTypePage::UserTypePage(QWidget *parent) : QWidget(parent)
 {
-    QLabel *serverLabel = new QLabel(tr("UserTypePage:"));
+    QLabel *serverLabel = new QLabel(QStringLiteral("UserTypePage:"));
      QVBoxLayout *mainLayout = new QVBoxLayout;
      mainLayout->addWidget(serverLabel);
      mainLayout->addStretch(1);
