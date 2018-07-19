@@ -12,7 +12,7 @@ Setup::Setup()
 //    QTextEdit *edit=new QTextEdit;
 //    edit->setText(loadXml("../../../config/config-autoid.xml"));
 //    setCentralWidget(edit);
-//    resize(400,500);
+    resize(600,700);
     contentsWidget = new QTreeWidget;
 //    contentsWidget->setIconSize(QSize(96, 84));
     contentsWidget->setMaximumWidth(200);
