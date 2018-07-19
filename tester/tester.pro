@@ -31,7 +31,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         tester.cpp \
     showwidget.cpp \
-    about.cpp \
     setup.cpp \
     util.cpp \
     logindialog.cpp \
@@ -50,7 +49,6 @@ SOURCES += main.cpp\
 
 HEADERS  += tester.h \
     showwidget.h \
-    about.h \
     setup.h \
     util.h \
     logindialog.h \

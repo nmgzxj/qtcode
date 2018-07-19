@@ -1,4 +1,4 @@
-#include "statisticresult.h"
+﻿#include "statisticresult.h"
 #include <QFile>
 
 StatisticResult::StatisticResult()

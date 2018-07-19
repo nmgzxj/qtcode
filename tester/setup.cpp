@@ -12,7 +12,7 @@ Setup::Setup()
 //    QTextEdit *edit=new QTextEdit;
 //    edit->setText(loadXml("../../../config/config-autoid.xml"));
 //    setCentralWidget(edit);
-    resize(500,300);
+//    resize(400,500);
     contentsWidget = new QTreeWidget;
 //    contentsWidget->setIconSize(QSize(96, 84));
     contentsWidget->setMaximumWidth(200);
@@ -95,7 +95,7 @@ Setup::Setup()
 
 //        插入孙节点
     if(contentsWidget->topLevelItem(1)->child(0)->child(0)->isSelected()){
-        qDebug()<<contentsWidget->topLevelItem(1)->child(0)->child(0)<<"被选中";
+        qDebug()<<contentsWidget->topLevelItem(1)->child(0)->child(0)<<QStringLiteral("被选中");
     }
 
 
@@ -191,180 +191,180 @@ void Setup::slotItemPressed(QTreeWidgetItem *item)
 
     if(item->text(0)=="Items"){
         pagesWidget->setCurrentIndex(0);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="字段分隔符"){
         pagesWidget->setCurrentIndex(1);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="字段个数"){
         pagesWidget->setCurrentIndex(2);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="时间格式"){
         pagesWidget->setCurrentIndex(3);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
 //    else if(item->text(0)=="检测规则"){
 //        pagesWidget->setCurrentIndex(4);
-//        qDebug()<<"菜单命中"<<item->text(0);
+//        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 //    }
     else if(item->text(0)=="comon-rule"&&item->parent()->text(0)=="个人用户姓名"){
         pagesWidget->setCurrentIndex(5);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="match-rule"&&item->parent()!=NULL&&"个人用户姓名"==item->parent()->text(0)){
         pagesWidget->setCurrentIndex(6);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="comon-rule"&&item->parent()->text(0)=="单位/行业用户名称"){
         pagesWidget->setCurrentIndex(7);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="match-rule"&&item->parent()->text(0)=="单位/行业用户名称"){
         pagesWidget->setCurrentIndex(8);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="comon-rule"&&item->parent()->text(0)=="证件号码"){
         pagesWidget->setCurrentIndex(9);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="match-rule"&&item->parent()!=NULL&&"证件号码"==item->parent()->text(0)){
         pagesWidget->setCurrentIndex(10);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="addr-rule"&&item->parent()->text(0)=="证件地址"){
         pagesWidget->setCurrentIndex(11);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="match-rule"&&item->parent()->text(0)=="证件地址"){
         pagesWidget->setCurrentIndex(12);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="公共参数"){
         pagesWidget->setCurrentIndex(13);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
 
     //    else if(item->text(0)=="重号率阈值"){
 //        pagesWidget->setCurrentIndex(13);
-//        qDebug()<<"菜单命中"<<item->text(0);
+//        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 //    }
 //    else if(item->text(0)=="个人用户规则"){
 //        pagesWidget->setCurrentIndex(14);
-//        qDebug()<<"菜单命中"<<item->text(0);
+//        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 //    }
 //    else if(item->text(0)=="单位/行业用户规则"){
 //        pagesWidget->setCurrentIndex(15);
-//        qDebug()<<"菜单命中"<<item->text(0);
+//        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 //    }
     else if(item->text(0)=="系统参数"){
         pagesWidget->setCurrentIndex(16);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="用户类型"){
         pagesWidget->setCurrentIndex(17);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="工作路径"){
         pagesWidget->setCurrentIndex(18);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="移动"){//&&item->parent()->text(0)=="业务类型"
         pagesWidget->setCurrentIndex(19);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="固定"){//&&item->parent()->text(0)=="业务类型"
         pagesWidget->setCurrentIndex(20);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
     else if(item->text(0)=="非实名停机"&&item->parent()->text(0)=="业务状态"){
         pagesWidget->setCurrentIndex(21);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="不在网"&&item->parent()->text(0)=="业务状态"){
         pagesWidget->setCurrentIndex(22);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="居民身份证"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(23);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="临时居民身份证"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(24);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="户口薄"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(25);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="中国人民解放军军人身份证件"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(26);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="中国人民武装警察身份证件"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(27);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="港澳居民来往内地通行证"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(28);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="台湾居民来往大陆通行证"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(29);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="外国公民护照"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(30);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="法律、行政法规和国家规定的其他有效身份证件"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(31);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="非法律、行政法规和国家规定的有效身份证件"&&item->parent()->text(0)=="个人证件"){
         pagesWidget->setCurrentIndex(32);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="组织机构代码证"&&item->parent()->text(0)=="单位证件"){
         pagesWidget->setCurrentIndex(33);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="营业执照"&&item->parent()->text(0)=="单位证件"){
         pagesWidget->setCurrentIndex(34);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="事业单位法人证书或者社会团体法人登记证书"&&item->parent()->text(0)=="单位证件"){
         pagesWidget->setCurrentIndex(35);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="法律、行政法规和国家规定的其他有效证件或者证明文件"&&item->parent()->text(0)=="单位证件"){
         pagesWidget->setCurrentIndex(36);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
     else if(item->text(0)=="非法律、行政法规和国家规定的有效身份证件"&&item->parent()->text(0)=="单位证件"){
         pagesWidget->setCurrentIndex(37);
-        qDebug()<<"菜单命中"<<item->text(0);
+        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
 

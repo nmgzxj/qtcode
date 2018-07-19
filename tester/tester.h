@@ -19,7 +19,6 @@
 #include <QTextCodec>
 #include <QStatusBar>
 #include "showwidget.h"
-#include "about.h"
 #include "setup.h"
 #include "setuppages.h"
 #include "userfile.h"

@@ -1,4 +1,4 @@
-#ifndef STATISTICRESULT_H
+﻿#ifndef STATISTICRESULT_H
 #define STATISTICRESULT_H
 
 

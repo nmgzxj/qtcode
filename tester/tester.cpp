@@ -316,7 +316,7 @@ void Tester::startCheckFile()
 {
 //    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
     statusBar()->showMessage("start process file", 3000);
-    qDebug()<<"开始处理文件";
+    qDebug()<<QStringLiteral("开始处理文件");
     if(m_objThread==NULL)
         {
             startObjThread();
@@ -334,7 +334,7 @@ void Tester::stopCheckFile()
     statusBar()->showMessage("stop process file", 3000);
     userfile->stop();
 //    m_objThread->quit();
-    qDebug()<<"停止处理文件";
+    qDebug()<<QStringLiteral("停止处理文件");
 }
 
 void Tester::setupTester()
@@ -348,10 +348,10 @@ void Tester::aboutTester()
 //    About *newAbout =new About;
 //    newAbout->show();
 //    label->setText(tr("About Message Box"));
-//    QMessageBox::about(this, tr("About消息框"),tr("实名制检测系统\n "
-//                                                  "Version 1.0 \n"
-//                                                  "本系统为实名制检查工具。"));
-//    return;
+    QMessageBox::about(this, QStringLiteral("About消息框"),QStringLiteral("实名制检测系统\n "
+                                                  "Version 1.0 \n"
+                                                  "本系统为实名制检查工具。"));
+    return;
 }
 
 void Tester::helpTester()
