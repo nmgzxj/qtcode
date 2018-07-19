@@ -1,11 +1,10 @@
-#include "setup.h"
+﻿#include "setup.h"
 #include "setuppages.h"
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QListWidget>
 #include <QDebug>
-
 
 Setup::Setup()
 {
@@ -20,7 +19,7 @@ Setup::Setup()
 
     contentsWidget->setHeaderItem(new QTreeWidgetItem());
     contentsWidget->clear();
-    contentsWidget->headerItem()->setText(0,tr("设置项"));
+    contentsWidget->headerItem()->setText(0,QStringLiteral("设置项"));
     contentsWidget->setHeaderHidden(true);
     //插入顶级节点
     int menu_index=0;

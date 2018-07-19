@@ -1,4 +1,4 @@
-#include "userfile.h"
+﻿#include "userfile.h"
 #include <QDir>
 #include <QSqlRecord>
 #include <QList>
@@ -205,7 +205,7 @@ void UserFile::setFileName(QString fileName)
 }
 
 bool isNull(QString str){
-    return (str.isNull()|str.isEmpty()|str.toUpper().compare("NULL")==0);
+    return (str.isNull()||str.isEmpty()||str.toUpper().compare("NULL")==0);
 }
 
 
@@ -422,7 +422,7 @@ bool UserFile::processPersonFixed(QList<QString> line){
     if(isnt_owner_name||isnt_owner_num||isnt_owner_add){
         saveAllNotReg(line);//全量未登记
     }
-
+    return true;
 }
 
 void saveUnitMobileOwnerNotReg(QList<QString> line){
@@ -512,7 +512,7 @@ bool UserFile::processUnitMobile(QList<QString> line){
     if(isnt_owner_info||isnt_agent_info||isnt_unit_info){
         saveAllNotReg(line);//全量未登记
     }
-
+    return true;
 
 }
 
@@ -595,7 +595,7 @@ bool UserFile::processUnitFixed(QList<QString> line){
         saveAllNotReg(line);//全量未登记
     }
 
-
+    return true;
 }
 void UserFile::saveTradeMobileAgentNotReg(QList<QString> line){
     //行业移动应用-经办人信息未登记
@@ -680,6 +680,7 @@ bool UserFile::processTradeMobile(QList<QString> line){
     if(isnt_liable_info||isnt_agent_info||isnt_unit_info){
         saveAllNotReg(line);//全量未登记
     }
+        return true;
 }
 
 void UserFile::saveTradeFixedAgentNotReg(QList<QString> line){
@@ -739,7 +740,7 @@ bool UserFile::processTradeFixed(QList<QString> line){
         saveAllNotReg(line);//全量未登记
     }
 
-
+    return true;
 
 }
 /**

@@ -1,4 +1,4 @@
-#ifndef TESTER_H
+﻿#ifndef TESTER_H
 #define TESTER_H
 
 #include <QMainWindow>

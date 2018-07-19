@@ -1,4 +1,4 @@
-#ifndef USERFILE_H
+﻿#ifndef USERFILE_H
 #define USERFILE_H
 #include <QString>
 #include <QFile>
@@ -6,6 +6,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QThread>
+#include <QMutex>
 #define strItemDelimeter "||"
 #define COL_NUM 42
 #include "xmlconfigreader.h"

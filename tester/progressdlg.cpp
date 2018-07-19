@@ -1,4 +1,4 @@
-#include "progressdlg.h"
+﻿#include "progressdlg.h"
 #include <QProgressDialog>
 #include <QFont>
 

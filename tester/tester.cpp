@@ -1,4 +1,4 @@
-#include "tester.h"
+﻿#include "tester.h"
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>

@@ -1,4 +1,4 @@
-#include "about.h"
+﻿#include "about.h"
 #include <QTextEdit>
 
 About::About(QWidget *parent) : QMainWindow(parent)

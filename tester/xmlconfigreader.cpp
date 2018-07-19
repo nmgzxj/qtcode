@@ -1,4 +1,4 @@
-#include "xmlconfigreader.h"
+﻿#include "xmlconfigreader.h"
 #include <QCoreApplication>
 #include <QFile>
 #include <QStringList>

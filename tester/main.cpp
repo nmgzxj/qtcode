@@ -1,4 +1,4 @@
-#include "tester.h"
+﻿#include "tester.h"
 #include "progressdlg.h"
 #include "connection.h"
 #include "logindialog.h"

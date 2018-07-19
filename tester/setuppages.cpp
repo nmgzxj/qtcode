@@ -1,4 +1,4 @@
-#include "setuppages.h"
+﻿#include "setuppages.h"
 
 
 #include <QTableWidget>

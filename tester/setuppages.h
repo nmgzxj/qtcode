@@ -1,4 +1,4 @@
-#ifndef SETUPPAGES_H
+﻿#ifndef SETUPPAGES_H
 #define SETUPPAGES_H
 #include <QWidget>
 #include <QTableWidget>

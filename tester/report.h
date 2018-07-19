@@ -1,4 +1,4 @@
-#ifndef REPORT_H
+﻿#ifndef REPORT_H
 #define REPORT_H
 
 #include <QDialog>

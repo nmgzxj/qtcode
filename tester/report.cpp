@@ -1,7 +1,8 @@
-#include "report.h"
+﻿#include "report.h"
 #include "ui_report.h"
 #include "connection.h"
 #include "userfile.h"
+//test
 
 Report::Report(QWidget *parent)
     :QDialog(parent),
@@ -53,7 +54,7 @@ Report::Report(QWidget *parent)
 //         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
 
     //个人移动用户-形式合规数据
-         qDebug()<<"update personMobileFormatRight is:"<<query.exec("update report set personMobileFormatRight=(select count(*) from file where col"+UserFile::getCol_num("用户类型")+"='')");
+         //qDebug()<<"update personMobileFormatRight is:"<<query.exec("update report set personMobileFormatRight=(select count(*) from file where col"+UserFile::getCol_num("用户类型")+"='')");
 
     //个人移动用户-证件类型未登记
          qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec("update report set personMobileOwnerTypeNotReg=(select count(*) from file)");
