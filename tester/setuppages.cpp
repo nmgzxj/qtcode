@@ -589,14 +589,14 @@ void CommonRulePage::save(){
 }
 
 
-UserTypePage::UserTypePage(QWidget *parent) : QWidget(parent)
-{
-    QLabel *serverLabel = new QLabel(QStringLiteral("UserTypePage:"));
-     QVBoxLayout *mainLayout = new QVBoxLayout;
-     mainLayout->addWidget(serverLabel);
-     mainLayout->addStretch(1);
-     setLayout(mainLayout);
-}
+//UserTypePage::UserTypePage(QWidget *parent) : QWidget(parent)
+//{
+//    QLabel *serverLabel = new QLabel(QStringLiteral("用户类型:"));
+//     QVBoxLayout *mainLayout = new QVBoxLayout;
+//     mainLayout->addWidget(serverLabel);
+//     mainLayout->addStretch(1);
+//     setLayout(mainLayout);
+//}
 
 //BizTypePage::BizTypePage(QWidget *parent,QString menu): QWidget(parent)
   BizTypePage::BizTypePage(QString menu): QWidget()

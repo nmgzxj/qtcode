@@ -9,8 +9,14 @@
 #include <QDomElement>
 
 QString getConfigPath(){
+#ifdef Q_OS_WIN
     return QCoreApplication::applicationDirPath();//"/Users/zhangxianjin/qtcode/testXml";
+#endif
+#ifdef Q_OS_MACOS
+     return "/Users/zhangxianjin/qtcode/testXml";
+#endif
 }
+
 
 //读取数据列配置
 QList<QList<QString>> XMLConfigReader::readAutoid(){
@@ -76,6 +82,9 @@ void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QStrin
     if("业务类型移动"==*var){
         *child = "移动";
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
+    }
+    else if("用户类型"==*var){
+        *inputFilePath = getConfigPath()+"/config/config-usertype.xml";
     }
     else if("业务类型固定"==*var){
         *child = "固定";

@@ -267,7 +267,7 @@ void Tester::startObjThread()
     qDebug()<<"processfilename is "<<processfilename;
         qDebug() << "Main Thread : " << QThread::currentThreadId();
     userfile->printMessage();
-    qDebug()<<"启动文件处理线程";
+    qDebug()<<QStringLiteral("启动文件处理线程");
 
 
     m_objThread = new QThread();
