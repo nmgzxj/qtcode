@@ -589,14 +589,20 @@ void CommonRulePage::save(){
 }
 
 
-//UserTypePage::UserTypePage(QWidget *parent) : QWidget(parent)
-//{
+UserTypePage::UserTypePage(QWidget *parent) : QWidget(parent)
+{
 //    QLabel *serverLabel = new QLabel(QStringLiteral("用户类型:"));
-//     QVBoxLayout *mainLayout = new QVBoxLayout;
-//     mainLayout->addWidget(serverLabel);
-//     mainLayout->addStretch(1);
-//     setLayout(mainLayout);
-//}
+    table = new QTableWidget;
+    table->setColumnCount(1);
+    QTableWidgetItem *item0 = new QTableWidgetItem;
+    item0->setText("值");
+    table->setHorizontalHeaderItem(0, item0);
+
+     QVBoxLayout *mainLayout = new QVBoxLayout;
+     mainLayout->addWidget(table);
+     mainLayout->addStretch(1);
+     setLayout(mainLayout);
+}
 
 //BizTypePage::BizTypePage(QWidget *parent,QString menu): QWidget(parent)
   BizTypePage::BizTypePage(QString menu): QWidget()

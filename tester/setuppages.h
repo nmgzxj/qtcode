@@ -177,8 +177,18 @@ private:
 
 class UserTypePage : public QWidget
 {
+    Q_OBJECT
 public:
     UserTypePage(QWidget *parent = 0);
+public slots:
+    void add();
+    void del();
+    void valueSave();
+private:
+    QTableWidget *table;
+    QList<QString> value;
+    QString currnt_menu;
+    XMLConfigReader *xmlConfig;
 };
 
 class BizTypePage : public QWidget

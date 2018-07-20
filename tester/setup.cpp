@@ -119,8 +119,8 @@ Setup::Setup()
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人用户规则")));//14
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位/行业用户规则")));//15
     pagesWidget->addWidget(new SystemPage);//13
-//    pagesWidget->addWidget(new UserTypePage);//14
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("用户类型")));//14
+    pagesWidget->addWidget(new UserTypePage);//14
+//    pagesWidget->addWidget(new BizTypePage(QStringLiteral("用户类型")));//14
     pagesWidget->addWidget(new WorkPathPage);//15
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("业务类型移动")));//16
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("业务类型固定")));//17
