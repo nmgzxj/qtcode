@@ -79,127 +79,128 @@ QList<QList<QString>> XMLConfigReader::readAutoid(){
 //读取单列配置
 void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QString* var)
 {
-    if("业务类型移动"==*var){
-        *child = "移动";
+    if(QStringLiteral("业务类型移动")==*var){
+        *child = QStringLiteral("移动");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
-    else if("用户类型"==*var){
+    else if(QStringLiteral("用户类型")==*var){
+        *child = QStringLiteral("移动");
         *inputFilePath = getConfigPath()+"/config/config-usertype.xml";
     }
-    else if("业务类型固定"==*var){
-        *child = "固定";
+    else if(QStringLiteral("业务类型固定")==*var){
+        *child = QStringLiteral("固定");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
-    else if("业务状态非实名停机"==*var){
-        *child = "非实名停机";
+    else if(QStringLiteral("业务状态非实名停机")==*var){
+        *child = QStringLiteral("非实名停机");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
-    else if("业务状态不在网"==*var){
-        *child = "不在网";
+    else if(QStringLiteral("业务状态不在网")==*var){
+        *child = QStringLiteral("不在网");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
-    else if("个人证件居民身份证"==*var){
-        *child = "居民身份证";
+    else if(QStringLiteral("个人证件居民身份证")==*var){
+        *child = QStringLiteral("居民身份证");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件临时居民身份证"==*var){
-        *child = "临时居民身份证";
+    else if(QStringLiteral("个人证件临时居民身份证")==*var){
+        *child = QStringLiteral("临时居民身份证");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件户口薄"==*var){
-        *child = "户口薄";
+    else if(QStringLiteral("个人证件户口薄")==*var){
+        *child = QStringLiteral("户口薄");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件中国人民解放军军人身份证件"==*var){
-        *child = "中国人民解放军军人身份证件";
+    else if(QStringLiteral("个人证件中国人民解放军军人身份证件")==*var){
+        *child = QStringLiteral("中国人民解放军军人身份证件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件中国人民武装警察身份证件"==*var){
-        *child = "中国人民武装警察身份证件";
+    else if(QStringLiteral("个人证件中国人民武装警察身份证件")==*var){
+        *child = QStringLiteral("中国人民武装警察身份证件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件港澳居民来往内地通行证"==*var){
-        *child = "港澳居民来往内地通行证";
+    else if(QStringLiteral("个人证件港澳居民来往内地通行证")==*var){
+        *child = QStringLiteral("港澳居民来往内地通行证");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件台湾居民来往大陆通行证"==*var){
-        *child = "台湾居民来往大陆通行证";
+    else if(QStringLiteral("个人证件台湾居民来往大陆通行证")==*var){
+        *child = QStringLiteral("台湾居民来往大陆通行证");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件外国公民护照"==*var){
-        *child = "外国公民护照";
+    else if(QStringLiteral("个人证件外国公民护照")==*var){
+        *child = QStringLiteral("外国公民护照");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件法律、行政法规和国家规定的其他有效身份证件"==*var){
-        *child = "法律、行政法规和国家规定的其他有效身份证件";
+    else if(QStringLiteral("个人证件法律、行政法规和国家规定的其他有效身份证件")==*var){
+        *child = QStringLiteral("法律、行政法规和国家规定的其他有效身份证件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人证件非法律、行政法规和国家规定的有效身份证件"==*var){
-        *child = "非法律、行政法规和国家规定的有效身份证件";
+    else if(QStringLiteral("个人证件非法律、行政法规和国家规定的有效身份证件")==*var){
+        *child = QStringLiteral("非法律、行政法规和国家规定的有效身份证件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("单位证件组织机构代码证"==*var){
-        *child = "组织机构代码证";
+    else if(QStringLiteral("单位证件组织机构代码证")==*var){
+        *child = QStringLiteral("组织机构代码证");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("单位证件营业执照"==*var){
-        *child = "营业执照";
+    else if(QStringLiteral("单位证件营业执照")==*var){
+        *child = QStringLiteral("营业执照");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("单位证件事业单位法人证书或者社会团体法人登记证书"==*var){
-        *child = "事业单位法人证书或者社会团体法人登记证书";
+    else if(QStringLiteral("单位证件事业单位法人证书或者社会团体法人登记证书")==*var){
+        *child = QStringLiteral("事业单位法人证书或者社会团体法人登记证书");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("单位证件法律、行政法规和国家规定的其他有效证件或者证明文件"==*var){
-        *child = "法律、行政法规和国家规定的其他有效证件或者证明文件";
+    else if(QStringLiteral("单位证件法律、行政法规和国家规定的其他有效证件或者证明文件")==*var){
+        *child = QStringLiteral("法律、行政法规和国家规定的其他有效证件或者证明文件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("单位证件非法律、行政法规和国家规定的有效身份证件"==*var){
-        *child = "非法律、行政法规和国家规定的有效身份证件";
+    else if(QStringLiteral("单位证件非法律、行政法规和国家规定的有效身份证件")==*var){
+        *child = QStringLiteral("非法律、行政法规和国家规定的有效身份证件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if("个人用户姓名comon-rule"==*var){
-        *child = "common-rule";
+    else if(QStringLiteral("个人用户姓名comon-rule")==*var){
+        *child = QStringLiteral("common-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-name-person.xml";
      }
-    else if("个人用户姓名match-rule"==*var){
-        *child = "match-rule";
+    else if(QStringLiteral("个人用户姓名match-rule")==*var){
+        *child = QStringLiteral("match-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-name-person.xml";
      }
-    else if("行业用户姓名comon-rule"==*var){
-        *child = "common-rule";
+    else if(QStringLiteral("行业用户姓名comon-rule")==*var){
+        *child = QStringLiteral("common-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-name-unit.xml";
      }
-    else if("行业用户姓名match-rule"==*var){
-        *child = "match-rule";
+    else if(QStringLiteral("行业用户姓名match-rule")==*var){
+        *child = QStringLiteral("match-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-name-unit.xml";
      }
-    else if("证件号码comon-rule"==*var){
-        *child = "common-rule";
+    else if(QStringLiteral("证件号码comon-rule")==*var){
+        *child = QStringLiteral("common-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-cardnum-person-unit.xml";
      }
-    else if("证件号码match-rule"==*var){
-        *child = "match-rule";
+    else if(QStringLiteral("证件号码match-rule")==*var){
+        *child = QStringLiteral("match-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-cardnum-person-unit.xml";
      }
-    else if("证件地址addr-rule"==*var){
-        *child = "addr-rule";
+    else if(QStringLiteral("证件地址addr-rule")==*var){
+        *child = QStringLiteral("addr-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-addr-person-unit.xml";
      }
-    else if("证件地址match-rule"==*var){
-        *child = "match-rule";
+    else if(QStringLiteral("证件地址match-rule")==*var){
+        *child = QStringLiteral("match-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-addr-person-unit.xml";
      }
-    else if("重号率阈值"==*var){
-        *child = "重号率阈值";
+    else if(QStringLiteral("重号率阈值")==*var){
+        *child = QStringLiteral("重号率阈值");
         *inputFilePath = getConfigPath()+"/rule/rule-common.xml";
      }
-    else if("个人用户规则"==*var){
-        *child = "个人用户规则";
+    else if(QStringLiteral("个人用户规则")==*var){
+        *child = QStringLiteral("个人用户规则");
         *inputFilePath = getConfigPath()+"/rule/rule-common.xml";
      }
-    else if("单位/行业用户规则"==*var){
-        *child = "单位/行业用户规则";
+    else if(QStringLiteral("单位/行业用户规则")==*var){
+        *child = QStringLiteral("单位/行业用户规则");
         *inputFilePath = getConfigPath()+"/rule/rule-common.xml";
      }
 }
@@ -219,7 +220,7 @@ QList<QString> XMLConfigReader::readValue(QString var){
     processFile(&inputFilePath, &child, &var);
 
 
-    qDebug()<<QStringLiteral("读取配置文件")<<inputFilePath;
+    qDebug()<<QStringLiteral("读取配置文件")<<inputFilePath<<child<<var;
 
     QFile file(inputFilePath);
     if (!QFile::exists(inputFilePath))
