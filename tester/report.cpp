@@ -36,7 +36,7 @@ Report::Report(QWidget *parent)
     qDebug()<<"insert report data is:"<<query.exec("insert into report(id,allData,allNotReg,formatNotRight) values (1,2,3,4)");
     UserFile* uf;
     uf = new UserFile;
-    uf->insertDb("/Users/zhangxianjin/qtcode/test_data.txt");
+//  todo  uf->insertDb("/Users/zhangxianjin/qtcode/test_data.txt");
 
     //总量
         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");

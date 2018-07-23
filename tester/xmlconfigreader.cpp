@@ -205,6 +205,52 @@ void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QStrin
      }
 }
 
+QMap<QString,QString> XMLConfigReader::readUserType(){
+    enum ExitCode
+    {
+        Success,
+        ParseFailure,
+        ArgumentError,
+        WriteError,
+        FileFailure
+    };
+    QTextStream errorStream(stderr);
+    QString  inputFilePath = getConfigPath()+"/config/config-usertype.xml";
+    QFile file(inputFilePath);
+    if (!QFile::exists(inputFilePath))
+    {
+        errorStream << QString("File %1 does not exist.\n").arg(inputFilePath);
+
+    }
+    else if (!file.open(QIODevice::ReadOnly)) {
+        errorStream << QString("Failed to open file %1.\n").arg(inputFilePath);
+    }
+    QMap<QString,QString> rtnList;
+    QDomDocument doc;
+    if(!doc.setContent(&file))
+     {
+                 file.close();
+//                 return;
+     }
+     file.close();
+//     QDomElement root=doc.documentElement();
+     QDomNodeList list=doc.elementsByTagName("usertype-config").at(0).childNodes();
+     int count= list.size();
+        qDebug()<<"count = "<<count;
+
+    for(int i=0; i<count; i++)
+    {
+        qDebug()<<"item is "<<list.at(i).toElement().text()<<endl;
+        if(list.at(i).toElement().nodeName()!="")
+        {
+            rtnList.insert(list.at(i).toElement().nodeName(),list.at(i).toElement().text());
+        }
+
+    }
+
+    return rtnList;
+}
+
 QList<QString> XMLConfigReader::readValue(QString var){
     enum ExitCode
     {
@@ -455,6 +501,28 @@ void XMLConfigReader::writeAutoid(QList<QList<QString>> autoid){
     //updateAutoid(temp,qqq,0);
 }
 
+void XMLConfigReader::writeUserType(QList<QList<QString>> userTypeList){
+    qDebug()<<"=========================in writeUserType =======================";
+    QString temp="";
+    QList<QList<QString>> qqq;
+    for(int i=0; i<userTypeList.size(); i++){
+        qDebug()<<"userType is "<<userTypeList.at(i).at(1);
+//        if(temp=="")
+        {
+            if(temp!=""&&userTypeList.at(i).at(0)!=temp){
+                qDebug()<<"temp is "<<temp;
+
+                updateAutoid(temp,qqq,0);//autoid.at(i),offset++);
+                qqq.clear();
+            }
+            qqq.append(userTypeList.at(i));
+            temp = userTypeList.at(i).at(0);
+        }
+
+        updateAutoid(temp,qqq,0);
+    }
+    //updateAutoid(temp,qqq,0);
+}
 
 /**
  * @brief XMLConfigReader::writeValue 通用修改单列配置项

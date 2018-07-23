@@ -31,8 +31,9 @@ public:
     QMap<QString,QString> readDateformatValue();
     void writeCommonRuleValue(QMap<QString,QString> map);
     QMap<QString,QString> readCommonRuleValue(QList<QString> queryList);
+    QMap<QString,QString> readUserType();
     QString PATH;
-
+    void writeUserType(QList<QList<QString>> userTypeList);
 };
 
 #endif // XMLCONFIGREADER_H

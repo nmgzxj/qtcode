@@ -115,7 +115,7 @@ void Tester::showNewFile()
 void Tester::showOpenFile()
 {
     QString name;
-    name = QFileDialog::getOpenFileName(this,"打开",".","histogram files (*.txt)");
+    name = QFileDialog::getOpenFileName(this,QStringLiteral("打开"),".","histogram files (*.txt)");
     if (!name.isEmpty()){
         processfilename = name;
           loadFile(name);
@@ -322,7 +322,7 @@ void Tester::startCheckFile()
             startObjThread();
         }
 
-        emit startObjThreadWork1();//主线程通过信号换起子线程的槽函数
+        emit startObjThreadWork1();//主线程通过信号唤起子线程的槽函数
 //    emit startObjThreadWork2();
 
     Report *report = new Report;

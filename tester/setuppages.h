@@ -186,7 +186,7 @@ public slots:
     void valueSave();
 private:
     QTableWidget *table;
-    QList<QString> value;
+    QMap<QString,QString> value;
     QString currnt_menu;
     XMLConfigReader *xmlConfig;
 };

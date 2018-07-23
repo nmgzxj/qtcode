@@ -477,7 +477,7 @@ CommonRulePage::CommonRulePage(QWidget *parent) : QWidget(parent)
     //
     mainLayout->addWidget(maxlimitLabel,0,0,1,1);
     mainLayout->addWidget(maxlimitEdit,0,1,1,1);
-    mainLayout->addWidget(new QLabel("------个人-------"),1,0,1,2);
+    mainLayout->addWidget(new QLabel(QStringLiteral("------个人-------")),1,0,1,2);
     mainLayout->addWidget(personNameLen_minLabel,2,0,1,1);
     mainLayout->addWidget(personNameLen_minEdit,2,1,1,1);
     mainLayout->addWidget(personNameLen_maxLabel,3,0,1,1);
@@ -494,7 +494,7 @@ CommonRulePage::CommonRulePage(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(personCard_addLen_minEdit,8,1,1,1);
     mainLayout->addWidget(personCard_addLen_maxLabel,9,0,1,1);
     mainLayout->addWidget(personCard_addLen_maxEdit,9,1,1,1);
-    mainLayout->addWidget(new QLabel("-----单位/行业用户-----"),10,0,1,2);
+    mainLayout->addWidget(new QLabel(QStringLiteral("-----单位/行业用户-----")),10,0,1,2);
     mainLayout->addWidget(unitNameLen_minLabel,11,0,1,1);
     mainLayout->addWidget(unitNameLen_minEdit,11,1,1,1);
     mainLayout->addWidget(unitNameLen_maxLabel,12,0,1,1);
@@ -593,24 +593,150 @@ UserTypePage::UserTypePage(QWidget *parent) : QWidget(parent)
 {
 //    QLabel *serverLabel = new QLabel(QStringLiteral("用户类型:"));
     table = new QTableWidget;
-    table->setColumnCount(1);
+    table->setColumnCount(2);
     QTableWidgetItem *item0 = new QTableWidgetItem;
-    item0->setText("值");
+    item0->setText("key");
+    QTableWidgetItem *item1 = new QTableWidgetItem;
+    item1->setText("value");
     table->setHorizontalHeaderItem(0, item0);
+    table->setHorizontalHeaderItem(1, item1);
+
+//     QVBoxLayout *mainLayout = new QVBoxLayout;
+//     mainLayout->addWidget(table);
+//     mainLayout->addStretch(1);
+//     setLayout(mainLayout);
+
+     //插入数据
+     value=xmlConfig->readUserType();
+     qDebug()<<QStringLiteral("读取用户类型")<<value;
+//     currnt_menu = menu;
+     table->setRowCount(value.count());
+ //    bool ok=true;
+     qDebug()<<"value count "<<value.count();
+     QMap<QString, QString>::const_iterator it;
+     int i=0;
+     for( it=value.constBegin(); it!=value.constEnd(); it++){
+         table->setItem(i, 0, new QTableWidgetItem(it.key()));
+         table->setItem(i++, 1, new QTableWidgetItem(it.value()));
+     }
+//     for(int i=0; i<value.size(); i++){
+//         table->setItem(i, 0, new QTableWidgetItem(value.key(i)));
+//         table->setItem(i, 1, new QTableWidgetItem(value.value(i)));
+//         qDebug()<<"value is "<<value.value(i);
+//     }
+
+
+
+     table->horizontalHeader()->setVisible(true);
+     table->verticalHeader()->setVisible(false);
+     table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+     table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+     table->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+     //增加行按钮
+     QPushButton *addButton = new QPushButton;
+     addButton->setText("+");
+     addButton->setStyleSheet("width:30px");
+
+     //删除行按钮
+     QPushButton *delButton = new QPushButton;
+     delButton->setText("-");
+     delButton->setStyleSheet("width:30px");
+
+     //保存按钮
+     QPushButton *saveButton = new QPushButton;
+     saveButton->setText("save");
+
+     connect(addButton, SIGNAL(clicked()), this, SLOT(add()));
+     connect(delButton, SIGNAL(clicked()), this, SLOT(del()));
+     connect(saveButton, SIGNAL(clicked()), this, SLOT(valueSave()));
+
+     QHBoxLayout *buttonLayout = new QHBoxLayout;
+     buttonLayout->addWidget(addButton);
+     buttonLayout->addWidget(delButton);
+     buttonLayout->addWidget(saveButton);
+
 
      QVBoxLayout *mainLayout = new QVBoxLayout;
+//     mainLayout->addWidget(serverLabel);
      mainLayout->addWidget(table);
-     mainLayout->addStretch(1);
+     mainLayout->addLayout(buttonLayout);
+     mainLayout->setSpacing(1);
+     setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
      setLayout(mainLayout);
 }
+void UserTypePage::add(){
+    //结尾添加一行
+    int row = table->rowCount();
+    table->insertRow(row);
+    table->setItem(row, 0, new QTableWidgetItem("new row"));
+    table->setItem(row, 1, new QTableWidgetItem("new row"));
+}
+void UserTypePage::del(){
+    qDebug()<<QStringLiteral("del方法")<<table;
+    //空行无法选择
+        QList<QTableWidgetItem*> items = table->selectedItems();
+        //选择模式器
+        QItemSelectionModel *smodel = table->selectionModel();
+        //获取所有的选择索引
+        QModelIndexList slist = smodel->selectedIndexes();
 
+        //获取所有被选中的行号
+        std::set<int> rows;
+        for (int i = 0; i < slist.size(); i++)
+        {
+            //重复的插入失败
+            rows.insert(slist[i].row());
+        }
+
+       //给用户提示
+        QString msg = QStringLiteral("您确认删除:");
+
+        for (std::set<int>::iterator itr = rows.begin(); itr != rows.end(); itr++)
+        {
+            QTableWidgetItem *item = table->item(*itr, 0);
+            msg += "[";
+            msg += QString::number(*itr+1);
+            msg += ":";
+            if (item)
+                msg += item->text();
+            msg += "]";
+        }
+        int re = QMessageBox::information(this, "", msg, QStringLiteral("确认"), QStringLiteral("取消"));
+        if (re != 0)
+        {
+            return;
+        }
+
+        //删除多行
+        for (;;)
+        {
+            //获取所有的选择索引
+            QModelIndexList s = smodel->selectedIndexes();
+            if (s.size() <= 0) break;
+            //每次只删除一行
+            table->removeRow(s[0].row());
+        }
+}
+
+void UserTypePage::valueSave(){
+    qDebug()<<" ===================in valueSave==================== ";
+    qDebug()<<"row count is "<<table->rowCount();
+    qDebug()<<"col count is "<<table->columnCount();
+    value.clear();
+    for(int i=0; i<table->rowCount();i++){
+        value.insert(table->item(i,0)->text(),table->item(i,1)->text());
+    }
+//    xmlConfig->writeValue(currnt_menu,value);
+    //保存 todu
+}
 //BizTypePage::BizTypePage(QWidget *parent,QString menu): QWidget(parent)
   BizTypePage::BizTypePage(QString menu): QWidget()
 {
     table = new QTableWidget;
     table->setColumnCount(1);
     QTableWidgetItem *item0 = new QTableWidgetItem;
-    item0->setText("值");
+    item0->setText(QStringLiteral("值"));
     table->setHorizontalHeaderItem(0, item0);
 
     //////////////////////////////////////////////
