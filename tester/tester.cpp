@@ -252,10 +252,10 @@ void Tester::loadFile(QString filename)
 //创建线程
 void Tester::startObjThread()
 {
-    if(m_objThread)
-    {
-        return;
-    }
+//    if(m_objThread)
+//    {
+//        return;
+//    }
     //    QList<QList<QString>> users = userfile->insertList(processfilename);
     //    qDebug()<<"行数是："<<users.size();
     //    userfile->analysisData(users);//传统方法
@@ -275,7 +275,7 @@ void Tester::startObjThread()
     connect(m_objThread,&QThread::finished,m_objThread,&QObject::deleteLater);
     connect(m_objThread,&QThread::finished,userfile,&QObject::deleteLater);
     connect(this,&Tester::startObjThreadWork1,userfile,&UserFile::run);
-//    connect(this,&Tester::startObjThreadWork2,userfile,&UserFile::run);
+    connect(this,&Tester::startObjThreadWork2,userfile,&UserFile::run);
 //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
 //       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
     m_objThread->start();
@@ -318,15 +318,17 @@ void Tester::startCheckFile()
     statusBar()->showMessage("start process file", 3000);
     qDebug()<<QStringLiteral("开始处理文件");
     if(m_objThread==NULL)
-        {
-            startObjThread();
-        }
+    {
+       startObjThread();
+    }
+//    qDebug()<<"m_objThread"<<m_objThread;
 
-        emit startObjThreadWork1();//主线程通过信号唤起子线程的槽函数
-//    emit startObjThreadWork2();
+    emit startObjThreadWork1();//主线程通过信号唤起子线程的槽函数
+    emit startObjThreadWork2();
 
-    Report *report = new Report;
-    report->show();
+//todo
+//    Report *report = new Report;
+//    report->show();
 }
 
 void Tester::stopCheckFile()

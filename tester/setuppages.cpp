@@ -122,7 +122,7 @@ void ColumnPage::add(){
 //按行删除函数
 void ColumnPage::del(){
 
-    qDebug()<<"del方法"<<table;
+    qDebug()<<QStringLiteral("del方法")<<table;
     //空行无法选择
         QList<QTableWidgetItem*> items = table->selectedItems();
         //选择模式器
@@ -800,7 +800,7 @@ void BizTypePage::add(){
     table->setItem(row, 0, new QTableWidgetItem("new row"));
 }
 void BizTypePage::del(){
-    qDebug()<<"del方法"<<table;
+    qDebug()<<QStringLiteral("del方法")<<table;
     //空行无法选择
         QList<QTableWidgetItem*> items = table->selectedItems();
         //选择模式器
