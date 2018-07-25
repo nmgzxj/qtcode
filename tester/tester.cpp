@@ -275,7 +275,7 @@ void Tester::startObjThread()
     connect(m_objThread,&QThread::finished,m_objThread,&QObject::deleteLater);
     connect(m_objThread,&QThread::finished,userfile,&QObject::deleteLater);
     connect(this,&Tester::startObjThreadWork1,userfile,&UserFile::run);
-    connect(this,&Tester::startObjThreadWork2,userfile,&UserFile::run);
+//    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
 //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
 //       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
     m_objThread->start();
@@ -358,7 +358,7 @@ void Tester::aboutTester()
 
 void Tester::helpTester()
 {
-
+    userdb->run();
 }
 
 Tester::~Tester()

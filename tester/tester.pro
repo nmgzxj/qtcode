@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     treeitem.cpp \
     treemodel.cpp \
     report.cpp \
-    setuppages.cpp
+    setuppages.cpp \
+    userdb.cpp
 
 HEADERS  += tester.h \
     showwidget.h \
@@ -64,7 +65,8 @@ HEADERS  += tester.h \
     treeitem.h \
     treemodel.h \
     report.h \
-    setuppages.h
+    setuppages.h \
+    userdb.h
 
 FORMS += \
     logindialog.ui \

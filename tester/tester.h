@@ -22,6 +22,7 @@
 #include "setup.h"
 #include "setuppages.h"
 #include "userfile.h"
+#include "userdb.h"
 #include <iostream>
 //#include <QMessagebox>
 #include <QDebug>
@@ -62,6 +63,7 @@ private:
     QTableView *table;
     QSplitter *splitter;
     UserFile *userfile;
+    UserDb *userdb;
 
 
 //    QAction *aboutAction;
