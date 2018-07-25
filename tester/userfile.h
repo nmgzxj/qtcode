@@ -11,6 +11,10 @@
 #define COL_NUM 42
 #include "xmlconfigreader.h"
 #include "report.h"
+#include <QDir>
+#include <QSqlRecord>
+#include <QList>
+#include <QTextCodec>
 
 class UserFile: public QObject
 {

@@ -1,8 +1,5 @@
 ﻿#include "userfile.h"
-#include <QDir>
-#include <QSqlRecord>
-#include <QList>
-#include <QTextCodec>
+
 
 
 UserFile::UserFile()
@@ -34,87 +31,7 @@ bool UserFile::fileIsExists(QString filename){
     return file.exists();
 }
 
-//创建数据库表
-bool UserFile::createTable(){
 
-    QString sql = "create table file(id varchar primary key";
-    for(int i=0;i<COL_NUM;i++){
-        sql.append(",col").append( QString::number(i+1, 10)).append(" varchar");
-    }
-    sql.append(")");
-
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-
-    db.setHostName("localhost");
-    db.setDatabaseName("data.db");
-    db.setUserName("king");
-    db.setPassword("123456");
-    if(!db.open()){
-        qDebug()<<"数据库连接出错。";
-        return false;
-    }
-
-    QSqlQuery query;
-    qDebug()<<"drop table"<<query.exec("drop table file");
-    qDebug()<<"createTable()"<<sql;
-    bool b = query.exec(sql);
-    db.close();
-    return b;
-}
-
-//文件入库
-bool UserFile::insertDb(QString filename){
-    if(!fileIsExists(filename)){
-        qDebug()<<"文件不存在。\n当前路径是：";
-        qDebug()<< QDir::currentPath();
-        return false;
-    }
-    if(!createTable()){
-        qDebug()<<"库表创建不成功。";
-        return false;
-    }
-//    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-
-//    db.setHostName("localhost");
-//    db.setDatabaseName("data.db");
-//    db.setUserName("king");
-//    db.setPassword("123456");
-//    if(!db.open()){
-//        writeLog("创建数据库连接出错。");
-//        return false;
-//    }
-
-    QSqlQuery query;
-    QFile file(filename);
-    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
-    QList<QString> col;
-    QString sql="";
-    QString line = "";
-    int line_num = 1;
-    if(file.open(QFile::ReadOnly | QFile::Text)){
-        QTextStream stream(&file);
-        stream.setCodec(code);
-
-         do {
-            sql = "insert into file values(";
-            sql.append(QString::number(line_num++));
-            line = stream.readLine();
-            col =  line.split(strItemDelimeter);
-            qDebug()<<"tmp is :"<<qPrintable(line);
-            for(int i=0;i<col.size();i++){
-                sql.append(",'"+col[i]+"'");
-            }
-            sql.append(")");
-            qDebug()<<"insertDb()"<<qPrintable(sql);
-            qDebug()<<query.exec(sql);
-        }while(!line.isEmpty());
-    }
-    else{
-        qDebug()<<"文件打开错误。";
-    }
-//    db.close();
-    return true;
-}
 
 //文件导入内存
 QList<QList<QString>> UserFile::insertList(QString filename){
