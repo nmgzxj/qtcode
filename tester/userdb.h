@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QDir>
 #include <QTextCodec>
+#include <QTime>
 #define strItemDelimeter "||"
 
 
