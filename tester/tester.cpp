@@ -33,8 +33,11 @@ void Tester::createMenus()
     fileMenu->addAction(exitAction);
 
     //运行菜单
-    runMenu =menuBar()->addMenu(QStringLiteral("运行"));
-    runMenu->addAction(startAction);
+    runMenu =menuBar()->addMenu(QStringLiteral("运行1"));
+    runMenu->addAction(startAction1);
+    runMenu->addAction(stopAction);
+    runMenu =menuBar()->addMenu(QStringLiteral("运行2"));
+    runMenu->addAction(startAction2);
     runMenu->addAction(stopAction);
 
     //帮助菜单
@@ -78,11 +81,16 @@ void Tester::createActions()
     setupAction->setShortcut(QStringLiteral("Ctrl+S"));
     setupAction->setStatusTip(QStringLiteral("设置运行参数"));
     connect(setupAction,SIGNAL(triggered()),this,SLOT(setupTester()));
-    //“开始”动作
-    startAction =new QAction(QStringLiteral("开始"),this);//QIcon("../../../new.png"),
-    startAction->setShortcut(QStringLiteral("Ctrl+R"));
-    startAction->setStatusTip(QStringLiteral("开始检查"));
-    connect(startAction,SIGNAL(triggered()),this,SLOT(startCheckFile()));
+    //“开始1”动作
+    startAction1 =new QAction(QStringLiteral("开始1"),this);//QIcon("../../../new.png"),
+    startAction1->setShortcut(QStringLiteral("Ctrl+R"));
+    startAction1->setStatusTip(QStringLiteral("开始检查"));
+    connect(startAction1,SIGNAL(triggered()),this,SLOT(startCheckFile1()));
+    //“开始2”动作
+    startAction2 =new QAction(QStringLiteral("开始2"),this);//QIcon("../../../new.png"),
+    startAction2->setShortcut(QStringLiteral("Ctrl+R"));
+    startAction2->setStatusTip(QStringLiteral("开始检查"));
+    connect(startAction2,SIGNAL(triggered()),this,SLOT(startCheckFile2()));
     //“停止”动作
     stopAction =new QAction(QStringLiteral("停止"),this);//QIcon("../../../new.png"),
     stopAction->setShortcut(QStringLiteral("Ctrl+C"));
@@ -312,9 +320,9 @@ void Tester::startObjThread()
 
 }
 
-void Tester::startCheckFile()
+void Tester::startCheckFile1()
 {
-//    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+
     statusBar()->showMessage("start process file", 3000);
     qDebug()<<QStringLiteral("开始处理文件");
     if(m_objThread==NULL)
@@ -324,12 +332,31 @@ void Tester::startCheckFile()
 //    qDebug()<<"m_objThread"<<m_objThread;
 
     emit startObjThreadWork1();//主线程通过信号唤起子线程的槽函数
-    emit startObjThreadWork2();
 
 //todo
 //    Report *report = new Report;
 //    report->show();
 }
+
+void Tester::startCheckFile2()
+{
+    statusBar()->showMessage("start process file", 3000);
+    qDebug()<<QStringLiteral("开始处理文件");
+    userdb->run();
+//    if(m_objThread==NULL)
+//    {
+//       startObjThread();
+//    }
+////    qDebug()<<"m_objThread"<<m_objThread;
+
+//主线程通过信号唤起子线程的槽函数
+//    emit startObjThreadWork2();
+
+
+    Report *report = new Report;
+    report->show();
+}
+
 
 void Tester::stopCheckFile()
 {

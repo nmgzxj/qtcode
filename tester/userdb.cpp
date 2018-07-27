@@ -22,7 +22,7 @@ void UserDb::connDb(){
 void UserDb::run()
 {
     qDebug()<<"run begin";
-    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("D:\\gitcode\\build-tester-Desktop_Qt_5_10_0_MSVC2015_64bit-Debug\\data\\test_data.txt");//test.txt");//
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("/Users/zhangxianjin/qtcode/test_data.txt");//D:\\test.txt");//gitcode\\build-tester-Desktop_Qt_5_10_0_MSVC2015_64bit-Debug\\data\\test_data.txt");
     QSqlQuery query;
     qDebug()<<"drop report:"<<query.exec("drop table report");
     qDebug()<<"create report:"<<query.exec("create table report(id int primary key,allData int,allNotReg int,formatNotRight int,fieldNotRight int,allOk int,personMobileFormatRight int,"
@@ -42,6 +42,7 @@ void UserDb::run()
                                            "tradeMobileAgentUnitIllegal int,tradeMobileLiableAgentIllegal int,tradeMobileLiableAgentUnitIllegal int,tradeMobileUnitIllegal int,tradeMobileLiableIllegal int,"
                                            "tradeMobileLiableUnitIllegal int,tradeFixedLegal int, tradeFixedAgentNotReg int,tradeFixedAgentUnitNotReg int,tradeFixedUnitNotReg int,tradeFixedAgentIllegal int,"
                                            "tradeFixedAgentUnitIllegal int,tradeFixedUnitIllegal int,personMobileOneCard int)");
+    qDebug()<<"insert report is:"<<query.exec("insert into report (id) values (1)");
 
     //总量
         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
@@ -303,60 +304,27 @@ void UserDb::run()
     //个人移动一证五卡不合规
          qDebug()<<"update is:"<<query.exec("update report set personMobileOneCard=99");
 
-    qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
-    query.prepare("select count(*) from file where col1='丁泽富'");
-    if(!query.exec())
-    {
-        qDebug()<<query.lastError();
-    }
-    else
-    {
-        while(query.next())
-        {
-            int id = query.value(0).toInt();
-//            QString name = query.value(1).toString();
-//            int age = query.value(2).toInt();
-
-            qDebug()<<QString("id:%1    name:%2    age:%3").arg(id);//.arg(name).arg(age);
-        }
-    }
 }
 
 //创建数据库表
 bool UserDb::createTable(){
 //    connDb();
-//    db1 = QSqlDatabase::addDatabase("QSQLITE");
 
-//    db1.setHostName("localhost");
-//    db1.setDatabaseName("data.db1");
-//    db1.setUserName("king");
-//    db1.setPassword("123456");
     QString sql = "create table file(id varchar primary key";
     for(int i=0;i<42;i++){
         sql.append(",col").append( QString::number(i+1, 10)).append(" varchar");
     }
     sql.append(")");
-//    qDebug()<<"create table";
-//    if (QSqlDatabase::contains("qt_sql_default_connection"))
-//    {
-//        db1 = QSqlDatabase::database("qt_sql_default_connection");
-//        qDebug()<<QStringLiteral("数据库已打开。");
-//    }
-//    else
-//    {
-////        connDb();
-//        qDebug()<<QStringLiteral("数据库连接出错。");
-//        return false;
-//    }
+
 
     QSqlQuery query;
-    query.
+
     qDebug()<<"drop table"<<query.exec("drop table file");
     qDebug()<<"createTable()"<<sql;
     bool b = query.exec(sql);
-//    db1.close();
     return b;
 }
+
 
 QString getCol(QString str){
     if(str!="null")
@@ -377,27 +345,18 @@ bool UserDb::insertDb(QString filename){
         qDebug()<<"库表创建不成功。";
         return false;
     }
-//    QSqlDatabase db1 = QSqlDatabase::addDatabase("QSQLITE");
 
-//    db1.setHostName("localhost");
-//    db1.setDatabaseName("data.db1");
-//    db1.setUserName("king");
-//    db1.setPassword("123456");
-//    if(!db1.open()){
-//        writeLog("创建数据库连接出错。");
-//        return false;
-//    }
 
     QSqlQuery query;
-    QFile file(filename);    QTextCodec *code = QTextCodec::codecForName("UTF-8");//设置文件编码
-    QSqlQuery transaction_start;
-    QSqlQuery transaction_COMMIT;
-    QSqlQuery transaction_ROLLBACK;
-    QSqlQuery query_insert;
-    QSqlQuery query_delete;
+    QFile file(filename);    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+//    QSqlQuery transaction_start;
+//    QSqlQuery transaction_COMMIT;
+//    QSqlQuery transaction_ROLLBACK;
+//    QSqlQuery query_insert;
+//    QSqlQuery query_delete;
 
-    https://blog.csdn.net/iloveqt5/article/details/14121195
-    transaction_start.exec("START TRANSACTION");//开始事务。使用BEGIN也可以
+//    https://blog.csdn.net/iloveqt5/article/details/14121195
+//    transaction_start.exec("START TRANSACTION");//开始事务。使用BEGIN也可以
 
     QList<QString> col;
     QString sql="";
@@ -432,7 +391,7 @@ cout<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
     if(file.open(QFile::ReadOnly | QFile::Text)){
         QTextStream stream(&file);
         stream.setCodec(code);
-        db1.transaction();
+//        db1.transaction();
          do {
             sql = "insert into file values(";
             sql.append(QString::number(line_num++));
@@ -449,7 +408,7 @@ cout<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
 //            qDebug()<<
            isInsert=  query.exec(sql);
             if(line_num%100==0&&isInsert){
-                db1.commit();
+//                db1.commit();
                 qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
                 tmpTime.start();
                 qDebug()<<line_num;

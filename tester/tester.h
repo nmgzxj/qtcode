@@ -54,7 +54,8 @@ private:
     ShowWidget *showWidget;
     QAction *openFileAction;                     	//文件菜单项
     QAction *NewFileAction;
-    QAction *startAction;
+    QAction *startAction1;
+    QAction *startAction2;
     QAction *stopAction;
     QAction *setupAction;                          	//编辑菜单项
     QAction *aboutAction;
@@ -101,7 +102,8 @@ private:
 protected slots:
     void showNewFile();
     void showOpenFile();
-    void startCheckFile();
+    void startCheckFile1();
+    void startCheckFile2();
     void stopCheckFile();
     void setupTester();
     void aboutTester();
