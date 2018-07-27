@@ -76,3 +76,9 @@ DISTFILES +=
 
 RESOURCES += \
     logo.qrc
+win32-g++ {
+    LIBS += -lopengl32
+}
+win32-msvc*{
+    LIBS += opengl32.lib
+}

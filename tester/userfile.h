@@ -6,7 +6,6 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QThread>
-#include <QMutex>
 #define strItemDelimeter "||"
 #define COL_NUM 42
 #include "xmlconfigreader.h"
@@ -14,6 +13,7 @@
 #include <QDir>
 #include <QSqlRecord>
 #include <QList>
+#include <QMutex>
 #include <QTextCodec>
 
 class UserFile: public QObject

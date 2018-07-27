@@ -23,9 +23,10 @@
 #include "setuppages.h"
 #include "userfile.h"
 #include "userdb.h"
-#include <iostream>
+
 //#include <QMessagebox>
 #include <QDebug>
+#include <QThread>
 
 class Tester : public QMainWindow
 {
@@ -125,7 +126,7 @@ protected slots:
 private:
     QStandardItemModel *model;
     QString processfilename;
-    QThread* m_objThread;
+    QThread* m_Thread;
 
 };
 

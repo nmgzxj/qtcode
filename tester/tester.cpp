@@ -1,8 +1,8 @@
-﻿#include "tester.h"
-#include <QFileDialog>
+﻿#include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
 #include "report.h"
+#include "tester.h"
 
 
 Tester::Tester(QWidget *parent)
@@ -260,8 +260,9 @@ void Tester::loadFile(QString filename)
 //创建线程
 void Tester::startObjThread()
 {
-//    if(m_objThread)
+//    if(m_Thread==NULL)
 //    {
+//        qDebug()<<"m_Thread"<<m_Thread;
 //        return;
 //    }
     //    QList<QList<QString>> users = userfile->insertList(processfilename);
@@ -278,15 +279,15 @@ void Tester::startObjThread()
     qDebug()<<QStringLiteral("启动文件处理线程");
 
 
-    m_objThread = new QThread();
-    userfile->moveToThread(m_objThread);
-    connect(m_objThread,&QThread::finished,m_objThread,&QObject::deleteLater);
-    connect(m_objThread,&QThread::finished,userfile,&QObject::deleteLater);
+    m_Thread = new QThread();
+    userfile->moveToThread(m_Thread);
+    connect(m_Thread,&QThread::finished,m_Thread,&QObject::deleteLater);
+    connect(m_Thread,&QThread::finished,userfile,&QObject::deleteLater);
     connect(this,&Tester::startObjThreadWork1,userfile,&UserFile::run);
 //    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
 //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
 //       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
-    m_objThread->start();
+    m_Thread->start();
 
 //    while(isFinsh){
 
@@ -322,14 +323,15 @@ void Tester::startObjThread()
 
 void Tester::startCheckFile1()
 {
-
+//    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
     statusBar()->showMessage("start process file", 3000);
-    qDebug()<<QStringLiteral("开始处理文件");
-    if(m_objThread==NULL)
+    qDebug()<<QStringLiteral("开始处理文件")<<(NULL==m_Thread);
+    if(m_Thread==NULL)
     {
+       qDebug()<<QStringLiteral("开始处理文件xiancheng");
        startObjThread();
     }
-//    qDebug()<<"m_objThread"<<m_objThread;
+//    qDebug()<<"m_Thread"<<m_Thread;
 
     emit startObjThreadWork1();//主线程通过信号唤起子线程的槽函数
 
@@ -343,11 +345,11 @@ void Tester::startCheckFile2()
     statusBar()->showMessage("start process file", 3000);
     qDebug()<<QStringLiteral("开始处理文件");
     userdb->run();
-//    if(m_objThread==NULL)
+//    if(m_Thread==NULL)
 //    {
 //       startObjThread();
 //    }
-////    qDebug()<<"m_objThread"<<m_objThread;
+////    qDebug()<<"m_Thread"<<m_Thread;
 
 //主线程通过信号唤起子线程的槽函数
 //    emit startObjThreadWork2();
@@ -362,7 +364,7 @@ void Tester::stopCheckFile()
 {
     statusBar()->showMessage("stop process file", 3000);
     userfile->stop();
-//    m_objThread->quit();
+//    m_Thread->quit();
     qDebug()<<QStringLiteral("停止处理文件");
 }
 
