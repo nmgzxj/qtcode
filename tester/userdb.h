@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QTextCodec>
 #include <QTime>
+#include "userfile.h"
 #define strItemDelimeter "||"
 
 
@@ -21,7 +22,11 @@ public:
     bool fileIsExists(QString filename);
 private:
     QSqlDatabase db1;
+    UserFile* userFile;
     void connDb();
+    int getCol_num(QString name);
+    QMap<QString,int> col_name_map;
+    XMLConfigReader *xmlConfig;
 };
 
 #endif // USERDB_H

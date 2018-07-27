@@ -2,7 +2,17 @@
 
 UserDb::UserDb()
 {
-
+    QList<QList<QString>> lls = xmlConfig->readAutoid();
+    QString name;
+//     report = new Report();
+    int num;
+    bool ok;
+    for(int i=0; i<lls.size(); i++){
+        name = lls.at(i).at(1);
+        num = lls.at(i).at(2).toInt(&ok,10);
+        qDebug()<<"col name is "<<name<<" num is "<<num;
+        col_name_map.insert(name,num);
+    }
 }
 
 void UserDb::connDb(){
@@ -43,6 +53,7 @@ void UserDb::run()
                                            "tradeMobileLiableUnitIllegal int,tradeFixedLegal int, tradeFixedAgentNotReg int,tradeFixedAgentUnitNotReg int,tradeFixedUnitNotReg int,tradeFixedAgentIllegal int,"
                                            "tradeFixedAgentUnitIllegal int,tradeFixedUnitIllegal int,personMobileOneCard int)");
     qDebug()<<"insert report is:"<<query.exec("insert into report (id) values (1)");
+    QString sql;
 
     //总量
         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
@@ -62,7 +73,10 @@ void UserDb::run()
          //qDebug()<<"update personMobileFormatRight is:"<<query.exec("update report set personMobileFormatRight=(select count(*) from file where col"+UserFile::getCol_num("用户类型")+"='')");
 
     //个人移动用户-证件类型未登记
-         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec("update report set personMobileOwnerTypeNotReg=(select count(*) from file)");
+         sql = "update report set personMobileOwnerTypeNotReg=(select count(*) from file where col";
+//         qDebug()<< getCol_num("证件类型");
+         sql += " is null)";
+         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql);
 
     //个人移动用户-用户姓名未登记
          qDebug()<<"update personMobileOwnerNameNotReg is:"<<query.exec("update report set personMobileOwnerNameNotReg=(select count(*) from file)");
@@ -305,6 +319,11 @@ void UserDb::run()
          qDebug()<<"update is:"<<query.exec("update report set personMobileOneCard=99");
 
 }
+
+int UserDb::getCol_num(QString name){
+    //    int rtn = ;
+        qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name);
+        return col_name_map.value(name);}
 
 //创建数据库表
 bool UserDb::createTable(){
