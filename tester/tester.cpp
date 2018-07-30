@@ -8,7 +8,7 @@
 Tester::Tester(QWidget *parent)
     : QMainWindow(parent)
 {
-    setWindowIcon(QIcon(":/Images/logo.icns"));
+//    setWindowIcon(QIcon(":/Images/logo.icns"));
     setWindowTitle(QStringLiteral("实名制检测系统"));			//设置窗体标题
     resize(600,600);
     showWidget =new ShowWidget(this);		//设置文本显示窗体

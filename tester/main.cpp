@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
 
 ///    图形界面
     QApplication a(argc, argv);
-    a.setWindowIcon(QIcon(QApplication::applicationDirPath()+"/images/config.png"));
+    a.setWindowIcon(QIcon(":/Images/config.png"));
+//    a.setWindowIcon(QIcon(QApplication::applicationDirPath()+"/images/config.png"));
 //    qDebug()<<"path="<<QApplication::applicationDirPath();
 //    ProgressDlg w;
     if(!createConnection()||!createXml())
