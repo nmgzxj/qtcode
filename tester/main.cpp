@@ -3,7 +3,7 @@
 #include "connection.h"
 #include "logindialog.h"
 #include "gencode.h"
-#include "userfile.h"
+//#include "userfile.h"
 
 #include <QApplication>
 
@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
 
 ///    图形界面
     QApplication a(argc, argv);
+    a.setWindowIcon(QIcon(QApplication::applicationDirPath()+"/images/config.png"));
+//    qDebug()<<"path="<<QApplication::applicationDirPath();
 //    ProgressDlg w;
     if(!createConnection()||!createXml())
     {

@@ -1,4 +1,4 @@
-#include "gencode.h"
+﻿#include "gencode.h"
 #include <iostream>
 #include "util.h"
 #include "setup.h"

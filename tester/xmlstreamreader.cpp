@@ -1,4 +1,4 @@
-#include "xmlstreamreader.h"
+﻿#include "xmlstreamreader.h"
 using namespace std;
 using std::cerr;
 //暂时无用

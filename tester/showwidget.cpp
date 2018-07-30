@@ -1,4 +1,4 @@
-#include "showwidget.h"
+﻿#include "showwidget.h"
 #include <QHBoxLayout>
 
 ShowWidget::ShowWidget(QWidget *parent) : QWidget(parent)

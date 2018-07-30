@@ -1,4 +1,4 @@
-#ifndef PROGRESSDLG_H
+﻿#ifndef PROGRESSDLG_H
 #define PROGRESSDLG_H
 
 #include <QDialog>

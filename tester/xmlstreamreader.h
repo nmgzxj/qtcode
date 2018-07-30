@@ -1,4 +1,4 @@
-#ifndef XMLSTREAMREADER_H
+﻿#ifndef XMLSTREAMREADER_H
 #define XMLSTREAMREADER_H
 #include <QTreeWidget>
 #include <QString>

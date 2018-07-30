@@ -1,4 +1,4 @@
-#ifndef GENCODE_H
+﻿#ifndef GENCODE_H
 #define GENCODE_H
 
 #include <QString>

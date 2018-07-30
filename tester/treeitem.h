@@ -1,4 +1,4 @@
-#ifndef TREEITEM_H
+﻿#ifndef TREEITEM_H
 #define TREEITEM_H
 #include <QList>
 #include <QVariant>
