@@ -38,7 +38,6 @@ SOURCES += main.cpp\
     gencode.cpp \
     xmlstreamreader.cpp \
     userfile.cpp \
-    rule.cpp \
     statisticresult.cpp \
     user.cpp \
     xmlconfigreader.cpp \
@@ -53,12 +52,10 @@ HEADERS  += tester.h \
     setup.h \
     util.h \
     logindialog.h \
-    connection.h \
     progressdlg.h \
     gencode.h \
     xmlstreamreader.h \
     userfile.h \
-    rule.h \
     statisticresult.h \
     user.h \
     xmlconfigreader.h \

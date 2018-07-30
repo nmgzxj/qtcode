@@ -6,12 +6,13 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QThread>
+#include <QSqlRecord>
+#include <QSqlError>
 #define strItemDelimeter "||"
 #define COL_NUM 42
 #include "xmlconfigreader.h"
 #include "report.h"
 #include <QDir>
-#include <QSqlRecord>
 #include <QList>
 #include <QMutex>
 #include <QTextCodec>

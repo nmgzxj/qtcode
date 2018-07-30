@@ -1,6 +1,5 @@
 ﻿#include "report.h"
 #include "ui_report.h"
-#include "connection.h"
 #include "userfile.h"
 
 Report::Report(QWidget *parent)
