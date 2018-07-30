@@ -258,7 +258,7 @@ void Tester::loadFile(QString filename)
 
 
 //创建线程
-void Tester::startObjThread()
+void Tester::startObjThread1()
 {
 //    if(m_Thread==NULL)
 //    {
@@ -279,15 +279,78 @@ void Tester::startObjThread()
     qDebug()<<QStringLiteral("启动文件处理线程");
 
 
-    m_Thread = new QThread();
-    userfile->moveToThread(m_Thread);
-    connect(m_Thread,&QThread::finished,m_Thread,&QObject::deleteLater);
-    connect(m_Thread,&QThread::finished,userfile,&QObject::deleteLater);
+    m_Thread1 = new QThread();
+    userfile->moveToThread(m_Thread1);
+    connect(m_Thread1,&QThread::finished,m_Thread1,&QObject::deleteLater);
+    connect(m_Thread1,&QThread::finished,userfile,&QObject::deleteLater);
     connect(this,&Tester::startObjThreadWork1,userfile,&UserFile::run);
 //    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
 //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
 //       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
-    m_Thread->start();
+    m_Thread1->start();
+
+//    while(isFinsh){
+
+//    }
+//    statusBar()->showMessage("all data insert table.", 3000);
+//    qDebug()<<"all data insert table.";
+
+//    QList<QString> users = userfile->readTable("select col1,col2 from file where col1= '丁泽富'");
+//    QList<QString> users = userfile->readTable("select count(*),col1,col3 from file group by col1,col3");
+//    for(int i=0;i<users.size();i++){
+//        qDebug()<< users.at(i)<<"\\n";
+//    }
+
+//    printf("start process file");
+//    std::cout<< processfilename.toStdString();
+
+//    QFile file(processfilename);
+//    QTextStream stream(&file);
+//    stream.setCodec(code);
+//    QString buffer;
+//    QString cols[col_num] = new QString[col_num]{};
+//    if(file.open(QIODevice::ReadOnly))
+//    {
+//        while(stream.readLineInto(&buffer,2048)){
+//            cols = buffer.split('||');
+//            qDebug()<<buffer;
+//            qDebug()<<cols[1];
+//        }
+//    }
+//    file.close();
+
+}
+
+void Tester::startObjThread2()
+{
+//    if(m_Thread==NULL)
+//    {
+//        qDebug()<<"m_Thread"<<m_Thread;
+//        return;
+//    }
+    //    QList<QList<QString>> users = userfile->insertList(processfilename);
+    //    qDebug()<<"行数是："<<users.size();
+    //    userfile->analysisData(users);//传统方法
+
+    //    userfile->insertDb(processfilename);
+//
+//     userdb->printMessage();
+//    userdb->setFileName(processfilename);
+    qDebug()<<"processfilename is "<<processfilename;
+        qDebug() << "Main Thread : " << QThread::currentThreadId();
+//    userdb->printMessage();
+    qDebug()<<QStringLiteral("启动文件处理线程");
+
+
+    m_Thread2 = new QThread();
+    userdb->moveToThread(m_Thread2);
+    connect(m_Thread2,&QThread::finished,m_Thread2,&QObject::deleteLater);
+    connect(m_Thread2,&QThread::finished,userdb,&QObject::deleteLater);
+    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
+//    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
+//       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
+//       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
+    m_Thread2->start();
 
 //    while(isFinsh){
 
@@ -323,13 +386,12 @@ void Tester::startObjThread()
 
 void Tester::startCheckFile1()
 {
-//    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
     statusBar()->showMessage("start process file", 3000);
-    qDebug()<<QStringLiteral("开始处理文件")<<(NULL==m_Thread);
-    if(m_Thread==NULL)
+    qDebug()<<QStringLiteral("开始处理文件")<<(NULL==m_Thread1);
+    if(m_Thread1==NULL)
     {
        qDebug()<<QStringLiteral("开始处理文件xiancheng");
-       startObjThread();
+       startObjThread1();
     }
 //    qDebug()<<"m_Thread"<<m_Thread;
 
@@ -344,7 +406,12 @@ void Tester::startCheckFile2()
 {
     statusBar()->showMessage("start process file", 3000);
     qDebug()<<QStringLiteral("开始处理文件");
-    userdb->run();
+    if(m_Thread2==NULL)
+    {
+       qDebug()<<QStringLiteral("开始处理文件xiancheng");
+       startObjThread2();
+    }
+//    userdb->run();
 //    if(m_Thread==NULL)
 //    {
 //       startObjThread();

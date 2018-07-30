@@ -42,7 +42,8 @@ public:
     void setupModel();
     int col_num = 42; //文件列数
     int row_num = 20; //预览行数
-    void startObjThread();
+    void startObjThread1();
+    void startObjThread2();
 signals:
     void startObjThreadWork1();
     void startObjThreadWork2();
@@ -126,7 +127,8 @@ protected slots:
 private:
     QStandardItemModel *model;
     QString processfilename;
-    QThread* m_Thread;
+    QThread* m_Thread1;
+    QThread* m_Thread2;
 
 };
 
