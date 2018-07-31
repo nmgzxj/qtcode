@@ -2,8 +2,9 @@
 
 UserDb::UserDb()
 {
-    QList<QList<QString>> lls = xmlConfig->readAutoid();
-    QString name;
+     stopped = false;
+     QList<QList<QString>> lls = xmlConfig->readAutoid();
+     QString name;
 //     report = new Report();
     int num;
     bool ok;
@@ -15,28 +16,22 @@ UserDb::UserDb()
     }
 }
 
-void UserDb::connDb(){
-    if(db1.isOpen()){
-        db1.databaseName();
-    }
-    else{
-        db1 = QSqlDatabase::addDatabase("QSQLITE");
+void UserDb::printMessage(){
+    qDebug()<<QString("%1->%2,thread id:%3").arg(__FUNCTION__).arg(__FILE__).arg((int)(size_t)QThread::currentThreadId());
+}
 
-        db1.setHostName("localhost");
-        db1.setDatabaseName("data.db1");
-        db1.setUserName("king");
-        db1.setPassword("123456");
-    }
+void UserDb::stop()
+{
+    stopped = true;
+    m_isStop = true;
 }
 
 void UserDb::run()
 {
     qDebug()<<"run begin";
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("D:\\test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//test_data.txt");//
 }
-
-//void t(){
-//    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("/Users/zhangxianjin/qtcode/test_data.txt");//D:\\test.txt");//gitcode\\build-tester-Desktop_Qt_5_10_0_MSVC2015_64bit-Debug\\data\\test_data.txt");
-//    QSqlQuery query;
+    //    QSqlQuery query;
 //    qDebug()<<"drop report:"<<query.exec("drop table report");
 //    qDebug()<<"create report:"<<query.exec("create table report(id int primary key,allData int,allNotReg int,formatNotRight int,fieldNotRight int,allOk int,personMobileFormatRight int,"
 //                                           "personMobileOwnerTypeNotReg int,personMobileOwnerNameNotReg int,personMobileOwnerNumNotReg int,personMobileOwnerAddNotReg int,personMobileOwnerNameNumNotReg int,"
@@ -70,14 +65,14 @@ void UserDb::run()
 //         qDebug()<<"update allOk is:"<<query.exec("update report set allOk=(select count(*) from file)");
 
 //    //待挖掘记录
-////         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
+// //         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
 
 //    //个人移动用户-形式合规数据
 //         //qDebug()<<"update personMobileFormatRight is:"<<query.exec("update report set personMobileFormatRight=(select count(*) from file where col"+UserFile::getCol_num("用户类型")+"='')");
 
 //    //个人移动用户-证件类型未登记
 //         sql = "update report set personMobileOwnerTypeNotReg=(select count(*) from file where col";
-////         qDebug()<< getCol_num("证件类型");
+// //         qDebug()<< getCol_num("证件类型");
 //         sql += " is null)";
 //         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql);
 
@@ -344,6 +339,7 @@ bool UserDb::createTable(){
     qDebug()<<"drop table"<<query.exec("drop table file");
     qDebug()<<"createTable()"<<sql;
     bool b = query.exec(sql);
+    qDebug()<<b;
     return b;
 }
 
@@ -370,7 +366,8 @@ bool UserDb::insertDb(QString filename){
 
 
     QSqlQuery query;
-    QFile file(filename);    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+    QFile file(filename);
+    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
 //    QSqlQuery transaction_start;
 //    QSqlQuery transaction_COMMIT;
 //    QSqlQuery transaction_ROLLBACK;
@@ -378,42 +375,18 @@ bool UserDb::insertDb(QString filename){
 //    QSqlQuery query_delete;
 
 //    https://blog.csdn.net/iloveqt5/article/details/14121195
-//    transaction_start.exec("START TRANSACTION");//开始事务。使用BEGIN也可以
 
     QList<QString> col;
     QString sql="";
     QString line = "";
     int line_num = 1;
-    bool isInsert=false;
-    /**
-bool    bsuccess = false;
-QTime    tmpTime;
 
-// 开始启动事务
-db_sqlite.transaction();
-tmpTime.start();
-for(int i = 0; i<100000; i++)
-{
-   bsuccess = query.exec("insert into DataBase(D_1,D_2,D_3,D_4,D_5) values('TT','TT','TT','TT','TT')");
-   if (!bsuccess)
-   {
-    cout<<"Error occur"<<endl;
-    break;
-   }
-
-}
-
-// 提交事务，这个时候才是真正打开文件执行SQL语句的时候
-db_sqlite.commit();
-cout<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
-
-}
-*/
     QTime    tmpTime;
+    bool isSuccess = true;
     if(file.open(QFile::ReadOnly | QFile::Text)){
         QTextStream stream(&file);
         stream.setCodec(code);
-//        db1.transaction();
+//        qDebug()<<"start transaction"<<db.transaction();
          do {
             sql = "insert into file values(";
             sql.append(QString::number(line_num++));
@@ -426,14 +399,24 @@ cout<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
             }
             sql.append(")");
 
-            qDebug()<<"insertDb()"<<qPrintable(sql);
-//            qDebug()<<
-           isInsert=  query.exec(sql);
-            if(line_num%100==0&&isInsert){
-//                db1.commit();
-                qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
-                tmpTime.start();
-                qDebug()<<line_num;
+            qDebug()<<"insertDb()"<<qPrintable(sql)<<query.exec(sql);
+
+//           if(!query.exec(sql)){
+//                isSuccess=false;
+//                break;
+//           }
+
+            if(line_num%1000==0){
+                if(isSuccess){
+                    qDebug()<<"commit"<<db.commit();
+                    qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
+                    tmpTime.start();
+                    qDebug()<<"line_num"<<line_num;
+                }
+                else{
+                    qDebug()<<"error: line_num"<<line_num<<" "<<sql;
+                    qDebug()<<"roll back"<<db.rollback();
+                }
             }
         }while(!line.isEmpty());
     }

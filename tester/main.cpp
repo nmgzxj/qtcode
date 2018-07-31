@@ -1,33 +1,12 @@
 ﻿#include "tester.h"
 #include "progressdlg.h"
-//#include "connection.h"
 #include "logindialog.h"
 #include "gencode.h"
-//#include "userfile.h"
+#include "db.h"
 
 #include <QApplication>
 
-static bool createConnection()
-{
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
-    db.setHostName("localhost");
-    db.setDatabaseName("data.db");
-    db.setUserName("king");
-    db.setPassword("123456");
-    if(!db.open()){
-        //提示出错
-        return false;
-    }
-
-    QSqlQuery query;
-
-    //创建密码表
-    query.exec("create table password(pwd varchar primary key)");
-    query.exec("delete password");
-    query.exec("insert into password values('1')");
-    return true;
-}
 /*QT5日志功能（qDebug、qWarnng、qCritical、qFatal）
  * 一、基本分类：
 qDebug : 调试信息提示
@@ -100,10 +79,7 @@ int main(int argc, char *argv[])
 
 
 //    ProgressDlg w;
-    if(!createConnection())//||!createXml())
-    {
-        return 0;
-    }
+    createConnection();
     Tester w;
     LoginDialog dlg;
     if(dlg.exec() == QDialog::Accepted)

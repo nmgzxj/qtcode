@@ -20,6 +20,7 @@ Tester::Tester(QWidget *parent)
     setupModel();
     setupView();
     userfile = new UserFile();
+    userdb = new UserDb();
 }
 
 void Tester::createMenus()
@@ -323,22 +324,9 @@ void Tester::startObjThread1()
 
 void Tester::startObjThread2()
 {
-//    if(m_Thread==NULL)
-//    {
-//        qDebug()<<"m_Thread"<<m_Thread;
-//        return;
-//    }
-    //    QList<QList<QString>> users = userfile->insertList(processfilename);
-    //    qDebug()<<"行数是："<<users.size();
-    //    userfile->analysisData(users);//传统方法
-
-    //    userfile->insertDb(processfilename);
-//
-//     userdb->printMessage();
-//    userdb->setFileName(processfilename);
     qDebug()<<"processfilename is "<<processfilename;
         qDebug() << "Main Thread : " << QThread::currentThreadId();
-//    userdb->printMessage();
+    userdb->printMessage();
     qDebug()<<QStringLiteral("启动文件处理线程");
 
 
@@ -352,35 +340,7 @@ void Tester::startObjThread2()
 //       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
     m_Thread2->start();
 
-//    while(isFinsh){
 
-//    }
-//    statusBar()->showMessage("all data insert table.", 3000);
-//    qDebug()<<"all data insert table.";
-
-//    QList<QString> users = userfile->readTable("select col1,col2 from file where col1= '丁泽富'");
-//    QList<QString> users = userfile->readTable("select count(*),col1,col3 from file group by col1,col3");
-//    for(int i=0;i<users.size();i++){
-//        qDebug()<< users.at(i)<<"\\n";
-//    }
-
-//    printf("start process file");
-//    std::cout<< processfilename.toStdString();
-
-//    QFile file(processfilename);
-//    QTextStream stream(&file);
-//    stream.setCodec(code);
-//    QString buffer;
-//    QString cols[col_num] = new QString[col_num]{};
-//    if(file.open(QIODevice::ReadOnly))
-//    {
-//        while(stream.readLineInto(&buffer,2048)){
-//            cols = buffer.split('||');
-//            qDebug()<<buffer;
-//            qDebug()<<cols[1];
-//        }
-//    }
-//    file.close();
 
 }
 
@@ -422,8 +382,8 @@ void Tester::startCheckFile2()
 //    emit startObjThreadWork2();
 
 
-    Report *report = new Report;
-    report->show();
+//    Report *report = new Report;
+//    report->show();
 }
 
 
@@ -459,6 +419,8 @@ void Tester::helpTester()
 
 Tester::~Tester()
 {
-
+//    delete showWidget;
+    delete userfile;
+    delete userdb;
 }
 

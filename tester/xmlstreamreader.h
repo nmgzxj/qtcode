@@ -5,7 +5,6 @@
 #include <QFile>
 #include <QDebug>
 #include <QtXml>
-#include <iostream>
 #include <QXmlStreamReader>
 
 class XmlStreamReader

@@ -1,6 +1,6 @@
 ﻿#include "xmlstreamreader.h"
+#include <iostream>
 using namespace std;
-using std::cerr;
 //暂时无用
 
 
@@ -16,9 +16,8 @@ bool XmlStreamReader::readFile(const QString &fileName)
 {
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        cerr << "Error: Cannot read file " << qPrintable(fileName)
-                  << ": " << qPrintable(file.errorString())
-                  << std::endl;
+        qDebug() << "Error: Cannot read file " << qPrintable(fileName)
+                  << ": " << qPrintable(file.errorString());
         return false;
     }
     qDebug()<<QString("read success");

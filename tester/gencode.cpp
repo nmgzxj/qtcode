@@ -1,5 +1,4 @@
 ﻿#include "gencode.h"
-#include <iostream>
 #include "util.h"
 #include "setup.h"
 #include <QDebug>
@@ -22,12 +21,12 @@ std::string qstr2str(const QString qstr)
 GenCode::GenCode()
 {
 //    Util::DateTimeType dtt = Util::Date;
-    std::cout<<"test\n"<<"\n";
+    qDebug()<<"test\n"<<"\n";
 }
 
 void GenCode::test()
 {
-    std::cout<<"ok\n";//<<Util::getDateTime();
+    qDebug()<<"ok\n";//<<Util::getDateTime();
     QString qs  = loadXml(QString("../../../config/config-autoid.xml"));
     qDebug("print %s",qPrintable(qs));
     XmlStreamReader* r = new XmlStreamReader();
