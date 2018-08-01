@@ -21,7 +21,12 @@ static void createConnection()
         db.setDatabaseName("data.db");
         db.setUserName("king");
         db.setPassword("123456");
-        if(!db.open()){
+        if(db.open())
+        {
+            qDebug()<<"数据库连接成功！";
+        }
+        else
+        {
             qDebug()<<"数据库连接错误！";
         }
     }

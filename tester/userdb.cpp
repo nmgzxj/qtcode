@@ -29,7 +29,7 @@ void UserDb::stop()
 void UserDb::run()
 {
     qDebug()<<"run begin";
-    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("D:\\test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//test_data.txt");//
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("D:\\test_data.txt"); //test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//
 }
     //    QSqlQuery query;
 //    qDebug()<<"drop report:"<<query.exec("drop table report");
@@ -321,7 +321,8 @@ void UserDb::run()
 int UserDb::getCol_num(QString name){
     //    int rtn = ;
         qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name);
-        return col_name_map.value(name);}
+        return col_name_map.value(name);
+}
 
 //创建数据库表
 bool UserDb::createTable(){
@@ -386,7 +387,10 @@ bool UserDb::insertDb(QString filename){
     if(file.open(QFile::ReadOnly | QFile::Text)){
         QTextStream stream(&file);
         stream.setCodec(code);
-//        qDebug()<<"start transaction"<<db.transaction();
+        createConnection();
+        qDebug()<<"db isopen?"<<db.isOpen();
+        qDebug()<<"start transaction"<<db.transaction();
+
          do {
             sql = "insert into file values(";
             sql.append(QString::number(line_num++));
@@ -399,14 +403,15 @@ bool UserDb::insertDb(QString filename){
             }
             sql.append(")");
 
-            qDebug()<<"insertDb()"<<qPrintable(sql)<<query.exec(sql);
+//            qDebug()<<"insertDb()"<<qPrintable(sql)<<query.exec(sql);
 
-//           if(!query.exec(sql)){
-//                isSuccess=false;
-//                break;
-//           }
+           if(!query.exec(sql)){
+                isSuccess=false;
+                qDebug()<<"执行出错"<<sql;
+                break;
+           }
 
-            if(line_num%1000==0){
+            if(line_num%10==0){
                 if(isSuccess){
                     qDebug()<<"commit"<<db.commit();
                     qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
@@ -419,6 +424,7 @@ bool UserDb::insertDb(QString filename){
                 }
             }
         }while(!line.isEmpty());
+        db.close();
     }
     else{
         qDebug()<<QStringLiteral("文件打开错误。");

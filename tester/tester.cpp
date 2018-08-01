@@ -339,6 +339,7 @@ void Tester::startObjThread2()
 //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
 //       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
     m_Thread2->start();
+   qDebug()<<"m_thread is running?"<< m_Thread2->isRunning();
 
 
 
@@ -350,7 +351,7 @@ void Tester::startCheckFile1()
     qDebug()<<QStringLiteral("开始处理文件")<<(NULL==m_Thread1);
     if(m_Thread1==NULL)
     {
-       qDebug()<<QStringLiteral("开始处理文件xiancheng");
+       qDebug()<<QStringLiteral("开始处理文件xiancheng1");
        startObjThread1();
     }
 //    qDebug()<<"m_Thread"<<m_Thread;
@@ -368,7 +369,7 @@ void Tester::startCheckFile2()
     qDebug()<<QStringLiteral("开始处理文件");
     if(m_Thread2==NULL)
     {
-       qDebug()<<QStringLiteral("开始处理文件xiancheng");
+       qDebug()<<QStringLiteral("开始处理文件xiancheng2");
        startObjThread2();
     }
 //    userdb->run();
@@ -379,7 +380,7 @@ void Tester::startCheckFile2()
 ////    qDebug()<<"m_Thread"<<m_Thread;
 
 //主线程通过信号唤起子线程的槽函数
-//    emit startObjThreadWork2();
+    emit startObjThreadWork2();
 
 
 //    Report *report = new Report;
