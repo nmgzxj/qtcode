@@ -29,7 +29,7 @@ void UserDb::stop()
 void UserDb::run()
 {
     qDebug()<<"run begin";
-    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("D:\\test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//test_data.txt"); //
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("C:\\test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//test_data.txt"); //
 
         QSqlQuery query;
     qDebug()<<"drop report:"<<query.exec("drop table report");
@@ -55,7 +55,7 @@ void UserDb::run()
 
     //总量
         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
-
+    printData("file");
 }
 //    //全量未登记
 //        qDebug()<<"update allNotReg is:"<<query.exec("update report set allNotReg=(select count(*) from file)");
@@ -389,9 +389,6 @@ bool UserDb::insertDb(QString filename){
     if(file.open(QFile::ReadOnly | QFile::Text)){
         QTextStream stream(&file);
         stream.setCodec(code);
-        createConnection();
-        qDebug()<<"db isopen?"<<db.isOpen();
-        qDebug()<<"start transaction"<<db.transaction();
 /*
  * dbT1.transaction();
    while(!ReadDat.atEnd())
@@ -407,9 +404,12 @@ bool UserDb::insertDb(QString filename){
         DatWin->append(strTextData);
    }
    dbT1.commit();*/
+        createConnection();
+        qDebug()<<"db isopen?"<<db.isOpen();
+        qDebug()<<"start transaction"<<db.transaction();
          do {
-            sql = "insert into file values(";
-            sql.append(QString::number(line_num++));
+            sql = "insert into file values(?";
+
             line = stream.readLine();
             col =  line.split(strItemDelimeter);
 //            qDebug()<<"tmp is :"<<qPrintable(line);
@@ -420,21 +420,27 @@ bool UserDb::insertDb(QString filename){
             sql.append(")");
             query.prepare(sql);
 
+//sql.append(QString::number(line_num++));
+            query.addBindValue(line_num++);
             for(int i=0;i<col.size();i++){
+//                qDebug()<<"i:"<<i<<"--"<<getCol(col[i]);
                 query.addBindValue(getCol(col[i]));
             }
-//            qDebug()<<"insertDb()"<<qPrintable(sql);//<<query.exec(sql);
-
-//            if(!){
+//            qDebug()<<"insertDb()"<<qPrintable(sql)<<query.exec();
+//                        qDebug()<<"insertDb()"<<qPrintable(sql)<<query.execBatch();
+query.exec();
+//            if(!query.execBatch()){
 ////           if(!query.exec(sql)){
 //                isSuccess=false;
 //                qDebug()<<"执行出错"<<sql;
 //                break;
 //           }
 
-            if(line_num%10000==0){
-                if(query.execBatch()){
-                    qDebug()<<"commit"<<db.commit();
+            if(line_num%10000==0)
+            {
+                if(db.commit())
+                {
+                    qDebug()<<"commit";
                     qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
                     qDebug()<<"db isopen?"<<db.isOpen();
                     qDebug()<<"start transaction"<<db.transaction();
@@ -453,7 +459,6 @@ bool UserDb::insertDb(QString filename){
     else{
         qDebug()<<QStringLiteral("文件打开错误。");
     }
-//    db1.close();
     return true;
 }
 
@@ -468,3 +473,49 @@ bool UserDb::fileIsExists(QString filename){
 }
 
 
+/**
+ * 读取数据库函数
+ * @brief UserFile::readTable
+ * @param sql sqlite语句
+ * @return 数据列表
+ */
+QList<QString> UserDb::readTable(QString sql){
+    QList<QString> list;
+    QString line = "";
+//    QSqlDatabase db;
+//    if(QSqlDatabase::contains("qt_sql_default_connection"))
+//      db = QSqlDatabase::database("qt_sql_default_connection");
+//    else
+//      db = QSqlDatabase::addDatabase("QSQLITE");
+//    db.setHostName("localhost");
+//    db.setDatabaseName("data.db");
+//    db.setUserName("king");
+//    db.setPassword("123456");
+//    if(!db.open()){
+//        writeLog("创建数据库连接出错。");
+//    }
+
+    QSqlQuery query;
+    query.exec(sql);
+    QSqlRecord qr = query.record();
+    qDebug()<<sql<<"中字段数为"<<qr.count();
+
+    while(query.next()){
+        line = "";
+        for(int i=0;i<COL_NUM;i++){
+            line.append(query.value(i).toString());
+
+        }
+         qDebug()<<"line:"<<qPrintable(line);
+        list.append(line);
+    }
+//    db.close();
+    return list;
+}
+
+void UserDb::printData(QString table){
+    QList<QString> list = readTable("select * from "+table);
+    for(int i=0;i<list.size();i++){
+        qDebug()<<list.at(i);
+    }
+}

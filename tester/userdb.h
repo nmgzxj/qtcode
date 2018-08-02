@@ -22,6 +22,8 @@ public:
     bool fileIsExists(QString filename);
     void printMessage();
     void stop();
+    QList<QString> readTable(QString sql);
+    void printData(QString table);
 private:
     QSqlDatabase db1;
     UserFile* userFile;

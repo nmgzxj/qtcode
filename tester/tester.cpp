@@ -84,7 +84,7 @@ void Tester::createActions()
     connect(setupAction,SIGNAL(triggered()),this,SLOT(setupTester()));
     //“开始1”动作
     startAction1 =new QAction(QStringLiteral("开始1"),this);//QIcon("../../../new.png"),
-    startAction1->setShortcut(QStringLiteral("Ctrl+R"));
+    startAction1->setShortcut(QStringLiteral("Ctrl+E"));
     startAction1->setStatusTip(QStringLiteral("开始检查"));
     connect(startAction1,SIGNAL(triggered()),this,SLOT(startCheckFile1()));
     //“开始2”动作
@@ -381,7 +381,6 @@ void Tester::startCheckFile2()
 
 //主线程通过信号唤起子线程的槽函数
     emit startObjThreadWork2();
-
 
 //    Report *report = new Report;
 //    report->show();

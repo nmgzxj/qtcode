@@ -63,45 +63,7 @@ QList<QList<QString>> UserFile::insertList(QString filename){
     return list;
 }
 
-/**
- * 读取数据库函数
- * @brief UserFile::readTable
- * @param sql sqlite语句
- * @return 数据列表
- */
-QList<QString> UserFile::readTable(QString sql){
-    QList<QString> list;
-    QString line = "";
-    QSqlDatabase db;
-    if(QSqlDatabase::contains("qt_sql_default_connection"))
-      db = QSqlDatabase::database("qt_sql_default_connection");
-    else
-      db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setHostName("localhost");
-    db.setDatabaseName("data.db");
-    db.setUserName("king");
-    db.setPassword("123456");
-    if(!db.open()){
-        writeLog("创建数据库连接出错。");
-    }
 
-    QSqlQuery query;
-    query.exec(sql);
-    QSqlRecord qr = query.record();
-    qDebug()<<sql<<"中字段数为"<<qr.count();
-
-    while(query.next()){
-        line = "";
-        for(int i=0;i<COL_NUM;i++){
-            line.append(query.value(i).toString());
-
-        }
-         qDebug()<<"line:"<<qPrintable(line);
-        list.append(line);
-    }
-    db.close();
-    return list;
-}
 
 //读取规则
 bool UserFile::readRule(){
