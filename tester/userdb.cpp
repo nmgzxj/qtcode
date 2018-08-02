@@ -29,32 +29,34 @@ void UserDb::stop()
 void UserDb::run()
 {
     qDebug()<<"run begin";
-    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("D:\\test_data.txt"); //test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//
-}
-    //    QSqlQuery query;
-//    qDebug()<<"drop report:"<<query.exec("drop table report");
-//    qDebug()<<"create report:"<<query.exec("create table report(id int primary key,allData int,allNotReg int,formatNotRight int,fieldNotRight int,allOk int,personMobileFormatRight int,"
-//                                           "personMobileOwnerTypeNotReg int,personMobileOwnerNameNotReg int,personMobileOwnerNumNotReg int,personMobileOwnerAddNotReg int,personMobileOwnerNameNumNotReg int,"
-//                                           "personMobileOwnerNameAddNotReg int,personMobileOwnerNumAddNotReg int,personMobileOwnerNameNumAddNotReg int,personMobileOwnerTypeIllegal int,personMobileOwnerNameIllegal int,"
-//                                           "personMobileOwnerNumIllegal int,personMobileOwnerAddIllegal int,personMobileOwnerNameNumIllegal int,personMobileOwnerNameAddIllegal int,personMobileOwnerNumAddIllegal int,"
-//                                           "personMobileOwnerNameNumAddIllegal int,personFixedLegal int,personFixedOwnerTypeNotReg int,personFixedOwnerNameNotReg int,personFixedOwnerNumNotReg int,"
-//                                           "personFixedOwnerAddNotReg int,personFixedOwnerNameNumNotReg int,personFixedOwnerNameAddNotReg int,personFixedOwnerNumAddNotReg int,personFixedOwnerNameNumAddNotReg int,"
-//                                           "personFixedOwnerTypeIllegal int,personFixedOwnerNameIllegal int,personFixedOwnerNumIllegal int,personFixedOwnerAddIllegal int,personFixedOwnerNameNumIllegal int,"
-//                                           "personFixedOwnerNameAddIllegal int,personFixedOwnerNumAddIllegal int,personFixedOwnerNameNumAddIllegal int,personMobileAgentNotReg int,personFixedAgentNotReg int,"
-//                                           "personMobileAgentIllegal int,personFixedAgentIllegal int,unitMobileLegal int,unitMobileOwnerNotReg int,unitMobileAgentNotReg int,unitMobileUnitNotReg int,"
-//                                           "unitMobileOwnerAgentNotReg int,unitMobileOwnerUnitNotReg int,unitMobileAgentUnitNotReg int,unitMobileOwnerAgentUnitNotReg int,unitMobileOwnerIllegal int,"
-//                                           "unitMobileAgentIllegal int,unitMobileUnitIllegal int,unitMobileOwnerAgentIllegal int,unitMobileAgentUnitIllegal int,unitMobileOwnerAgentUnitIllegal int,"
-//                                           "unitFixedLegal int,unitFixedAgentNotReg int,unitFixedUnitNotReg int,unitFixedAgentUnitNotReg int,unitFixedAgentIllegal int,unitFixedUnitIllegal int,"
-//                                           "unitFixedAgentUnitIllegal int,tradeMobileLegal int,tradeMobileAgentNotReg int,tradeMobileAgentUnitNotReg int,tradeMobileLiableAgentNotReg int,"
-//                                           "tradeMobileLiableAgentUnitNotReg int,tradeMobileUnitNotReg int,tradeMobileLiableNotReg int,tradeMobileLiableUnitNotReg int,tradeMobileAgentIllegal int,"
-//                                           "tradeMobileAgentUnitIllegal int,tradeMobileLiableAgentIllegal int,tradeMobileLiableAgentUnitIllegal int,tradeMobileUnitIllegal int,tradeMobileLiableIllegal int,"
-//                                           "tradeMobileLiableUnitIllegal int,tradeFixedLegal int, tradeFixedAgentNotReg int,tradeFixedAgentUnitNotReg int,tradeFixedUnitNotReg int,tradeFixedAgentIllegal int,"
-//                                           "tradeFixedAgentUnitIllegal int,tradeFixedUnitIllegal int,personMobileOneCard int)");
-//    qDebug()<<"insert report is:"<<query.exec("insert into report (id) values (1)");
-//    QString sql;
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("D:\\test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//test_data.txt"); //
 
-//    //总量
-//        qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
+        QSqlQuery query;
+    qDebug()<<"drop report:"<<query.exec("drop table report");
+    qDebug()<<"create report:"<<query.exec("create table report(id int primary key,allData int,allNotReg int,formatNotRight int,fieldNotRight int,allOk int,personMobileFormatRight int,"
+                                           "personMobileOwnerTypeNotReg int,personMobileOwnerNameNotReg int,personMobileOwnerNumNotReg int,personMobileOwnerAddNotReg int,personMobileOwnerNameNumNotReg int,"
+                                           "personMobileOwnerNameAddNotReg int,personMobileOwnerNumAddNotReg int,personMobileOwnerNameNumAddNotReg int,personMobileOwnerTypeIllegal int,personMobileOwnerNameIllegal int,"
+                                           "personMobileOwnerNumIllegal int,personMobileOwnerAddIllegal int,personMobileOwnerNameNumIllegal int,personMobileOwnerNameAddIllegal int,personMobileOwnerNumAddIllegal int,"
+                                           "personMobileOwnerNameNumAddIllegal int,personFixedLegal int,personFixedOwnerTypeNotReg int,personFixedOwnerNameNotReg int,personFixedOwnerNumNotReg int,"
+                                           "personFixedOwnerAddNotReg int,personFixedOwnerNameNumNotReg int,personFixedOwnerNameAddNotReg int,personFixedOwnerNumAddNotReg int,personFixedOwnerNameNumAddNotReg int,"
+                                           "personFixedOwnerTypeIllegal int,personFixedOwnerNameIllegal int,personFixedOwnerNumIllegal int,personFixedOwnerAddIllegal int,personFixedOwnerNameNumIllegal int,"
+                                           "personFixedOwnerNameAddIllegal int,personFixedOwnerNumAddIllegal int,personFixedOwnerNameNumAddIllegal int,personMobileAgentNotReg int,personFixedAgentNotReg int,"
+                                           "personMobileAgentIllegal int,personFixedAgentIllegal int,unitMobileLegal int,unitMobileOwnerNotReg int,unitMobileAgentNotReg int,unitMobileUnitNotReg int,"
+                                           "unitMobileOwnerAgentNotReg int,unitMobileOwnerUnitNotReg int,unitMobileAgentUnitNotReg int,unitMobileOwnerAgentUnitNotReg int,unitMobileOwnerIllegal int,"
+                                           "unitMobileAgentIllegal int,unitMobileUnitIllegal int,unitMobileOwnerAgentIllegal int,unitMobileAgentUnitIllegal int,unitMobileOwnerAgentUnitIllegal int,"
+                                           "unitFixedLegal int,unitFixedAgentNotReg int,unitFixedUnitNotReg int,unitFixedAgentUnitNotReg int,unitFixedAgentIllegal int,unitFixedUnitIllegal int,"
+                                           "unitFixedAgentUnitIllegal int,tradeMobileLegal int,tradeMobileAgentNotReg int,tradeMobileAgentUnitNotReg int,tradeMobileLiableAgentNotReg int,"
+                                           "tradeMobileLiableAgentUnitNotReg int,tradeMobileUnitNotReg int,tradeMobileLiableNotReg int,tradeMobileLiableUnitNotReg int,tradeMobileAgentIllegal int,"
+                                           "tradeMobileAgentUnitIllegal int,tradeMobileLiableAgentIllegal int,tradeMobileLiableAgentUnitIllegal int,tradeMobileUnitIllegal int,tradeMobileLiableIllegal int,"
+                                           "tradeMobileLiableUnitIllegal int,tradeFixedLegal int, tradeFixedAgentNotReg int,tradeFixedAgentUnitNotReg int,tradeFixedUnitNotReg int,tradeFixedAgentIllegal int,"
+                                           "tradeFixedAgentUnitIllegal int,tradeFixedUnitIllegal int,personMobileOneCard int)");
+    qDebug()<<"insert report is:"<<query.exec("insert into report (id) values (1)");
+    QString sql;
+
+    //总量
+        qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
+
+}
 //    //全量未登记
 //        qDebug()<<"update allNotReg is:"<<query.exec("update report set allNotReg=(select count(*) from file)");
 //    //格式异常数据
@@ -390,7 +392,21 @@ bool UserDb::insertDb(QString filename){
         createConnection();
         qDebug()<<"db isopen?"<<db.isOpen();
         qDebug()<<"start transaction"<<db.transaction();
-
+/*
+ * dbT1.transaction();
+   while(!ReadDat.atEnd())
+   {
+       strTextData = ReadDat.readLine();
+       inQry.prepare("insert into datatable(tIndex, tTimStamp, tDistance)"
+                         "values(:tIndex, :tTimStamp, :tDistance)");
+        inQry.bindValue(0,datIndex);
+        inQry.bindValue(1,tmStampCnt);
+        inQry.bindValue(2,strTextData);
+        inQry.exec();
+        datIndex++;
+        DatWin->append(strTextData);
+   }
+   dbT1.commit();*/
          do {
             sql = "insert into file values(";
             sql.append(QString::number(line_num++));
@@ -398,23 +414,30 @@ bool UserDb::insertDb(QString filename){
             col =  line.split(strItemDelimeter);
 //            qDebug()<<"tmp is :"<<qPrintable(line);
             for(int i=0;i<col.size();i++){
-//                sql.append(",?");
-                sql.append(","+getCol(col[i])+"");
+                sql.append(",?");
+//                sql.append(","+getCol(col[i])+"");
             }
             sql.append(")");
+            query.prepare(sql);
 
-//            qDebug()<<"insertDb()"<<qPrintable(sql)<<query.exec(sql);
+            for(int i=0;i<col.size();i++){
+                query.addBindValue(getCol(col[i]));
+            }
+//            qDebug()<<"insertDb()"<<qPrintable(sql);//<<query.exec(sql);
 
-           if(!query.exec(sql)){
-                isSuccess=false;
-                qDebug()<<"执行出错"<<sql;
-                break;
-           }
+//            if(!){
+////           if(!query.exec(sql)){
+//                isSuccess=false;
+//                qDebug()<<"执行出错"<<sql;
+//                break;
+//           }
 
-            if(line_num%10==0){
-                if(isSuccess){
+            if(line_num%10000==0){
+                if(query.execBatch()){
                     qDebug()<<"commit"<<db.commit();
                     qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
+                    qDebug()<<"db isopen?"<<db.isOpen();
+                    qDebug()<<"start transaction"<<db.transaction();
                     tmpTime.start();
                     qDebug()<<"line_num"<<line_num;
                 }
@@ -424,7 +447,8 @@ bool UserDb::insertDb(QString filename){
                 }
             }
         }while(!line.isEmpty());
-        db.close();
+        qDebug()<<"final commit"<<db.commit();
+//        db.close();
     }
     else{
         qDebug()<<QStringLiteral("文件打开错误。");
