@@ -20,6 +20,12 @@ void UserDb::printMessage(){
     qDebug()<<QString("%1->%2,thread id:%3").arg(__FUNCTION__).arg(__FILE__).arg((int)(size_t)QThread::currentThreadId());
 }
 
+void UserDb::start()
+{
+    stopped = false;
+    m_isStop = false;
+}
+
 void UserDb::stop()
 {
     stopped = true;
@@ -28,10 +34,10 @@ void UserDb::stop()
 
 void UserDb::run()
 {
-    qDebug()<<"run begin";
-    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("/Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //C:\\test.txt");//
+    qDebug()<<"run begin"<<stopped;
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("C:\\test.txt");// /Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //
 
-        QSqlQuery query;
+    QSqlQuery query;
     qDebug()<<"drop report:"<<query.exec("drop table report");
     qDebug()<<"create report:"<<query.exec("create table report(id int primary key,allData int,allNotReg int,formatNotRight int,fieldNotRight int,allOk int,personMobileFormatRight int,"
                                            "personMobileOwnerTypeNotReg int,personMobileOwnerNameNotReg int,personMobileOwnerNumNotReg int,personMobileOwnerAddNotReg int,personMobileOwnerNameNumNotReg int,"
@@ -52,11 +58,10 @@ void UserDb::run()
                                            "tradeFixedAgentUnitIllegal int,tradeFixedUnitIllegal int,personMobileOneCard int)");
     qDebug()<<"insert report is:"<<query.exec("insert into report (id) values (1)");
     QString sql;
-
     //总量
         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
-    printData("file");
-}
+//    printData("file");
+
 //    //全量未登记
 //        qDebug()<<"update allNotReg is:"<<query.exec("update report set allNotReg=(select count(*) from file)");
 //    //格式异常数据
@@ -73,10 +78,11 @@ void UserDb::run()
 //         //qDebug()<<"update personMobileFormatRight is:"<<query.exec("update report set personMobileFormatRight=(select count(*) from file where col"+UserFile::getCol_num("用户类型")+"='')");
 
 //    //个人移动用户-证件类型未登记
-//         sql = "update report set personMobileOwnerTypeNotReg=(select count(*) from file where col";
-// //         qDebug()<< getCol_num("证件类型");
-//         sql += " is null)";
-//         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql);
+         sql = "update report set personMobileOwnerTypeNotReg=(select count(*) from file where col"
+                 + QString::number(getCol_num("机主证件类型"), 10)+ " is null and col"
+                 + QString::number(getCol_num("用户类型"))+"='个人客户' and col"
+                 + QString::number(getCol_num("用户业务类型"))+"='移动手机号码')";
+         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人移动用户-用户姓名未登记
 //         qDebug()<<"update personMobileOwnerNameNotReg is:"<<query.exec("update report set personMobileOwnerNameNotReg=(select count(*) from file)");
@@ -318,7 +324,7 @@ void UserDb::run()
 //    //个人移动一证五卡不合规
 //         qDebug()<<"update is:"<<query.exec("update report set personMobileOneCard=99");
 
-//}
+}
 
 int UserDb::getCol_num(QString name){
     //    int rtn = ;
@@ -348,8 +354,8 @@ bool UserDb::createTable(){
 
 
 QString getCol(QString str){
-    if(str!="null")
-        return "'"+str+"'";
+    if(str=="null")
+        return NULL;//"'"+str+"'";
     else
         return str;
 }
@@ -436,7 +442,7 @@ query.exec();
 //                break;
 //           }
 
-            if(line_num%100000==0)
+            if(!stopped && line_num%100==0)
             {
                 if(db.commit())
                 {
@@ -452,7 +458,7 @@ query.exec();
                     qDebug()<<"roll back"<<db.rollback();
                 }
             }
-        }while(!line.isEmpty());
+        }while(!stopped && !line.isEmpty());
         qDebug()<<"final commit"<<db.commit();
 //        db.close();
     }

@@ -20,7 +20,7 @@ Tester::Tester(QWidget *parent)
     setupModel();
     setupView();
     userfile = new UserFile();
-    userdb = new UserDb();
+//    userdb = new UserDb();
 }
 
 void Tester::createMenus()
@@ -33,13 +33,14 @@ void Tester::createMenus()
     fileMenu->addAction(setupAction);
     fileMenu->addAction(exitAction);
 
-    //运行菜单
-    runMenu =menuBar()->addMenu(QStringLiteral("运行1"));
-    runMenu->addAction(startAction1);
-    runMenu->addAction(stopAction);
-    runMenu =menuBar()->addMenu(QStringLiteral("运行2"));
+//    //运行菜单
+//    runMenu =menuBar()->addMenu(QStringLiteral("运行1"));
+//    runMenu->addAction(startAction1);
+//    runMenu->addAction(stopAction);
+    runMenu =menuBar()->addMenu(QStringLiteral("运行"));
     runMenu->addAction(startAction2);
     runMenu->addAction(stopAction);
+    runMenu->addAction(reportAction);
 
     //帮助菜单
     helpMenu =menuBar()->addMenu(QStringLiteral("帮助"));
@@ -82,16 +83,20 @@ void Tester::createActions()
     setupAction->setShortcut(QStringLiteral("Ctrl+S"));
     setupAction->setStatusTip(QStringLiteral("设置运行参数"));
     connect(setupAction,SIGNAL(triggered()),this,SLOT(setupTester()));
-    //“开始1”动作
-    startAction1 =new QAction(QStringLiteral("开始1"),this);//QIcon("../../../new.png"),
-    startAction1->setShortcut(QStringLiteral("Ctrl+E"));
-    startAction1->setStatusTip(QStringLiteral("开始检查"));
-    connect(startAction1,SIGNAL(triggered()),this,SLOT(startCheckFile1()));
+//    //“开始1”动作
+//    startAction1 =new QAction(QStringLiteral("开始1"),this);//QIcon("../../../new.png"),
+//    startAction1->setShortcut(QStringLiteral("Ctrl+E"));
+//    startAction1->setStatusTip(QStringLiteral("开始检查"));
+//    connect(startAction1,SIGNAL(triggered()),this,SLOT(startCheckFile1()));
     //“开始2”动作
-    startAction2 =new QAction(QStringLiteral("开始2"),this);//QIcon("../../../new.png"),
+    startAction2 =new QAction(QStringLiteral("开始"),this);//QIcon("../../../new.png"),
     startAction2->setShortcut(QStringLiteral("Ctrl+R"));
     startAction2->setStatusTip(QStringLiteral("开始检查"));
     connect(startAction2,SIGNAL(triggered()),this,SLOT(startCheckFile2()));
+    //查看报表动作
+    reportAction = new QAction("查看报表",this);
+    reportAction->setStatusTip("查看运行结果报表");
+    connect(reportAction,SIGNAL(triggered()),this,SLOT(report()));
     //“停止”动作
     stopAction =new QAction(QStringLiteral("停止"),this);//QIcon("../../../new.png"),
     stopAction->setShortcut(QStringLiteral("Ctrl+C"));
@@ -325,15 +330,23 @@ void Tester::startObjThread1()
 void Tester::startObjThread2()
 {
     qDebug()<<"processfilename is "<<processfilename;
+    if(processfilename.isEmpty()){
+        QErrorMessage * dialog = new QErrorMessage(this);
+        dialog -> setWindowTitle(QObject::tr("错误消息"));
+        dialog -> showMessage(QObject::tr("请先打开需要检查的文件。"));
+    }
         qDebug() << "Main Thread : " << QThread::currentThreadId();
+    userdb = new UserDb;
     userdb->printMessage();
     qDebug()<<QStringLiteral("启动文件处理线程");
 
 
     m_Thread2 = new QThread();
+
     userdb->moveToThread(m_Thread2);
     connect(m_Thread2,&QThread::finished,m_Thread2,&QObject::deleteLater);
     connect(m_Thread2,&QThread::finished,userdb,&QObject::deleteLater);
+//    connect(m_Thread2,&QThread::finished,this,&Tester::report);
     connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
 //    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
 //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
@@ -352,6 +365,7 @@ void Tester::startCheckFile1()
     if(m_Thread1==NULL)
     {
        qDebug()<<QStringLiteral("开始处理文件xiancheng1");
+       userdb->start();
        startObjThread1();
     }
 //    qDebug()<<"m_Thread"<<m_Thread;
@@ -370,6 +384,7 @@ void Tester::startCheckFile2()
     if(m_Thread2==NULL)
     {
        qDebug()<<QStringLiteral("开始处理文件xiancheng2");
+       userdb->start();
        startObjThread2();
     }
 //    userdb->run();
@@ -380,6 +395,7 @@ void Tester::startCheckFile2()
 ////    qDebug()<<"m_Thread"<<m_Thread;
 
 //主线程通过信号唤起子线程的槽函数
+
     emit startObjThreadWork2();
 
 //    Report *report = new Report;
@@ -390,8 +406,15 @@ void Tester::startCheckFile2()
 void Tester::stopCheckFile()
 {
     statusBar()->showMessage("stop process file", 3000);
-    userfile->stop();
-//    m_Thread->quit();
+    userdb->stop();
+    if(m_Thread1!=NULL){
+        m_Thread1->quit();
+        m_Thread1=NULL;
+    }
+    if(m_Thread2!=NULL){
+        m_Thread2->quit();
+        m_Thread2=NULL;
+    }
     qDebug()<<QStringLiteral("停止处理文件");
 }
 
@@ -407,8 +430,8 @@ void Tester::aboutTester()
 //    newAbout->show();
 //    label->setText(tr("About Message Box"));
     QMessageBox::about(this, QStringLiteral("About消息框"),QStringLiteral("实名制检测系统\n "
-                                                  "Version 1.0 \n"
-                                                  "本系统为实名制检查工具。"));
+                                                                          "Version 1.0 \n"
+                                                                          "本系统为实名制检查工具。"));
     return;
 }
 
@@ -417,10 +440,14 @@ void Tester::helpTester()
     userdb->run();
 }
 
+void Tester::report(){
+        Report *report = new Report;
+        report->show();
+}
 Tester::~Tester()
 {
 //    delete showWidget;
-    delete userfile;
-    delete userdb;
+//    delete userfile;
+//    delete userdb;
 }
 

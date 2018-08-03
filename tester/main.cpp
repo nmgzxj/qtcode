@@ -72,12 +72,13 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 #ifdef Q_OS_WIN
     a.setWindowIcon(QIcon(":/Images/config.png"));
+    //    a.setWindowIcon(QIcon(QApplication::applicationDirPath()+"/images/config.png"));
 #endif
 #ifdef Q_OS_MACOS
 
 #endif
 
-    //    a.setWindowIcon(QIcon(QApplication::applicationDirPath()+"/images/config.png"));
+
 
     //注册MessageHandler
 //        qInstallMessageHandler(outputMessage);
@@ -85,6 +86,9 @@ int main(int argc, char *argv[])
 
 
 //    ProgressDlg w;
+//    w.show();
+//    return a.exec();
+
     createConnection();
     Tester w;
     LoginDialog dlg;

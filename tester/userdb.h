@@ -21,6 +21,7 @@ public:
     bool createTable();
     bool fileIsExists(QString filename);
     void printMessage();
+    void start();
     void stop();
     QList<QString> readTable(QString sql);
     void printData(QString table);

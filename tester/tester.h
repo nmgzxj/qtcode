@@ -18,6 +18,7 @@
 #include <QSplitter>
 #include <QTextCodec>
 #include <QStatusBar>
+#include <QErrorMessage>
 #include "showwidget.h"
 #include "setup.h"
 #include "setuppages.h"
@@ -59,6 +60,7 @@ private:
     QAction *startAction1;
     QAction *startAction2;
     QAction *stopAction;
+    QAction *reportAction;
     QAction *setupAction;                          	//编辑菜单项
     QAction *aboutAction;
     QAction *exitAction;
@@ -111,6 +113,7 @@ protected slots:
     void aboutTester();
     void helpTester();
     void setupView();
+    void report();
 //    void ShowRotate270();
 //    void ShowMirrorVertical();
 //    void ShowMirrorHorizontal();
