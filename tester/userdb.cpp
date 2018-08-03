@@ -29,7 +29,7 @@ void UserDb::stop()
 void UserDb::run()
 {
     qDebug()<<"run begin";
-    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("C:\\test.txt");// /Users/zhangxianjin/qtcode/test_data.txt");//test_data.txt"); //
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("/Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //C:\\test.txt");//
 
         QSqlQuery query;
     qDebug()<<"drop report:"<<query.exec("drop table report");
@@ -436,7 +436,7 @@ query.exec();
 //                break;
 //           }
 
-            if(line_num%10000==0)
+            if(line_num%100000==0)
             {
                 if(db.commit())
                 {
