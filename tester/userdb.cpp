@@ -328,8 +328,8 @@ void UserDb::run()
 
 int UserDb::getCol_num(QString name){
     //    int rtn = ;
-        qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name);
-        return col_name_map.value(name);
+        qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
+        return col_name_map.value(name)+1;
 }
 
 //创建数据库表
