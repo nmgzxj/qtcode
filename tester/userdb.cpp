@@ -35,6 +35,7 @@ void UserDb::stop()
 void UserDb::run()
 {
     qDebug()<<"run begin"<<stopped;
+     emit message("run begin");
     qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("C:\\test.txt");// /Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //
 
     QSqlQuery query;
@@ -442,7 +443,7 @@ query.exec();
 //                break;
 //           }
 
-            if(!stopped && line_num%100==0)
+            if(!stopped && line_num%1000==0)
             {
                 if(db.commit())
                 {
@@ -451,6 +452,7 @@ query.exec();
                     qDebug()<<"db isopen?"<<db.isOpen();
                     qDebug()<<"start transaction"<<db.transaction();
                     tmpTime.start();
+                    emit message("已处理"+QString::number(line_num)+"行");
                     qDebug()<<"line_num"<<line_num;
                 }
                 else{

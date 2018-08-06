@@ -14,6 +14,7 @@
 
 class UserDb: public QObject
 {
+    Q_OBJECT
 public:
     UserDb();
 
@@ -31,13 +32,14 @@ private:
     int getCol_num(QString name);
     QMap<QString,int> col_name_map;
     XMLConfigReader *xmlConfig;
+    volatile bool stopped;
+    bool m_isStop;
 signals:
     void message(const QString& info);
     void progress(int present);
 public slots:
     void run();
-    volatile bool stopped;
-    bool m_isStop;
+
 };
 
 #endif // USERDB_H

@@ -350,7 +350,7 @@ void Tester::startObjThread2()
     connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
 //    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
 //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
-//       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
+       connect(userdb,&UserDb::message,this,&Tester::setStatus);
     m_Thread2->start();
    qDebug()<<"m_thread is running?"<< m_Thread2->isRunning();
 
@@ -443,6 +443,10 @@ void Tester::helpTester()
 void Tester::report(){
         Report *report = new Report;
         report->show();
+}
+
+void Tester::setStatus(QString str){
+     statusBar()->showMessage(str, 1000);
 }
 Tester::~Tester()
 {
