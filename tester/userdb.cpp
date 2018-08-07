@@ -5,7 +5,7 @@ UserDb::UserDb()
      stopped = false;
      QList<QList<QString>> lls = xmlConfig->readAutoid();
      QString name;
-//     report = new Report();
+     report = new Report();
     int num;
     bool ok;
     for(int i=0; i<lls.size(); i++){
@@ -16,6 +16,10 @@ UserDb::UserDb()
     }
 }
 
+UserDb::~UserDb()
+{
+    delete report;
+}
 void UserDb::printMessage(){
     qDebug()<<QString("%1->%2,thread id:%3").arg(__FUNCTION__).arg(__FILE__).arg((int)(size_t)QThread::currentThreadId());
 }
@@ -79,23 +83,39 @@ void UserDb::createReport(){
 //         //qDebug()<<"update personMobileFormatRight is:"<<query.exec("update report set personMobileFormatRight=(select count(*) from file where col"+UserFile::getCol_num("用户类型")+"='')");
 
 //    //个人移动用户-证件类型未登记
-         sql = "update report set personMobileOwnerTypeNotReg=(select count(*) from file where col"
-                 + QString::number(getCol_num("机主证件类型"), 10)+ " is null and col"
-                 + QString::number(getCol_num("用户类型"))+"='个人客户' and col"
-                 + QString::number(getCol_num("用户业务类型"))+"='移动手机号码')";
+         sql = "update report set personMobileOwnerTypeNotReg=(select count(*) from file where "
+                 + getCol("机主证件类型")+ " is null and "
+                 + getCol("用户类型")+"='个人客户' and "
+                 + getCol("用户业务类型")+"='移动手机号码')";
          qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人移动用户-用户姓名未登记
-//         qDebug()<<"update personMobileOwnerNameNotReg is:"<<query.exec("update report set personMobileOwnerNameNotReg=(select count(*) from file)");
+         sql = "update report set personMobileOwnerNameNotReg=(select count(*) from file where "
+                 + getCol("用户姓名")+ " is null and "
+                 + getCol("用户类型")+"='个人客户' and "
+                 + getCol("用户业务类型")+"='移动手机号码')";
+         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人移动用户-证件号码未登记
-//         qDebug()<<"update personMobileOwnerNumNotReg is:"<<query.exec("update report set personMobileOwnerNumNotReg=(select count(*) from file)");
+         sql = "update report set personMobileOwnerNumNotReg=(select count(*) from file where "
+                 + getCol("证件号码")+ " is null and "
+                 + getCol("用户类型")+"='个人客户' and "
+                 + getCol("用户业务类型")+"='移动手机号码')";
+         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人移动用户-证件地址未登记
-//         qDebug()<<"update personMobileOwnerAddNotReg is:"<<query.exec("update report set personMobileOwnerAddNotReg=(select count(*) from file)");
+         sql = "update report set personMobileOwnerAddNotReg=(select count(*) from file where "
+                 + getCol("证件地址")+ " is null and "
+                 + getCol("用户类型")+"='个人客户' and "
+                 + getCol("用户业务类型")+"='移动手机号码')";
+         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人移动用户-用户姓名&amp;证件号码未登记
-//         qDebug()<<"update personMobileOwnerNameNumNotReg is:"<<query.exec("update report set personMobileOwnerNameNumNotReg=(select count(*) from file)");
+         sql = "update report set personMobileOwnerNameNumNotReg=(select count(*) from file where "
+                 + getCol("证件地址")+ " is null and "
+                 + getCol("用户类型")+"='个人客户' and "
+                 + getCol("用户业务类型")+"='移动手机号码')";
+         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人移动用户-用户姓名&amp;证件地址未登记
 //         qDebug()<<"update personMobileOwnerNameAddNotReg is:"<<query.exec("update report set personMobileOwnerNameAddNotReg=(select count(*) from file)");
@@ -327,10 +347,10 @@ void UserDb::createReport(){
 
 }
 
-int UserDb::getCol_num(QString name){
+QString UserDb::getCol(QString name){
     //    int rtn = ;
         qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
-        return col_name_map.value(name)+1;
+        return "col"+QString::number(col_name_map.value(name)+1);
 }
 
 //创建数据库表
@@ -498,31 +518,378 @@ void UserDb::printData(QString table){
     }
 }
 
-//void UserDb::savePersonMobileOwnerNameNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主姓名未登记"<<line;
+void UserDb::processLine(QList<QString> line){
+    savePersonMobileOwnerNameNotReg(line);
+    savePersonMobileOwnerTypeNotReg(line);
+    savePersonMobileOwnerNumNotReg(line);
+    savePersonMobileOwnerAddNotReg(line);
+    savePersonMobileOwnerNameNumNotReg(line);
+    savePersonMobileOwnerNameAddNotReg(line);
+    savePersonMobileOwnerNumAddNotReg(line);
+    savePersonMobileOwnerNameNumAddNotReg(line);
+    savePeronMobileOwnerTyteNok(line);
+    savePeronMobileOwnerNameNok(line);
+    savePeronMobileOwnerNumNok(line);
+    savePeronMobileOwnerAddNok(line);
+    savePeronMobileOwnerNameNumNok(line);
+    savePeronMobileOwnerNameAddNok(line);
+    savePeronMobileOwnerNumAddNok(line);
+    savePeronMobileOwnerNameNumAddNok(line);
+    savePersonFixedOk(line);
+    saveAllNotReg(line);
+    saveAllNok(line);
+    saveAbnormal(line);
+    saveFieldAbnormal(line);
+    saveAllOk(line);
+    saveWaitData(line);
+    savePersonMobileOk(line);
+    savePersonFixedOwnerNameNotReg(line);
+    savePersonFixedOwnerTypeNotReg(line);
+    savePersonFixedOwnerNumNotReg(line);
+    savePersonFixedOwnerAddNotReg(line);
+    savePersonFixedOwnerNameNumNotReg(line);
+    savePersonFixedOwnerNameAddNotReg(line);
+    savePersonFixedOwnerNumAddNotReg(line);
+    savePersonFixedOwnerNameNumAddNotReg(line);
+    savePersonFixedOwnerTypeNok(line);
+    savePersonFixedOwnerNameNok(line);
+    savePersonFixedOwnerNumNok(line);
+    savePersonFixedOwnerAddNok(line);
+    savePersonFixedOwnerNameNumNok(line);
+    savePersonFixedOwnerNameAddNok(line);
+    savePersonFixedOwnerNumAddNok(line);
+    savePersonFixedOwnerNameNumAddNok(line);
+    savePeronMobileAgentNotReg(line);
+    savePersonFixedAgentNotReg(line);
+    savePeronMobileAgentNok(line);
+    savePersonFixedAgentNok(line);
+    saveUnitMobileOk(line);
+    saveUnitMobileOwnerNotReg(line);
+    saveUnitMobileOwnerAgentNotReg(line);
+    saveUnitMobileUnitNotReg(line);
+    saveUnitMobileOwnerUnitNotReg(line);
+    saveUnitMobileAgentUnitNotReg(line);
+    saveUnitMobileOwnerAgentUnitAddNotReg(line);
+    saveUnitMobileOwnerNok(line);
+    saveUnitMobileAgentNok(line);
+    saveUnitMobileUnitNok(line);
+    saveUnitMobileOwnerAgentNok(line);
+    saveUnitMobileOwnerUnitNok(line);
+    saveUnitMobileAgentUnitNok(line);
+    saveUnitMobileOwnerAgentUnitNok(line);
+    saveUnitFixedOk(line);
+    saveUnitFixedOwnerNotReg(line);
+    saveUnitFixedAgentNotReg(line);
+    saveUnitFixedUnitNotReg(line);
+    saveUnitFixedOwnerAgentNotReg(line);
+    saveUnitFixedOwnerUnitNotReg(line);
+    saveUnitFixedAgentUnitNotReg(line);
+    saveUnitFixedOwnerAgentUnitAddNotReg(line);
+    saveUnitFixedAgentNok(line);
+    saveUnitFixedUnitNok(line);
+    saveUnitFixedAgentUnitNok(line);
+    saveTradeMobileOk(line);
+    saveTradeMobileAgentNotReg(line);
+    saveTradeMobileUnitNotReg(line);
+    saveTradeMobileLiableNotReg(line);
+    saveTradeMobileAgentUnitNotReg(line);
+    saveTradeMobileLiableAgentNotReg(line);
+    saveTradeMobileLiableUnitNotReg(line);
+    saveTradeMobileLiableAgentUnitAddNotReg(line);
+    saveTradeMobileAgentNok(line);
+    saveTradeMobileAgentUnitNok(line);
+    saveTradeMobileLiableAgentNok(line);
+    saveTradeMobileLiableAgentUnitAddNok(line);
+    saveTradeMobileUnitNok(line);
+    saveTradeMobileLiableNok(line);
+    saveTradeMobileLiableUnitNok(line);
+    saveTradeFixedOk(line);
+    saveTradeFixedAgentNotReg(line);
+    saveTradeFixedUnitNotReg(line);
+    saveTradeFixedAgentUnitNotReg(line);
+    saveTradeFixedAgentNok(line);
+    saveTradeFixedAgentUnitNok(line);
+    saveTradeFixedUnitNok(line);
+    saveOneCard(line);
+}
 
-//}
-//void UserDb::savePersonMobileOwnerTypeNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主证件类型未登记"<<line;
-//}
-//void UserDb::savePersonMobileOwnerNumNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主证件号码未登记"<<line;
-//}
-//void UserDb::savePersonMobileOwnerAddNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主证件地址未登记"<<line;
-//}
-//void UserDb::savePersonMobileOwnerNameNumNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主姓名证件号码未登记"<<line;
-//}
-//void UserDb::savePersonMobileOwnerNameAddNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主姓名证件地址未登记"<<line;
-//}
-//void UserDb::savePersonMobileOwnerNumAddNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主证件号码地址未登记"<<line;
-//}
-//void UserDb::savePersonMobileOwnerNameNumAddNotReg(QList<QString> line){
-//    qDebug()<<"个人移动用户机主姓名证件号码地址未登记"<<line;
-//}
-//void UserDb::saveAllNotReg(QList<QString> line){
-//    qDebug()<<"全量未登记"<<line;
-//}
+void UserDb::saveAllNotReg(QList<QString> line){
+    qDebug()<<"全量未登记.nreg"<<line;
+}
+void UserDb::saveAllNok(QList<QString> line){
+    qDebug()<<"全量形式不合规.nck"<<line;
+}
+void UserDb::saveAbnormal(QList<QString> line){
+    qDebug()<<"格式异常数据.abnormal（不是42列的）"<<line;
+}
+void UserDb::saveFieldAbnormal(QList<QString> line){
+    qDebug()<<"字段异常数据.abnormal（例如时间格式等不合规）"<<line;
+}
+void UserDb::saveAllOk(QList<QString> line){
+    qDebug()<<"all.ok(全部合规数据)"<<line;
+}
+void UserDb::saveWaitData(QList<QString> line){
+    qDebug()<<"待挖掘记录(-\" + head_loop_num + \".txt)"<<line;
+}
+void UserDb::savePersonMobileOk(QList<QString> line){
+    qDebug()<<"个人移动用户-形式合规数据.ok"<<line;
+}
+void UserDb::savePersonMobileOwnerTypeNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-证件类型未登记.nreg"<<line;
+}
+void UserDb::savePersonMobileOwnerNameNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名未登记.nreg"<<line;
+}
+void UserDb::savePersonMobileOwnerNumNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-证件号码未登记.nreg"<<line;
+}
+void UserDb::savePersonMobileOwnerAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-证件地址未登记.nreg"<<line;
+}
+void UserDb::savePersonMobileOwnerNameNumNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名&证件号码未登记.nreg"<<line;
+}
+void UserDb::savePersonMobileOwnerNameAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名&证件地址未登记.nreg"<<line;
+}
+void UserDb::savePersonMobileOwnerNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-证件号码&证件地址未登记.nreg"<<line;
+}
+void UserDb::savePersonMobileOwnerNameNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名&证件号码&证件地址未登记.nreg"<<line;
+}
+void UserDb::savePeronMobileOwnerTyteNok(QList<QString> line){
+    qDebug()<<"个人移动用户-证件类型校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileOwnerNameNok(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileOwnerNumNok(QList<QString> line){
+    qDebug()<<"个人移动用户-证件号码校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileOwnerAddNok(QList<QString> line){
+    qDebug()<<"个人移动用户-证件地址校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileOwnerNameNumNok(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名&证件号码校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileOwnerNameAddNok(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名&证件地址校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileOwnerNumAddNok(QList<QString> line){
+    qDebug()<<"个人移动用户-证件号码&证件地址校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileOwnerNameNumAddNok(QList<QString> line){
+    qDebug()<<"个人移动用户-用户姓名&证件号码&证件地址校验不合规.nck"<<line;
+}
+// 个人-固定电话
+void UserDb::savePersonFixedOk(QList<QString> line){
+    qDebug()<<"个人固话用户-形式合规数据.ok"<<line;
+}
+void UserDb::savePersonFixedOwnerTypeNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-证件类型未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerNameNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerNumNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-证件号码未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-证件地址未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerNameNumNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名&证件号码未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerNameAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名&证件地址未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-证件号码&证件地址未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerNameNumAddNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名&证件号码&证件地址未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedOwnerTypeNok(QList<QString> line){
+    qDebug()<<"个人固话用户-证件类型校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedOwnerNameNok(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedOwnerNumNok(QList<QString> line){
+    qDebug()<<"个人固话用户-证件号码校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedOwnerAddNok(QList<QString> line){
+    qDebug()<<"个人固话用户-证件地址校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedOwnerNameNumNok(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名&证件号码校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedOwnerNameAddNok(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名&证件地址校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedOwnerNumAddNok(QList<QString> line){
+    qDebug()<<"个人固话用户-证件号码&证件地址校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedOwnerNameNumAddNok(QList<QString> line){
+    qDebug()<<"个人固话用户-用户姓名&证件号码&证件地址校验不合规.nck"<<line;
+}
+void UserDb::savePeronMobileAgentNotReg(QList<QString> line){
+    qDebug()<<"个人移动用户-代办人信息未登记.nreg"<<line;
+}
+void UserDb::savePersonFixedAgentNotReg(QList<QString> line){
+    qDebug()<<"个人固话用户-代办人信息未登记.nreg"<<line;
+}
+void UserDb::savePeronMobileAgentNok(QList<QString> line){
+    qDebug()<<"个人移动用户-代办人信息校验不合规.nck"<<line;
+}
+void UserDb::savePersonFixedAgentNok(QList<QString> line){
+    qDebug()<<"个人固话用户-代办人信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitMobileOk(QList<QString> line){
+    qDebug()<<"单位移动用户-形式合规数据.ok"<<line;
+}
+void UserDb::saveUnitMobileOwnerNotReg(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人信息未登记.nreg"<<line;
+}
+void UserDb::saveUnitMobileOwnerAgentNotReg(QList<QString> line){
+    qDebug()<<"单位移动用户-经办人信息未登记.nreg"<<line;
+}
+void UserDb::saveUnitMobileUnitNotReg(QList<QString> line){
+    qDebug()<<"单位移动用户-单位信息未登记.nreg"<<line;
+}
+void UserDb::saveUnitMobileOwnerUnitNotReg(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人&单位信息未登记.nreg"<<line;
+}
+
+void UserDb::saveUnitMobileAgentUnitNotReg(QList<QString> line){
+    qDebug()<<"单位移动用户-经办人&单位信息未登记.nreg"<<line;
+}
+
+void UserDb::saveUnitMobileOwnerAgentUnitAddNotReg(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人&经办人&单位信息未登记.nreg"<<line;
+}
+void UserDb::saveUnitMobileOwnerNok(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitMobileAgentNok(QList<QString> line){
+    qDebug()<<"单位移动用户-经办人信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitMobileUnitNok(QList<QString> line){
+    qDebug()<<"单位移动用户-单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitMobileOwnerAgentNok(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人&经办人信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitMobileOwnerUnitNok(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitMobileAgentUnitNok(QList<QString> line){
+    qDebug()<<"单位移动用户-经办人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitMobileOwnerAgentUnitNok(QList<QString> line){
+    qDebug()<<"单位移动用户-使用人&经办人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitFixedOk(QList<QString> line){
+    qDebug()<<"单位固话用户-形式合规数据.ok"<<line;
+}
+void UserDb::saveUnitFixedOwnerNotReg(QList<QString> line){
+        qDebug()<<"单位固话用户-形式合规数据.ok"<<line;
+}
+void UserDb::saveUnitFixedAgentNotReg(QList<QString> line){
+    qDebug()<<"单位固话用户-经办人信息未登记"<<line;
+}
+void UserDb::saveUnitFixedUnitNotReg(QList<QString> line){
+    qDebug()<<"单位固话用户-单位信息未登记"<<line;
+}
+void UserDb::saveUnitFixedOwnerAgentNotReg(QList<QString> line){
+    qDebug()<<"单位固话用户-使用人&经办人信息未登记"<<line;
+}
+void UserDb::saveUnitFixedOwnerUnitNotReg(QList<QString> line){
+    qDebug()<<"单位固话用户-使用人&单位信息未登记"<<line;
+}
+void UserDb::saveUnitFixedAgentUnitNotReg(QList<QString> line){
+    qDebug()<<"单位固话用户-经办人&单位信息未登记"<<line;
+}
+void UserDb::saveUnitFixedOwnerAgentUnitAddNotReg(QList<QString> line){
+    qDebug()<<"单位固话用户-使用人&经办人&单位信息未登记"<<line;
+}
+void UserDb::saveUnitFixedAgentNok(QList<QString> line){
+    qDebug()<<"单位固话用户-经办人信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitFixedUnitNok(QList<QString> line){
+    qDebug()<<"单位固话用户-单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveUnitFixedAgentUnitNok(QList<QString> line){
+    qDebug()<<"单位固话用户-经办人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeMobileOk(QList<QString> line){
+    qDebug()<<"行业移动应用-形式合规数据.ok"<<line;
+}
+void UserDb::saveTradeMobileAgentNotReg(QList<QString> line){
+    qDebug()<<"行业移动应用-经办人信息未登记"<<line;
+}
+void UserDb::saveTradeMobileAgentUnitNotReg(QList<QString> line){
+    qDebug()<<"行业移动应用-经办人&单位信息未登记"<<line;
+}
+void UserDb::saveTradeMobileLiableAgentNotReg(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人&经办人信息未登记"<<line;
+}
+void UserDb::saveTradeMobileLiableAgentUnitAddNotReg(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人&经办人&单位信息未登记"<<line;
+}
+void UserDb::saveTradeMobileUnitNotReg(QList<QString> line){
+    qDebug()<<"行业移动应用-单位信息未登记"<<line;
+}
+void UserDb::saveTradeMobileLiableNotReg(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人信息未登记"<<line;
+}
+void UserDb::saveTradeMobileLiableUnitNotReg(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人&单位信息未登记"<<line;
+}
+void UserDb::saveTradeMobileAgentNok(QList<QString> line){
+    qDebug()<<"行业移动应用-经办人信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeMobileAgentUnitNok(QList<QString> line){
+    qDebug()<<"行业移动应用-经办人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeMobileLiableAgentNok(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人&经办人信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeMobileLiableAgentUnitAddNok(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人&经办人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeMobileUnitNok(QList<QString> line){
+    qDebug()<<"行业移动应用-单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeMobileLiableNok(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeMobileLiableUnitNok(QList<QString> line){
+    qDebug()<<"行业移动应用-责任人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeFixedOk(QList<QString> line){
+    qDebug()<<"行业固话应用-形式合规数据.ok"<<line;
+}
+void UserDb::saveTradeFixedAgentNotReg(QList<QString> line){
+    qDebug()<<"行业固话应用-经办人信息未登记.nreg"<<line;
+}
+void UserDb::saveTradeFixedAgentUnitNotReg(QList<QString> line){
+    qDebug()<<"行业固话应用-经办人&单位信息未登记.nreg"<<line;
+}
+void UserDb::saveTradeFixedUnitNotReg(QList<QString> line){
+    qDebug()<<"行业固话应用-单位信息未登记.nreg"<<line;
+}
+void UserDb::saveTradeFixedAgentNok(QList<QString> line){
+    qDebug()<<"行业固话应用-经办人信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeFixedAgentUnitNok(QList<QString> line){
+    qDebug()<<"行业固话应用-经办人&单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveTradeFixedUnitNok(QList<QString> line){
+    qDebug()<<"行业固话应用-单位信息校验不合规.nck"<<line;
+}
+void UserDb::saveOneCard(QList<QString> line){
+    qDebug()<<"个人移动一证五卡不合规.nck"<<line;
+}
+

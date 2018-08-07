@@ -43,12 +43,10 @@ public:
     void setupModel();
     int col_num = 42; //文件列数
     int row_num = 20; //预览行数
-    void startObjThread1();
-    void startObjThread2();
+    void startObjThread();
 
 signals:
-    void startObjThreadWork1();
-    void startObjThreadWork2();
+    void startObjThreadWork();
 private:
     QMenu *fileMenu;                           		//各项菜单栏
     QMenu *runMenu;
@@ -58,8 +56,7 @@ private:
     ShowWidget *showWidget;
     QAction *openFileAction;                     	//文件菜单项
     QAction *NewFileAction;
-    QAction *startAction1;
-    QAction *startAction2;
+    QAction *startAction;
     QAction *stopAction;
     QAction *reportAction;
     QAction *setupAction;                          	//编辑菜单项
@@ -75,8 +72,7 @@ private:
 protected slots:
     void showNewFile();
     void showOpenFile();
-//    void startCheckFile1();
-    void startCheckFile2();
+    void startCheckFile();
     void stopCheckFile();
     void setupTester();
     void aboutTester();
@@ -88,8 +84,7 @@ protected slots:
 private:
     QStandardItemModel *model;
     QString processfilename;
-    QThread* m_Thread1;
-    QThread* m_Thread2;
+    QThread* m_Thread;
 
 };
 

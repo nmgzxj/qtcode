@@ -34,11 +34,9 @@ void Tester::createMenus()
     fileMenu->addAction(exitAction);
 
 //    //运行菜单
-//    runMenu =menuBar()->addMenu(QStringLiteral("运行1"));
-//    runMenu->addAction(startAction1);
-//    runMenu->addAction(stopAction);
+
     runMenu =menuBar()->addMenu(QStringLiteral("运行"));
-    runMenu->addAction(startAction2);
+    runMenu->addAction(startAction);
     runMenu->addAction(stopAction);
     runMenu->addAction(reportAction);
 
@@ -83,16 +81,11 @@ void Tester::createActions()
     setupAction->setShortcut(QStringLiteral("Ctrl+S"));
     setupAction->setStatusTip(QStringLiteral("设置运行参数"));
     connect(setupAction,SIGNAL(triggered()),this,SLOT(setupTester()));
-//    //“开始1”动作
-//    startAction1 =new QAction(QStringLiteral("开始1"),this);//QIcon("../../../new.png"),
-//    startAction1->setShortcut(QStringLiteral("Ctrl+E"));
-//    startAction1->setStatusTip(QStringLiteral("开始检查"));
-//    connect(startAction1,SIGNAL(triggered()),this,SLOT(startCheckFile1()));
-    //“开始2”动作
-    startAction2 =new QAction(QStringLiteral("开始"),this);//QIcon("../../../new.png"),
-    startAction2->setShortcut(QStringLiteral("Ctrl+R"));
-    startAction2->setStatusTip(QStringLiteral("开始检查"));
-    connect(startAction2,SIGNAL(triggered()),this,SLOT(startCheckFile2()));
+    //“开始”动作
+    startAction =new QAction(QStringLiteral("开始"),this);//QIcon("../../../new.png"),
+    startAction->setShortcut(QStringLiteral("Ctrl+R"));
+    startAction->setStatusTip(QStringLiteral("开始检查"));
+    connect(startAction,SIGNAL(triggered()),this,SLOT(startCheckFile()));
     //查看报表动作
     reportAction = new QAction("查看报表",this);
     reportAction->setStatusTip("查看运行结果报表");
@@ -250,71 +243,7 @@ void Tester::loadFile(QString filename)
 }
 
 
-////创建线程
-//void Tester::startObjThread1()
-//{
-////    if(m_Thread==NULL)
-////    {
-////        qDebug()<<"m_Thread"<<m_Thread;
-////        return;
-////    }
-//    //    QList<QList<QString>> users = userfile->insertList(processfilename);
-//    //    qDebug()<<"行数是："<<users.size();
-//    //    userfile->analysisData(users);//传统方法
-
-//    //    userfile->insertDb(processfilename);
-////
-//     userfile->printMessage();
-//    userfile->setFileName(processfilename);
-//    qDebug()<<"processfilename is "<<processfilename;
-//        qDebug() << "Main Thread : " << QThread::currentThreadId();
-//    userfile->printMessage();
-//    qDebug()<<QStringLiteral("启动文件处理线程");
-
-
-//    m_Thread1 = new QThread();
-//    userfile->moveToThread(m_Thread1);
-//    connect(m_Thread1,&QThread::finished,m_Thread1,&QObject::deleteLater);
-//    connect(m_Thread1,&QThread::finished,userfile,&QObject::deleteLater);
-//    connect(this,&Tester::startObjThreadWork1,userfile,&UserFile::run);
-////    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
-////       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
-////       connect(userfile,&ThreadObject::message,this,&Widget::receiveMessage);
-//    m_Thread1->start();
-
-////    while(isFinsh){
-
-////    }
-////    statusBar()->showMessage("all data insert table.", 3000);
-////    qDebug()<<"all data insert table.";
-
-////    QList<QString> users = userfile->readTable("select col1,col2 from file where col1= '丁泽富'");
-////    QList<QString> users = userfile->readTable("select count(*),col1,col3 from file group by col1,col3");
-////    for(int i=0;i<users.size();i++){
-////        qDebug()<< users.at(i)<<"\\n";
-////    }
-
-////    printf("start process file");
-////    std::cout<< processfilename.toStdString();
-
-////    QFile file(processfilename);
-////    QTextStream stream(&file);
-////    stream.setCodec(code);
-////    QString buffer;
-////    QString cols[col_num] = new QString[col_num]{};
-////    if(file.open(QIODevice::ReadOnly))
-////    {
-////        while(stream.readLineInto(&buffer,2048)){
-////            cols = buffer.split('||');
-////            qDebug()<<buffer;
-////            qDebug()<<cols[1];
-////        }
-////    }
-////    file.close();
-
-//}
-
-void Tester::startObjThread2()
+void Tester::startObjThread()
 {
     qDebug()<<"processfilename is "<<processfilename;
     if(processfilename.isEmpty()){
@@ -330,65 +259,35 @@ void Tester::startObjThread2()
         qDebug()<<QStringLiteral("启动文件处理线程");
 
 
-        m_Thread2 = new QThread();
+        m_Thread = new QThread();
 
-        userdb->moveToThread(m_Thread2);
-        connect(m_Thread2,&QThread::finished,m_Thread2,&QObject::deleteLater);
-        connect(m_Thread2,&QThread::finished,userdb,&QObject::deleteLater);
-    //    connect(m_Thread2,&QThread::finished,this,&Tester::report);
-        connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
-    //    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
-    //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
-           connect(userdb,&UserDb::message,this,&Tester::setStatus);
-        m_Thread2->start();
-       qDebug()<<"m_thread is running?"<< m_Thread2->isRunning();
+        userdb->moveToThread(m_Thread);
+        connect(m_Thread,&QThread::finished,m_Thread,&QObject::deleteLater);
+        connect(m_Thread,&QThread::finished,userdb,&QObject::deleteLater);
+        connect(this,&Tester::startObjThreadWork,userdb,&UserDb::run);
+        connect(userdb,&UserDb::message,this,&Tester::setStatus);
+        m_Thread->start();
+       qDebug()<<"m_thread is running?"<< m_Thread->isRunning();
     }
 
 
 }
 
-//void Tester::startCheckFile1()
-//{
-//    statusBar()->showMessage("start process file", 3000);
-//    qDebug()<<QStringLiteral("开始处理文件")<<(NULL==m_Thread1);
-//    if(m_Thread1==NULL)
-//    {
-//       qDebug()<<QStringLiteral("开始处理文件xiancheng1");
-//       userdb->start();
-//       startObjThread1();
-//    }
-////    qDebug()<<"m_Thread"<<m_Thread;
-
-//    emit startObjThreadWork1();//主线程通过信号唤起子线程的槽函数
-
-////todo
-////    Report *report = new Report;
-////    report->show();
-//}
-
-void Tester::startCheckFile2()
+void Tester::startCheckFile()
 {
     statusBar()->showMessage("start process file", 3000);
     qDebug()<<QStringLiteral("开始处理文件");
-    if(m_Thread2==NULL)
+    if(m_Thread==NULL)
     {
-       qDebug()<<QStringLiteral("开始处理文件xiancheng2");
+       qDebug()<<QStringLiteral("开始处理文件xiancheng");
        userdb->start();
-       startObjThread2();
+       startObjThread();
     }
-//    userdb->run();
-//    if(m_Thread==NULL)
-//    {
-//       startObjThread();
-//    }
-////    qDebug()<<"m_Thread"<<m_Thread;
 
 //主线程通过信号唤起子线程的槽函数
 
-    emit startObjThreadWork2();
+    emit startObjThreadWork();
 
-//    Report *report = new Report;
-//    report->show();
 }
 
 
@@ -396,13 +295,9 @@ void Tester::stopCheckFile()
 {
     statusBar()->showMessage("stop process file", 3000);
     userdb->stop();
-    if(m_Thread1!=NULL){
-        m_Thread1->quit();
-        m_Thread1=NULL;
-    }
-    if(m_Thread2!=NULL){
-        m_Thread2->quit();
-        m_Thread2=NULL;
+    if(m_Thread!=NULL){
+        m_Thread->quit();
+        m_Thread=NULL;
     }
     qDebug()<<QStringLiteral("停止处理文件");
 }
@@ -439,8 +334,6 @@ void Tester::setStatus(QString str){
 }
 Tester::~Tester()
 {
-//    delete showWidget;
-//    delete userfile;
 //    delete userdb;
 }
 
