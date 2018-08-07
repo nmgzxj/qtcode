@@ -23,21 +23,21 @@ void UserDb::printMessage(){
 void UserDb::start()
 {
     stopped = false;
-    m_isStop = false;
 }
 
 void UserDb::stop()
 {
     stopped = true;
-    m_isStop = true;
 }
 
 void UserDb::run()
 {
     qDebug()<<"run begin"<<stopped;
      emit message("run begin");
-    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb("C:\\test.txt");// /Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //
-
+    qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb(filename);//"C:\\test.txt");// /Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //
+    createReport();
+}
+void UserDb::createReport(){
     QSqlQuery query;
     qDebug()<<"drop report:"<<query.exec("drop table report");
     qDebug()<<"create report:"<<query.exec("create table report(id int primary key,allData int,allNotReg int,formatNotRight int,fieldNotRight int,allOk int,personMobileFormatRight int,"

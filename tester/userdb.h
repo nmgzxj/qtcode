@@ -29,6 +29,8 @@ public:
     void stop();
     QList<QString> readTable(QString sql);
     void printData(QString table);
+     QString filename;
+    void createReport();
 private:
     QSqlDatabase db1;
 //    UserFile* userFile;
@@ -37,6 +39,7 @@ private:
     XMLConfigReader *xmlConfig;
     volatile bool stopped;
     bool m_isStop;
+
 signals:
     void message(const QString& info);
     void progress(int present);

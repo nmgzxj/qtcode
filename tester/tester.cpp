@@ -134,20 +134,7 @@ void Tester::showOpenFile()
         processfilename = name;
           loadFile(name);
     }
-//    fileName =QFileDialog::getOpenFileName(this);
-//    if(!fileName.isEmpty())
-//    {
-//        if(showWidget->text->document()->isEmpty())
-//        {
-//            loadFile(fileName);
-//        }
-//        else
-//        {
-//            Tester *newTester =new Tester;
-//            newTester->show();
-//            newTester->loadFile(fileName);
-//        }
-//    }
+
 }
 
 void Tester::setupModel()
@@ -335,25 +322,27 @@ void Tester::startObjThread2()
         dialog -> setWindowTitle(QObject::tr("错误消息"));
         dialog -> showMessage(QObject::tr("请先打开需要检查的文件。"));
     }
+    else{
         qDebug() << "Main Thread : " << QThread::currentThreadId();
-    userdb = new UserDb;
-    userdb->printMessage();
-    qDebug()<<QStringLiteral("启动文件处理线程");
+        userdb = new UserDb;
+        userdb->printMessage();
+        userdb->filename = processfilename;
+        qDebug()<<QStringLiteral("启动文件处理线程");
 
 
-    m_Thread2 = new QThread();
+        m_Thread2 = new QThread();
 
-    userdb->moveToThread(m_Thread2);
-    connect(m_Thread2,&QThread::finished,m_Thread2,&QObject::deleteLater);
-    connect(m_Thread2,&QThread::finished,userdb,&QObject::deleteLater);
-//    connect(m_Thread2,&QThread::finished,this,&Tester::report);
-    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
-//    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
-//       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
-       connect(userdb,&UserDb::message,this,&Tester::setStatus);
-    m_Thread2->start();
-   qDebug()<<"m_thread is running?"<< m_Thread2->isRunning();
-
+        userdb->moveToThread(m_Thread2);
+        connect(m_Thread2,&QThread::finished,m_Thread2,&QObject::deleteLater);
+        connect(m_Thread2,&QThread::finished,userdb,&QObject::deleteLater);
+    //    connect(m_Thread2,&QThread::finished,this,&Tester::report);
+        connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
+    //    connect(this,&Tester::startObjThreadWork2,userdb,&UserDb::run);
+    //       connect(userfile,&ThreadObject::progress,this,&Widget::progress);
+           connect(userdb,&UserDb::message,this,&Tester::setStatus);
+        m_Thread2->start();
+       qDebug()<<"m_thread is running?"<< m_Thread2->isRunning();
+    }
 
 
 }
