@@ -2,6 +2,9 @@
 #define REPORT_H
 
 #include <QDialog>
+#include <QSqlQuery>
+#include<QDebug>
+#include<QSqlError>
 
 namespace Ui {
 class Report;

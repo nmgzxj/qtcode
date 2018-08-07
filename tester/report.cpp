@@ -1,6 +1,6 @@
 ﻿#include "report.h"
 #include "ui_report.h"
-#include "userfile.h"
+//#include "userfile.h"
 
 Report::Report(QWidget *parent)
     :QDialog(parent),

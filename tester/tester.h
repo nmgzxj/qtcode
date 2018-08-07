@@ -22,7 +22,7 @@
 #include "showwidget.h"
 #include "setup.h"
 #include "setuppages.h"
-#include "userfile.h"
+//#include "userfile.h"
 #include "userdb.h"
 
 //#include <QMessagebox>
@@ -68,14 +68,14 @@ private:
     QAction *helpAction;
     QTableView *table;
     QSplitter *splitter;
-    UserFile *userfile;
+//    UserFile *userfile;
     UserDb *userdb;
 
 
 protected slots:
     void showNewFile();
     void showOpenFile();
-    void startCheckFile1();
+//    void startCheckFile1();
     void startCheckFile2();
     void stopCheckFile();
     void setupTester();

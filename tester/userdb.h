@@ -6,7 +6,10 @@
 #include <QDir>
 #include <QTextCodec>
 #include <QTime>
-#include "userfile.h"
+#include<QSqlRecord>
+//#include "userfile.h"UserDb
+#include "xmlconfigreader.h"
+#define COL_NUM 42
 #include "db.h"
 
 #define strItemDelimeter "||"
@@ -28,7 +31,7 @@ public:
     void printData(QString table);
 private:
     QSqlDatabase db1;
-    UserFile* userFile;
+//    UserFile* userFile;
     int getCol_num(QString name);
     QMap<QString,int> col_name_map;
     XMLConfigReader *xmlConfig;

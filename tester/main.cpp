@@ -3,6 +3,7 @@
 #include "logindialog.h"
 #include "gencode.h"
 #include "db.h"
+#include <QMutex>
 
 #include <QApplication>
 

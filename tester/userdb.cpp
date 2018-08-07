@@ -378,13 +378,7 @@ bool UserDb::insertDb(QString filename){
     QSqlQuery query;
     QFile file(filename);
     QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
-//    QSqlQuery transaction_start;
-//    QSqlQuery transaction_COMMIT;
-//    QSqlQuery transaction_ROLLBACK;
-//    QSqlQuery query_insert;
-//    QSqlQuery query_delete;
 
-//    https://blog.csdn.net/iloveqt5/article/details/14121195
 
     QList<QString> col;
     QString sql="";
@@ -396,30 +390,22 @@ bool UserDb::insertDb(QString filename){
     if(file.open(QFile::ReadOnly | QFile::Text)){
         QTextStream stream(&file);
         stream.setCodec(code);
-/*
- * dbT1.transaction();
-   while(!ReadDat.atEnd())
-   {
-       strTextData = ReadDat.readLine();
-       inQry.prepare("insert into datatable(tIndex, tTimStamp, tDistance)"
-                         "values(:tIndex, :tTimStamp, :tDistance)");
-        inQry.bindValue(0,datIndex);
-        inQry.bindValue(1,tmStampCnt);
-        inQry.bindValue(2,strTextData);
-        inQry.exec();
-        datIndex++;
-        DatWin->append(strTextData);
-   }
-   dbT1.commit();*/
-        createConnection();
+
+        createConnection();//建立数据库连接
         qDebug()<<"db isopen?"<<db.isOpen();
         qDebug()<<"start transaction"<<db.transaction();
          do {
-            sql = "insert into file values(?";
 
             line = stream.readLine();
             col =  line.split(strItemDelimeter);
+            if(col.size() != COL_NUM){
+                qDebug()<<"列数不对"<<col.size();
+                //todo
+                continue;
+            }
 //            qDebug()<<"tmp is :"<<qPrintable(line);
+
+            sql = "insert into file values(?";
             for(int i=0;i<col.size();i++){
                 sql.append(",?");
 //                sql.append(","+getCol(col[i])+"");
@@ -427,23 +413,19 @@ bool UserDb::insertDb(QString filename){
             sql.append(")");
             query.prepare(sql);
 
-//sql.append(QString::number(line_num++));
             query.addBindValue(line_num++);
             for(int i=0;i<col.size();i++){
 //                qDebug()<<"i:"<<i<<"--"<<getCol(col[i]);
                 query.addBindValue(getCol(col[i]));
             }
-//            qDebug()<<"insertDb()"<<qPrintable(sql)<<query.exec();
-//                        qDebug()<<"insertDb()"<<qPrintable(sql)<<query.execBatch();
-query.exec();
-//            if(!query.execBatch()){
-////           if(!query.exec(sql)){
-//                isSuccess=false;
-//                qDebug()<<"执行出错"<<sql;
-//                break;
-//           }
 
-            if(!stopped && line_num%1000==0)
+            if(!query.exec()){
+                isSuccess=false;
+                qDebug()<<"执行出错"<<sql;
+                break;
+           }
+
+            if(!stopped && line_num%10000==0)
             {
                 if(db.commit())
                 {
@@ -490,18 +472,6 @@ bool UserDb::fileIsExists(QString filename){
 QList<QString> UserDb::readTable(QString sql){
     QList<QString> list;
     QString line = "";
-//    QSqlDatabase db;
-//    if(QSqlDatabase::contains("qt_sql_default_connection"))
-//      db = QSqlDatabase::database("qt_sql_default_connection");
-//    else
-//      db = QSqlDatabase::addDatabase("QSQLITE");
-//    db.setHostName("localhost");
-//    db.setDatabaseName("data.db");
-//    db.setUserName("king");
-//    db.setPassword("123456");
-//    if(!db.open()){
-//        writeLog("创建数据库连接出错。");
-//    }
 
     QSqlQuery query;
     query.exec(sql);
@@ -510,7 +480,7 @@ QList<QString> UserDb::readTable(QString sql){
 
     while(query.next()){
         line = "";
-        for(int i=0;i<COL_NUM;i++){
+        for(int i=0;i<qr.count();i++){
             line.append(query.value(i).toString());
 
         }
@@ -527,3 +497,32 @@ void UserDb::printData(QString table){
         qDebug()<<list.at(i);
     }
 }
+
+//void UserDb::savePersonMobileOwnerNameNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主姓名未登记"<<line;
+
+//}
+//void UserDb::savePersonMobileOwnerTypeNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主证件类型未登记"<<line;
+//}
+//void UserDb::savePersonMobileOwnerNumNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主证件号码未登记"<<line;
+//}
+//void UserDb::savePersonMobileOwnerAddNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主证件地址未登记"<<line;
+//}
+//void UserDb::savePersonMobileOwnerNameNumNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主姓名证件号码未登记"<<line;
+//}
+//void UserDb::savePersonMobileOwnerNameAddNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主姓名证件地址未登记"<<line;
+//}
+//void UserDb::savePersonMobileOwnerNumAddNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主证件号码地址未登记"<<line;
+//}
+//void UserDb::savePersonMobileOwnerNameNumAddNotReg(QList<QString> line){
+//    qDebug()<<"个人移动用户机主姓名证件号码地址未登记"<<line;
+//}
+//void UserDb::saveAllNotReg(QList<QString> line){
+//    qDebug()<<"全量未登记"<<line;
+//}
