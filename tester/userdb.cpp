@@ -6,6 +6,7 @@ UserDb::UserDb()
      QList<QList<QString>> lls = xmlConfig->readAutoid();
      QString name;
      report = new Report();
+
     int num;
     bool ok;
     for(int i=0; i<lls.size(); i++){
@@ -36,8 +37,10 @@ void UserDb::stop()
 
 void UserDb::run()
 {
+//    countData();
     qDebug()<<"run begin"<<stopped;
      emit message("run begin");
+//    todo
     qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb(filename);//"C:\\test.txt");// /Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //
     createReport();
 }
@@ -64,290 +67,674 @@ void UserDb::createReport(){
     qDebug()<<"insert report is:"<<query.exec("insert into report (id) values (1)");
     QString sql;
     //总量
-        qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
+    if(!report->allData){
+       sql = "update report set allData=(select count(*) from file)";
+    }
+    else{
+       sql = "update report set allData="+report->allData;
+    }
+    qDebug()<< "update allData is:"<<query.exec(sql);
 //    printData("file");
 
-//    //全量未登记
-//        qDebug()<<"update allNotReg is:"<<query.exec("update report set allNotReg=(select count(*) from file)");
-//    //格式异常数据
-//         qDebug()<<"update formatNotRight is:"<<query.exec("update report set formatNotRight=(select count(*) from file)");
-//    //字段异常数据
-//         qDebug()<<"update fieldNotRight is:"<<query.exec("update report set fieldNotRight=(select count(*) from file)");
-//    //all.ok
-//         qDebug()<<"update allOk is:"<<query.exec("update report set allOk=(select count(*) from file)");
+    //全量未登记
+    if(!report->allNotReg){
+        sql = "update report set allNotReg=(select count(*) from file where ("
+                + getColName("机主证件地址")+ " is null ) and "
+                + getColName("用户类型")+"='个人客户' and "
+                + getColName("用户业务类型")+"='移动手机号码')";
+    }
+    else{
+        sql = "update report set allNotReg"+report->allNotReg;
+    }
+        qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
+    //格式异常数据
+        sql = "update report set formatNotRight="+report->formatNotRight;
+        qDebug()<<"update formatNotRight is:"<<query.exec(sql)<<sql;
+    //字段异常数据
+        sql = "update report set fieldNotRight="+report->fieldNotRight;
+         qDebug()<<"update fieldNotRight is:"<<query.exec(sql)<<sql;
+    //all.ok
+         sql = "update report set allOk="+report->allOk;
+         qDebug()<<"update allOk is:"<<query.exec(sql)<<sql;
 
-//    //待挖掘记录
-// //         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
+    //待挖掘记录
+ //         qDebug()<<"update allData is:"<<query.exec("update report set allData=(select count(*) from file)");
 
-//    //个人移动用户-形式合规数据
-//         //qDebug()<<"update personMobileFormatRight is:"<<query.exec("update report set personMobileFormatRight=(select count(*) from file where col"+UserFile::getCol_num("用户类型")+"='')");
+    //个人移动用户-形式合规数据
+         sql = "update report set personMobileFormatRight"+report->personMobileFormatRight;
+         qDebug()<<"update personMobileFormatRight is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件类型未登记
+    //个人移动用户-证件类型未登记
+         if(!report->personMobileOwnerTypeNotReg){
          sql = "update report set personMobileOwnerTypeNotReg=(select count(*) from file where "
-                 + getCol("机主证件类型")+ " is null and "
-                 + getCol("用户类型")+"='个人客户' and "
-                 + getCol("用户业务类型")+"='移动手机号码')";
+                 + getColName("机主证件类型")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileOwnerTypeNotReg="+report->personMobileOwnerTypeNotReg;
+         }
          qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名未登记
+    //个人移动用户-用户姓名未登记
+         if(!report->personMobileOwnerNameNotReg){
          sql = "update report set personMobileOwnerNameNotReg=(select count(*) from file where "
-                 + getCol("用户姓名")+ " is null and "
-                 + getCol("用户类型")+"='个人客户' and "
-                 + getCol("用户业务类型")+"='移动手机号码')";
+                 + getColName("机主姓名")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+        }
+         else{
+             sql = "update report set personMobileOwnerNameNotReg="+report->personMobileOwnerNameNotReg;
+         }
          qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件号码未登记
+    //个人移动用户-证件号码未登记
+         if(!report->personMobileOwnerNumNotReg){
          sql = "update report set personMobileOwnerNumNotReg=(select count(*) from file where "
-                 + getCol("证件号码")+ " is null and "
-                 + getCol("用户类型")+"='个人客户' and "
-                 + getCol("用户业务类型")+"='移动手机号码')";
+                 + getColName("机主证件号码")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileOwnerNumNotReg="+report->personMobileOwnerNumNotReg;
+         }
          qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件地址未登记
+    //个人移动用户-证件地址未登记
+         if(!report->personMobileOwnerAddNotReg){
          sql = "update report set personMobileOwnerAddNotReg=(select count(*) from file where "
-                 + getCol("证件地址")+ " is null and "
-                 + getCol("用户类型")+"='个人客户' and "
-                 + getCol("用户业务类型")+"='移动手机号码')";
-         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileOwnerAddNotReg="+report->personMobileOwnerAddNotReg;
+         }
+         qDebug()<<"update personMobileOwnerAddNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名&amp;证件号码未登记
+    //个人移动用户-用户姓名&amp;证件号码未登记
+         if(!report->personMobileOwnerNameNumNotReg){
          sql = "update report set personMobileOwnerNameNumNotReg=(select count(*) from file where "
-                 + getCol("证件地址")+ " is null and "
-                 + getCol("用户类型")+"='个人客户' and "
-                 + getCol("用户业务类型")+"='移动手机号码')";
-         qDebug()<<"update personMobileOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
+                 + getColName("机主姓名")+ " is null and "+ getColName("机主证件号码")+ " is null add "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileOwnerNameNumNotReg="+report->personMobileOwnerNameNumNotReg;
+         }
+         qDebug()<<"update personMobileOwnerNameNumNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名&amp;证件地址未登记
-//         qDebug()<<"update personMobileOwnerNameAddNotReg is:"<<query.exec("update report set personMobileOwnerNameAddNotReg=(select count(*) from file)");
+    //个人移动用户-用户姓名&amp;证件地址未登记
+         if(!report->personMobileOwnerNameAddNotReg){
+         sql = "update report set personMobileOwnerNameAddNotReg=(select count(*) from file where "
+                 + getColName("机主姓名")+ " is null and "+ getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileOwnerNameAddNotReg="+report->personMobileOwnerNameAddNotReg;
+         }
+         qDebug()<<"update personMobileOwnerNameAddNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件号码&amp;证件地址未登记
-//         qDebug()<<"update personMobileOwnerNumAddNotReg is:"<<query.exec("update report set personMobileOwnerNumAddNotReg=(select count(*) from file)");
+    //个人移动用户-证件号码&amp;证件地址未登记
+         if(!report->personMobileOwnerNumAddNotReg){
+         sql = "update report set personMobileOwnerNumAddNotReg=(select count(*) from file where "
+                 + getColName("机主证件号码")+ " is null add "+ getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileOwnerNumAddNotReg="+report->personMobileOwnerNumAddNotReg;
+         }
+         qDebug()<<"update personMobileOwnerNumAddNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名&amp;证件号码&amp;证件地址未登记
-//         qDebug()<<"update personMobileOwnerNameNumAddNotReg is:"<<query.exec("update report set personMobileOwnerNameNumAddNotReg=(select count(*) from file)");
+    //个人移动用户-用户姓名&amp;证件号码&amp;证件地址未登记
+         if(!report->personMobileOwnerNameNumAddNotReg){
+         sql = "update report set personMobileOwnerNameNumAddNotReg=(select count(*) from file where "
+                 + getColName("机主姓名")+ " is null and " + getColName("机主证件号码")+ " is null add " + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileOwnerNameNumAddNotReg="+report->personMobileOwnerNameNumAddNotReg;
+         }
+         qDebug()<<"update personMobileOwnerNameNumAddNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件类型校验不合规
-//         qDebug()<<"update personMobileOwnerTypeIllegal is:"<<query.exec("update report set personMobileOwnerTypeIllegal=(select count(*) from file)");
+    //个人移动用户-证件类型校验不合规
+         sql = "update report set personMobileOwnerTypeIllegal="+report->personMobileOwnerTypeIllegal;
+         qDebug()<<"update personMobileOwnerTypeIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名校验不合规
-//         qDebug()<<"update personMobileOwnerNameIllegal is:"<<query.exec("update report set personMobileOwnerNameIllegal=(select count(*) from file)");
+    //个人移动用户-用户姓名校验不合规
+         sql = "update report set personMobileOwnerNameIllegal="+report->personMobileOwnerNameIllegal;
+         qDebug()<<"update personMobileOwnerNameIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件号码校验不合规
-//         qDebug()<<"update personMobileOwnerNumIllegal is:"<<query.exec("update report set personMobileOwnerNumIllegal=(select count(*) from file)");
+    //个人移动用户-证件号码校验不合规
+         sql = "update report set personMobileOwnerNumIllegal="+report->personMobileOwnerNumIllegal;
+         qDebug()<<"update personMobileOwnerNumIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件地址校验不合规
-//         qDebug()<<"update personMobileOwnerAddIllegal is:"<<query.exec("update report set personMobileOwnerAddIllegal=(select count(*) from file)");
+    //个人移动用户-证件地址校验不合规
+         sql = "update report set personMobileOwnerAddIllegal="+report->personMobileOwnerAddIllegal;
+         qDebug()<<"update personMobileOwnerAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名&amp;证件号码校验不合规
-//         qDebug()<<"update personMobileOwnerNameNumIllegal is:"<<query.exec("update report set personMobileOwnerNameNumIllegal=(select count(*) from file)");
+    //个人移动用户-用户姓名&amp;证件号码校验不合规
+         sql = "update report set personMobileOwnerNameNumIllegal="+report->personMobileOwnerNameNumIllegal;
+         qDebug()<<"update personMobileOwnerNameNumIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名&amp;证件地址校验不合规
-//         qDebug()<<"update personMobileOwnerNameAddIllegal is:"<<query.exec("update report set personMobileOwnerNameAddIllegal=(select count(*) from file)");
+    //个人移动用户-用户姓名&amp;证件地址校验不合规
+         sql = "update report set personMobileOwnerNameAddIllegal="+report->personMobileOwnerNameAddIllegal;
+         qDebug()<<"update personMobileOwnerNameAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-证件号码&amp;证件地址校验不合规
-//         qDebug()<<"update personMobileOwnerNumAddIllegal is:"<<query.exec("update report set personMobileOwnerNumAddIllegal=(select count(*) from file)");
+    //个人移动用户-证件号码&amp;证件地址校验不合规
+         sql = "update report set personMobileOwnerNumAddIllegal="+report->personMobileOwnerNumAddIllegal;
+         qDebug()<<"update personMobileOwnerNumAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-用户姓名&amp;证件号码&amp;证件地址校验不合规
-//         qDebug()<<"update personMobileOwnerNameNumAddIllegal is:"<<query.exec("update report set personMobileOwnerNameNumAddIllegal=(select count(*) from file)");
+    //个人移动用户-用户姓名&amp;证件号码&amp;证件地址校验不合规
+         sql = "update report set personMobileOwnerNameNumAddIllegal="+report->personMobileOwnerNameNumAddIllegal;
+         qDebug()<<"update personMobileOwnerNameNumAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-形式合规数据
-//         qDebug()<<"update personFixedLegal is:"<<query.exec("update report set personFixedLegal=(select count(*) from file)");
+    //个人固话用户-形式合规数据
+         sql = "update report set personFixedLegal="+report->personFixedLegal;
+         qDebug()<<"update personFixedLegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-证件类型未登记
-//         qDebug()<<"update personFixedOwnerTypeNotReg is:"<<query.exec("update report set personFixedOwnerTypeNotReg=(select count(*) from file)");
+    //个人固话用户-证件类型未登记
+         if(!report->personFixedOwnerTypeNotReg){
+         sql = "update report set personFixedOwnerTypeNotReg = (select count(*) from file where "
+                 + getColName("机主证件类型")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedOwnerTypeNotReg="+report->personFixedOwnerTypeNotReg;
+         }
+         qDebug()<<"update personFixedOwnerTypeNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人固话用户-用户姓名未登记
-//         qDebug()<<"update personFixedOwnerNameNotReg is:"<<query.exec("update report set personFixedOwnerNameNotReg=(select count(*) from file)");
+         if(!report->personFixedOwnerNameNumNotReg){
+         sql = "update report set personFixedOwnerNameNumNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedOwnerNameNumNotReg="+report->personFixedOwnerNameNumNotReg;
+         }
+         qDebug()<<"update personFixedOwnerNameNumNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人固话用户-证件号码未登记
-//         qDebug()<<"update personFixedOwnerNumNotReg is:"<<query.exec("update report set personFixedOwnerNumNotReg=(select count(*) from file)");
+         if(!report->personFixedOwnerNameNumNotReg){
+         sql = "update report set personFixedOwnerNameNumNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedOwnerNameNumNotReg="+report->personFixedOwnerNameNumNotReg;
+         }
+         qDebug()<<"update personFixedOwnerNameNumNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人固话用户-证件地址未登记
-//         qDebug()<<"update personFixedOwnerAddNotReg is:"<<query.exec("update report set personFixedOwnerAddNotReg=(select count(*) from file)");
+         if(!report->personFixedOwnerAddNotReg){
+         sql = "update report set personFixedOwnerAddNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report personFixedOwnerAddNotReg="+report->personFixedOwnerAddNotReg;
+         }
+         qDebug()<<"update personFixedOwnerAddNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人固话用户-用户姓名&amp;证件号码未登记
-//         qDebug()<<"update personFixedOwnerNameNumNotReg is:"<<query.exec("update report set personFixedOwnerNameNumNotReg=(select count(*) from file)");
+         if(!report->personFixedOwnerNameNumNotReg){
+         sql = "update report set personFixedOwnerNameNumNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedOwnerNameNumNotReg="+report->personFixedOwnerNameNumNotReg;
+         }
+         qDebug()<<"update personFixedOwnerNameNumNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人固话用户-用户姓名&amp;证件地址未登记
-//         qDebug()<<"update personFixedOwnerNameAddNotReg is:"<<query.exec("update report set personFixedOwnerNameAddNotReg=(select count(*) from file)");
+         if(!report->personFixedOwnerNameAddNotReg){
+         sql = "update report set personFixedOwnerNameAddNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedOwnerNameAddNotReg="+report->personFixedOwnerNameAddNotReg;
+         }
+         qDebug()<<"update personFixedOwnerNameAddNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人固话用户-证件号码&amp;证件地址未登记
-//         qDebug()<<"update personFixedOwnerNumAddNotReg is:"<<query.exec("update report set personFixedOwnerNumAddNotReg=(select count(*) from file)");
+         if(!report->personFixedOwnerNumAddNotReg){
+         sql = "update report set personFixedOwnerNumAddNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedOwnerNumAddNotReg="+report->personFixedOwnerNumAddNotReg;
+         }
+         qDebug()<<"update personFixedOwnerNumAddNotReg is:"<<query.exec(sql)<<sql;
 
 //    //个人固话用户-用户姓名&amp;证件号码&amp;证件地址未登记
-//         qDebug()<<"update personFixedOwnerNameNumAddNotReg is:"<<query.exec("update report set personFixedOwnerNameNumAddNotReg=(select count(*) from file)");
+         if(!report->personFixedOwnerNameNumAddNotReg){
+         sql = "update report set personFixedOwnerNameNumAddNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedOwnerNameNumAddNotReg="+report->personFixedOwnerNameNumAddNotReg;
+         }
+         qDebug()<<"update personFixedOwnerNameNumAddNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-证件类型校验不合规
-//         qDebug()<<"update personFixedOwnerTypeIllegal is:"<<query.exec("update report set personFixedOwnerTypeIllegal=(select count(*) from file)");
+    //个人固话用户-证件类型校验不合规
+         sql = "update report set personFixedOwnerTypeIllegal="+report->personFixedOwnerTypeIllegal;
+         qDebug()<<"update personFixedOwnerTypeIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-用户姓名校验不合规
-//         qDebug()<<"update personFixedOwnerNameIllegal is:"<<query.exec("update report set personFixedOwnerNameIllegal=(select count(*) from file)");
+    //个人固话用户-用户姓名校验不合规
+         sql = "update report set personFixedOwnerNameIllegal="+report->personFixedOwnerNameIllegal;
+         qDebug()<<"update personFixedOwnerNameIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-证件号码校验不合规
-//         qDebug()<<"update personFixedOwnerNumIllegal is:"<<query.exec("update report set personFixedOwnerNumIllegal=(select count(*) from file)");
+    //个人固话用户-证件号码校验不合规
+         sql = "update report set personFixedOwnerNumIllegal="+report->personFixedOwnerNumIllegal;
+         qDebug()<<"update personFixedOwnerNumIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-证件地址校验不合规
-//         qDebug()<<"update personFixedOwnerAddIllegal is:"<<query.exec("update report set personFixedOwnerAddIllegal=(select count(*) from file)");
+    //个人固话用户-证件地址校验不合规
+         sql = "update report set personFixedOwnerAddIllegal="+report->personFixedOwnerAddIllegal;
+         qDebug()<<"update personFixedOwnerAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-用户姓名&amp;证件号码校验不合规
-//         qDebug()<<"update personFixedOwnerNameNumIllegal is:"<<query.exec("update report set personFixedOwnerNameNumIllegal=(select count(*) from file)");
+    //个人固话用户-用户姓名&amp;证件号码校验不合规
+         sql = "update report set personFixedOwnerNameNumIllegal="+report->personFixedOwnerNameNumIllegal;
+         qDebug()<<"update personFixedOwnerNameNumIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-用户姓名&amp;证件地址校验不合规
-//         qDebug()<<"update personFixedOwnerNameAddIllegal is:"<<query.exec("update report set personFixedOwnerNameAddIllegal=(select count(*) from file)");
+    //个人固话用户-用户姓名&amp;证件地址校验不合规
+         sql = "update report set personFixedOwnerNameAddIllegal="+report->personFixedOwnerNameAddIllegal;
+         qDebug()<<"update personFixedOwnerNameAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-证件号码&amp;证件地址校验不合规
-//         qDebug()<<"update personFixedOwnerNumAddIllegal is:"<<query.exec("update report set personFixedOwnerNumAddIllegal=(select count(*) from file)");
+    //个人固话用户-证件号码&amp;证件地址校验不合规
+         sql = "update report set personFixedOwnerNumAddIllegal="+report->personFixedOwnerNumAddIllegal;
+         qDebug()<<"update personFixedOwnerNumAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-用户姓名&amp;证件号码&amp;证件地址校验不合规
-//         qDebug()<<"update personFixedOwnerNameNumAddIllegal is:"<<query.exec("update report set personFixedOwnerNameNumAddIllegal=(select count(*) from file)");
+    //个人固话用户-用户姓名&amp;证件号码&amp;证件地址校验不合规
+         sql = "update report set personFixedOwnerNameNumAddIllegal="+report->personFixedOwnerNameNumAddIllegal;
+         qDebug()<<"update personFixedOwnerNameNumAddIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-代办人信息未登记
-//         qDebug()<<"update personMobileAgentNotReg is:"<<query.exec("update report set personMobileAgentNotReg=(select count(*) from file)");
+    //个人移动用户-代办人信息未登记
+         if(!report->personMobileAgentNotReg){
+         sql = "update report set personMobileAgentNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='个人客户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set personMobileAgentNotReg="+report->personMobileAgentNotReg;
+         }
+         qDebug()<<"update personMobileAgentNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-代办人信息未登记
-//         qDebug()<<"update personFixedAgentNotReg is:"<<query.exec("update report set personFixedAgentNotReg=(select count(*) from file)");
+    //个人固话用户-代办人信息未登记
+         if(!report->personFixedAgentNotReg){
+             sql = "update report set personFixedAgentNotReg=(select count(*) from file where "
+                     + getColName("机主证件地址")+ " is null and "
+                     + getColName("用户类型")+"='个人客户' and "
+                     + getColName("用户业务类型")+"='固定')";
+         }
+         else{
+             sql = "update report set personFixedAgentNotReg="+report->personFixedAgentNotReg;
+         }
+         qDebug()<<"update personFixedAgentNotReg is:"<<query.exec(sql)<<sql;
 
-//    //个人移动用户-代办人信息校验不合规
-//         qDebug()<<"update personMobileAgentIllegal is:"<<query.exec("update report set personMobileAgentIllegal=(select count(*) from file)");
+    //个人移动用户-代办人信息校验不合规
+         sql = "update report set personMobileAgentIllegal="+report->personMobileAgentIllegal;
+         qDebug()<<"update personMobileAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人固话用户-代办人信息校验不合规
-//         qDebug()<<"update personFixedAgentIllegal is:"<<query.exec("update report set personFixedAgentIllegal=(select count(*) from file)");
+    //个人固话用户-代办人信息校验不合规
+         sql = "update report set personFixedAgentIllegal="+report->personFixedAgentIllegal;
+         qDebug()<<"update personFixedAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-形式合规数据
-//         qDebug()<<"update unitMobileLegal is:"<<query.exec("update report set unitMobileLegal=(select count(*) from file)");
+    //单位移动用户-形式合规数据
+         sql = "update report set unitMobileLegal="+report->unitMobileLegal;
+         qDebug()<<"update unitMobileLegal is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-使用人信息未登记
-//         qDebug()<<"update unitMobileOwnerNotReg is:"<<query.exec("update report set unitMobileOwnerNotReg=(select count(*) from file)");
+    //单位移动用户-使用人信息未登记
+         if(!report->unitMobileOwnerNotReg){
+             sql = "update report set unitMobileOwnerNotReg=(select count(*) from file where "
+                     + getColName("机主证件地址")+ " is null and "
+                     + getColName("用户类型")+"='单位用户' and "
+                     + getColName("用户业务类型")+"='移动手机号码')";
+        }
+         else{
+             sql = "update report set unitMobileOwnerNotReg="+report->unitMobileOwnerNotReg;
+         }
+         qDebug()<<"update unitMobileOwnerNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位移动用户-经办人信息未登记
-//         qDebug()<<"update unitMobileAgentNotReg is:"<<query.exec("update report set unitMobileAgentNotReg=(select count(*) from file)");
+         if(!report->unitMobileOwnerAgentNotReg){
+             sql = "update report set unitMobileOwnerAgentNotReg=(select count(*) from file where "
+                     + getColName("机主证件地址")+ " is null and "
+                     + getColName("用户类型")+"='单位用户' and "
+                     + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileOwnerAgentNotReg="+report->unitMobileOwnerAgentNotReg;
+         }
+         qDebug()<<"update unitMobileOwnerAgentNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位移动用户-单位信息未登记
-//         qDebug()<<"update unitMobileUnitNotReg is:"<<query.exec("update report set unitMobileUnitNotReg=(select count(*) from file)");
+         if(!report->unitMobileUnitNotReg){
+         sql = "update report set unitMobileUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='单位用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileUnitNotReg="+report->unitMobileUnitNotReg;
+         }
+         qDebug()<<"update unitMobileUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位移动用户-使用人&amp;经办人信息未登记
-//         qDebug()<<"update unitMobileOwnerAgentNotReg is:"<<query.exec("update report set unitMobileOwnerAgentNotReg=(select count(*) from file)");
+         if(!report->unitMobileOwnerAgentNotReg){
+             sql = "update report set unitMobileOwnerAgentNotReg=(select count(*) from file where "
+                     + getColName("机主证件地址")+ " is null and "
+                     + getColName("用户类型")+"='单位用户' and "
+                     + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileOwnerAgentNotReg="+report->unitMobileOwnerAgentNotReg;
+         }
+         qDebug()<<"update unitMobileOwnerAgentNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位移动用户-使用人&amp;单位信息未登记
-//         qDebug()<<"update unitMobileOwnerUnitNotReg is:"<<query.exec("update report set unitMobileOwnerUnitNotReg=(select count(*) from file)");
+         if(!report->unitMobileOwnerUnitNotReg){
+         sql = "update report set unitMobileOwnerUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='单位用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileOwnerUnitNotReg="+report->unitMobileOwnerUnitNotReg;
+         }
+         qDebug()<<"update unitMobileOwnerUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位移动用户-经办人&amp;单位信息未登记
-//         qDebug()<<"update unitMobileAgentUnitNotReg is:"<<query.exec("update report set unitMobileAgentUnitNotReg=(select count(*) from file)");
+         if(!report->unitMobileAgentUnitNotReg){
+         sql = "update report set unitMobileAgentUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='单位用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileAgentUnitNotReg="+report->unitMobileAgentUnitNotReg;
+         }
+         qDebug()<<"update unitMobileAgentUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位移动用户-使用人&amp;经办人&amp;单位信息未登记
-//         qDebug()<<"update unitMobileOwnerAgentUnitNotReg is:"<<query.exec("update report set unitMobileOwnerAgentUnitNotReg=(select count(*) from file)");
+         if(!report->unitMobileOwnerAgentUnitNotReg){
+         sql = "update report set unitMobileOwnerAgentUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='单位用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileOwnerAgentUnitNotReg="+report->unitMobileOwnerAgentUnitNotReg;
+         }
+         qDebug()<<"update unitMobileOwnerAgentUnitNotReg is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-使用人信息校验不合规
-//         qDebug()<<"update unitMobileOwnerIllegal is:"<<query.exec("update report set unitMobileOwnerIllegal=(select count(*) from file)");
+    //单位移动用户-使用人信息校验不合规
+         sql = "update report set unitMobileOwnerIllegal="+report->unitMobileOwnerIllegal;
+         qDebug()<<"update unitMobileOwnerIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-经办人信息校验不合规
-//         qDebug()<<"update unitMobileAgentIllegal is:"<<query.exec("update report set unitMobileAgentIllegal=(select count(*) from file)");
+    //单位移动用户-经办人信息校验不合规
+         sql = "update report set unitMobileAgentIllegal="+report->unitMobileAgentIllegal;
+         qDebug()<<"update unitMobileAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-单位信息校验不合规
-//         qDebug()<<"update unitMobileUnitIllegal is:"<<query.exec("update report set unitMobileUnitIllegal=(select count(*) from file)");
+    //单位移动用户-单位信息校验不合规
+         sql = "update report set unitMobileUnitIllegal="+report->unitMobileUnitIllegal;
+         qDebug()<<"update unitMobileUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-使用人&amp;经办人信息校验不合规
-//         qDebug()<<"update unitMobileOwnerAgentIllegal is:"<<query.exec("update report set unitMobileOwnerAgentIllegal=(select count(*) from file)");
+    //单位移动用户-使用人&amp;经办人信息校验不合规
+         sql = "update report set unitMobileOwnerAgentIllegal="+report->unitMobileOwnerAgentIllegal;
+         qDebug()<<"update unitMobileOwnerAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-经办人&amp;单位信息校验不合规
-//         qDebug()<<"update unitMobileAgentUnitIllegal is:"<<query.exec("update report set unitMobileAgentUnitIllegal=(select count(*) from file)");
+    //单位移动用户-经办人&amp;单位信息校验不合规
+         sql = "update report set unitMobileAgentUnitIllegal="+report->unitMobileAgentUnitIllegal;
+         qDebug()<<"update unitMobileAgentUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位移动用户-使用人&amp;经办人&amp;单位信息校验不合规
-//         qDebug()<<"update unitMobileOwnerAgentUnitIllegal is:"<<query.exec("update report set unitMobileOwnerAgentUnitIllegal=(select count(*) from file)");
+    //单位移动用户-使用人&amp;经办人&amp;单位信息校验不合规
+         sql = "update report set unitMobileOwnerAgentUnitIllegal="+report->unitMobileOwnerAgentUnitIllegal;
+         qDebug()<<"update unitMobileOwnerAgentUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位固话用户-形式合规数据
-//         qDebug()<<"update unitFixedLegal is:"<<query.exec("update report set unitFixedLegal=(select count(*) from file)");
+    //单位固话用户-形式合规数据
+         sql = "update report set unitFixedLegal="+report->unitFixedLegal;
+         qDebug()<<"update unitFixedLegal is:"<<query.exec(sql)<<sql;
 
-//    //单位固话用户-经办人信息未登记
-//         qDebug()<<"update unitFixedAgentNotReg is:"<<query.exec("update report set unitFixedAgentNotReg=(select count(*) from file)");
+    //单位固话用户-经办人信息未登记
+         if(!report->unitMobileAgentNotReg){
+         sql = "update report set unitMobileAgentNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='单位用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileAgentNotReg="+report->unitMobileAgentNotReg;
+         }
+         qDebug()<<"update unitMobileAgentNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位固话用户-单位信息未登记
-//         qDebug()<<"update unitFixedUnitNotReg is:"<<query.exec("update report set unitFixedUnitNotReg=(select count(*) from file)");
+         if(!report->unitMobileUnitNotReg){
+         sql = "update report set unitMobileUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='单位用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitMobileUnitNotReg="+report->unitMobileUnitNotReg;
+         }
+         qDebug()<<"update unitMobileUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //单位固话用户-经办人&amp;单位信息未登记
-//         qDebug()<<"update unitFixedAgentUnitNotReg is:"<<query.exec("update report set unitFixedAgentUnitNotReg=(select count(*) from file)");
+         if(!report->unitFixedAgentUnitNotReg){
+         sql = "update report set unitFixedAgentUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='单位用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set unitFixedAgentUnitNotReg="+report->unitFixedAgentUnitNotReg;
+         }
+         qDebug()<<"update unitFixedAgentUnitNotReg is:"<<query.exec(sql)<<sql;
 
-//    //单位固话用户-经办人信息校验不合规
-//         qDebug()<<"update unitFixedAgentIllegal is:"<<query.exec("update report set unitFixedAgentIllegal=(select count(*) from file)");
+    //单位固话用户-经办人信息校验不合规
+         sql = "update report set unitFixedAgentIllegal="+report->unitFixedAgentIllegal;
+         qDebug()<<"update unitFixedAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位固话用户-单位信息校验不合规
-//         qDebug()<<"update unitFixedUnitIllegal is:"<<query.exec("update report set unitFixedUnitIllegal=(select count(*) from file)");
+    //单位固话用户-单位信息校验不合规
+         sql = "update report set unitFixedUnitIllegal="+report->unitFixedUnitIllegal;
+         qDebug()<<"update unitFixedUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //单位固话用户-经办人&amp;单位信息校验不合规
-//         qDebug()<<"update unitFixedAgentUnitIllegal is:"<<query.exec("update report set unitFixedAgentUnitIllegal=(select count(*) from file)");
+    //单位固话用户-经办人&amp;单位信息校验不合规
+         sql = "update report set unitFixedAgentUnitIllegal="+report->unitFixedAgentUnitIllegal;
+         qDebug()<<"update unitFixedAgentUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-形式合规数据
-//         qDebug()<<"update tradeMobileLegal is:"<<query.exec("update report set tradeMobileLegal=(select count(*) from file)");
+    //行业移动应用-形式合规数据
+         sql = "update report set tradeMobileLegal="+report->tradeMobileLegal;
+         qDebug()<<"update tradeMobileLegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-经办人信息未登记
-//         qDebug()<<"update tradeMobileAgentNotReg is:"<<query.exec("update report set tradeMobileAgentNotReg=(select count(*) from file)");
+    //行业移动应用-经办人信息未登记
+         if(!report->tradeMobileAgentNotReg){
+         sql = "update report set tradeMobileAgentNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeMobileAgentNotReg="+report->tradeMobileAgentNotReg;
+         }
+         qDebug()<<"update tradeMobileAgentNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业移动应用-经办人&amp;单位信息未登记
-//         qDebug()<<"update tradeMobileAgentUnitNotReg is:"<<query.exec("update report set tradeMobileAgentUnitNotReg=(select count(*) from file)");
+         if(!report->tradeMobileAgentUnitNotReg){
+             sql = "update report set tradeMobileAgentUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeMobileAgentUnitNotReg="+report->tradeMobileAgentUnitNotReg;
+         }
+         qDebug()<<"update tradeMobileAgentUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业移动应用-责任人&amp;经办人信息未登记
-//         qDebug()<<"update tradeMobileLiableAgentNotReg is:"<<query.exec("update report set tradeMobileLiableAgentNotReg=(select count(*) from file)");
+         if(!report->tradeMobileLiableAgentNotReg){
+         sql = "update report set tradeMobileLiableAgentNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeMobileLiableAgentNotReg="+report->tradeMobileLiableAgentNotReg;
+         }
+         qDebug()<<"update tradeMobileLiableAgentNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业移动应用-责任人&amp;经办人&amp;单位信息未登记
-//         qDebug()<<"update tradeMobileLiableAgentUnitNotReg is:"<<query.exec("update report set tradeMobileLiableAgentUnitNotReg=(select count(*) from file)");
+         if(!report->tradeMobileLiableAgentUnitNotReg){
+         sql = "update report set tradeMobileLiableAgentUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeMobileLiableAgentUnitNotReg="+report->tradeMobileLiableAgentUnitNotReg;
+         }
+         qDebug()<<"update tradeMobileLiableAgentUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业移动应用-单位信息未登记
-//         qDebug()<<"update tradeMobileUnitNotReg is:"<<query.exec("update report set tradeMobileUnitNotReg=(select count(*) from file)");
+         if(!report->tradeMobileUnitNotReg){
+         sql = "update report set tradeMobileUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeMobileUnitNotReg="+report->tradeMobileUnitNotReg;
+         }
+         qDebug()<<"update tradeMobileUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业移动应用-责任人信息未登记
-//         qDebug()<<"update tradeMobileLiableNotReg is:"<<query.exec("update report set tradeMobileLiableNotReg=(select count(*) from file)");
+         if(!report->tradeMobileLiableNotReg){
+         sql = "update report set tradeMobileLiableNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeMobileLiableNotReg="+report->tradeMobileLiableNotReg;
+         }
+         qDebug()<<"update tradeMobileLiableNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业移动应用-责任人&amp;单位信息未登记
-//         qDebug()<<"update tradeMobileLiableUnitNotReg is:"<<query.exec("update report set tradeMobileLiableUnitNotReg=(select count(*) from file)");
+         if(!report->tradeMobileLiableUnitNotReg){
+         sql = "update report set tradeMobileLiableUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeMobileLiableUnitNotReg="+report->tradeMobileLiableUnitNotReg;
+         }
+         qDebug()<<"update tradeMobileLiableUnitNotReg is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-经办人信息校验不合规
-//         qDebug()<<"update tradeMobileAgentIllegal is:"<<query.exec("update report set tradeMobileAgentIllegal=(select count(*) from file)");
+    //行业移动应用-经办人信息校验不合规
+         sql = "update report set tradeMobileAgentIllegal="+report->tradeMobileAgentIllegal;
+         qDebug()<<"update tradeMobileAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-经办人&amp;单位信息校验不合规
-//         qDebug()<<"update tradeMobileAgentUnitIllegal is:"<<query.exec("update report set tradeMobileAgentUnitIllegal=(select count(*) from file)");
+    //行业移动应用-经办人&amp;单位信息校验不合规
+         sql = "update report set tradeMobileAgentUnitIllegal="+report->tradeMobileAgentUnitIllegal;
+         qDebug()<<"update tradeMobileAgentUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-责任人&amp;经办人信息校验不合规
-//         qDebug()<<"update tradeMobileLiableAgentIllegal is:"<<query.exec("update report set tradeMobileLiableAgentIllegal=(select count(*) from file)");
+    //行业移动应用-责任人&amp;经办人信息校验不合规
+         sql = "update report set tradeMobileLiableAgentIllegal="+report->tradeMobileLiableAgentIllegal;
+         qDebug()<<"update tradeMobileLiableAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-责任人&amp;经办人&amp;单位信息校验不合规
-//         qDebug()<<"update tradeMobileLiableAgentUnitIllegal is:"<<query.exec("update report set tradeMobileLiableAgentUnitIllegal=(select count(*) from file)");
+    //行业移动应用-责任人&amp;经办人&amp;单位信息校验不合规
+         sql = "update report set tradeMobileLiableAgentUnitIllegal="+report->tradeMobileLiableAgentUnitIllegal;
+         qDebug()<<"update tradeMobileLiableAgentUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-单位信息校验不合规
-//         qDebug()<<"update tradeMobileUnitIllegal is:"<<query.exec("update report set tradeMobileUnitIllegal=(select count(*) from file)");
+    //行业移动应用-单位信息校验不合规
+         sql = "update report set tradeMobileUnitIllegal="+report->tradeMobileUnitIllegal;
+         qDebug()<<"update tradeMobileUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-责任人信息校验不合规
-//         qDebug()<<"update tradeMobileLiableIllegal is:"<<query.exec("update report set tradeMobileLiableIllegal=(select count(*) from file)");
+    //行业移动应用-责任人信息校验不合规
+         sql = "update report set tradeMobileLiableIllegal="+report->tradeMobileLiableIllegal;
+         qDebug()<<"update tradeMobileLiableIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业移动应用-责任人&amp;单位信息校验不合规
-//         qDebug()<<"update tradeMobileLiableUnitIllegal is:"<<query.exec("update report set tradeMobileLiableUnitIllegal=(select count(*) from file)");
+    //行业移动应用-责任人&amp;单位信息校验不合规
+         sql = "update report set tradeMobileLiableUnitIllegal="+report->tradeMobileLiableUnitIllegal;
+         qDebug()<<"update tradeMobileLiableUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业固话应用-形式合规数据
-//         qDebug()<<"update tradeFixedLegal is:"<<query.exec("update report set tradeFixedLegal=(select count(*) from file)");
+    //行业固话应用-形式合规数据
+         sql = "update report set tradeFixedLegal="+report->tradeFixedLegal;
+         qDebug()<<"update tradeFixedLegal is:"<<query.exec(sql)<<sql;
 
-//    //行业固话应用-经办人信息未登记
-//         qDebug()<<"update tradeFixedAgentNotReg is:"<<query.exec("update report set tradeFixedAgentNotReg=(select count(*) from file)");
+    //行业固话应用-经办人信息未登记
+         if(!report->tradeFixedAgentNotReg){
+         sql = "update report set tradeFixedAgentNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeFixedAgentNotReg="+report->tradeFixedAgentNotReg;
+         }
+         qDebug()<<"update tradeFixedAgentNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业固话应用-经办人&amp;单位信息未登记
-//         qDebug()<<"update tradeFixedAgentUnitNotReg is:"<<query.exec("update report set tradeFixedAgentUnitNotReg=(select count(*) from file)");
+         if(!report->tradeFixedAgentUnitNotReg){
+         sql = "update report set tradeFixedAgentUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeFixedAgentUnitNotReg="+report->tradeFixedAgentUnitNotReg;
+         }
+         qDebug()<<"update tradeFixedAgentUnitNotReg is:"<<query.exec(sql)<<sql;
 
 //    //行业固话应用-单位信息未登记
-//         qDebug()<<"update tradeFixedUnitNotReg is:"<<query.exec("update report set tradeFixedUnitNotReg=(select count(*) from file)");
+         if(!report->tradeFixedUnitNotReg){
+         sql = "update report set tradeFixedUnitNotReg=(select count(*) from file where "
+                 + getColName("机主证件地址")+ " is null and "
+                 + getColName("用户类型")+"='行业用户' and "
+                 + getColName("用户业务类型")+"='移动手机号码')";
+         }
+         else{
+             sql = "update report set tradeFixedUnitNotReg="+report->tradeFixedUnitNotReg;
+         }
+         qDebug()<<"update tradeFixedUnitNotReg is:"<<query.exec(sql)<<sql;
 
-//    //行业固话应用-经办人信息校验不合规
-//         qDebug()<<"update tradeFixedAgentIllegal is:"<<query.exec("update report set tradeFixedAgentIllegal=(select count(*) from file)");
+    //行业固话应用-经办人信息校验不合规
+         sql = "update report set tradeFixedAgentIllegal="+report->tradeFixedAgentIllegal;
+         qDebug()<<"update tradeFixedAgentIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业固话应用-经办人&amp;单位信息校验不合规
-//         qDebug()<<"update tradeFixedAgentUnitIllegal is:"<<query.exec("update report set tradeFixedAgentUnitIllegal=(select count(*) from file)");
+    //行业固话应用-经办人&amp;单位信息校验不合规
+         sql = "update report set tradeFixedAgentUnitIllegal="+report->tradeFixedAgentUnitIllegal;
+         qDebug()<<"update tradeFixedAgentUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //行业固话应用-单位信息校验不合规
-//         qDebug()<<"update tradeFixedUnitIllegal is:"<<query.exec("update report set tradeFixedUnitIllegal=98");
+    //行业固话应用-单位信息校验不合规
+         sql = "update report set tradeFixedUnitIllegal="+report->tradeFixedUnitIllegal;
+         qDebug()<<"update tradeFixedUnitIllegal is:"<<query.exec(sql)<<sql;
 
-//    //个人移动一证五卡不合规
-//         qDebug()<<"update is:"<<query.exec("update report set personMobileOneCard=99");
+    //个人移动一证五卡不合规
+         sql = "update report set personMobileOneCard="+report->personMobileOneCard;
+         qDebug()<<"update is:"<<query.exec(sql)<<sql;
 
 }
 
-QString UserDb::getCol(QString name){
+QString UserDb::getColName(QString name){
     //    int rtn = ;
         qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
         return "col"+QString::number(col_name_map.value(name)+1);
@@ -374,7 +761,7 @@ bool UserDb::createTable(){
 }
 
 
-QString getCol(QString str){
+QString UserDb::getCol(QString str){
     if(str=="null")
         return NULL;//"'"+str+"'";
     else
@@ -518,99 +905,149 @@ void UserDb::printData(QString table){
     }
 }
 
+bool UserDb::countData(){
+    qDebug()<<__FUNCTION__;
+    if(!fileIsExists(filename)){
+        qDebug()<<"文件不存在。\n当前路径是：";
+        qDebug()<< QDir::currentPath();
+        return false;
+    }
+
+    QFile file(filename);
+    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+
+
+    QList<QString> col;
+    QString line = "";
+    int line_num = 1;
+
+    QTime    tmpTime;
+    if(file.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream stream(&file);
+        stream.setCodec(code);
+
+         do {
+            line = stream.readLine();
+
+            col =  line.split(strItemDelimeter);
+
+            if(col.size() != COL_NUM){
+                qDebug()<<"列数不对"<<col.size();
+                //todo
+                continue;
+            }
+            processLine(col);
+//            qDebug()<<"tmp is :"<<qPrintable(line);
+
+            if(!stopped && line_num%10000==0)
+            {
+                    qDebug()<<"commit";
+                    qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
+                    tmpTime.start();
+                    emit message("已处理"+QString::number(line_num)+"行");
+                    qDebug()<<"line_num"<<line_num;
+            }
+        }while(!stopped && !line.isEmpty());
+    }
+    else{
+        qDebug()<<QStringLiteral("文件打开错误。");
+    }
+    return true;
+}
+
 void UserDb::processLine(QList<QString> line){
     savePersonMobileOwnerNameNotReg(line);
-    savePersonMobileOwnerTypeNotReg(line);
-    savePersonMobileOwnerNumNotReg(line);
-    savePersonMobileOwnerAddNotReg(line);
-    savePersonMobileOwnerNameNumNotReg(line);
-    savePersonMobileOwnerNameAddNotReg(line);
-    savePersonMobileOwnerNumAddNotReg(line);
-    savePersonMobileOwnerNameNumAddNotReg(line);
-    savePeronMobileOwnerTyteNok(line);
-    savePeronMobileOwnerNameNok(line);
-    savePeronMobileOwnerNumNok(line);
-    savePeronMobileOwnerAddNok(line);
-    savePeronMobileOwnerNameNumNok(line);
-    savePeronMobileOwnerNameAddNok(line);
-    savePeronMobileOwnerNumAddNok(line);
-    savePeronMobileOwnerNameNumAddNok(line);
-    savePersonFixedOk(line);
-    saveAllNotReg(line);
-    saveAllNok(line);
-    saveAbnormal(line);
-    saveFieldAbnormal(line);
-    saveAllOk(line);
-    saveWaitData(line);
-    savePersonMobileOk(line);
-    savePersonFixedOwnerNameNotReg(line);
-    savePersonFixedOwnerTypeNotReg(line);
-    savePersonFixedOwnerNumNotReg(line);
-    savePersonFixedOwnerAddNotReg(line);
-    savePersonFixedOwnerNameNumNotReg(line);
-    savePersonFixedOwnerNameAddNotReg(line);
-    savePersonFixedOwnerNumAddNotReg(line);
-    savePersonFixedOwnerNameNumAddNotReg(line);
-    savePersonFixedOwnerTypeNok(line);
-    savePersonFixedOwnerNameNok(line);
-    savePersonFixedOwnerNumNok(line);
-    savePersonFixedOwnerAddNok(line);
-    savePersonFixedOwnerNameNumNok(line);
-    savePersonFixedOwnerNameAddNok(line);
-    savePersonFixedOwnerNumAddNok(line);
-    savePersonFixedOwnerNameNumAddNok(line);
-    savePeronMobileAgentNotReg(line);
-    savePersonFixedAgentNotReg(line);
-    savePeronMobileAgentNok(line);
-    savePersonFixedAgentNok(line);
-    saveUnitMobileOk(line);
-    saveUnitMobileOwnerNotReg(line);
-    saveUnitMobileOwnerAgentNotReg(line);
-    saveUnitMobileUnitNotReg(line);
-    saveUnitMobileOwnerUnitNotReg(line);
-    saveUnitMobileAgentUnitNotReg(line);
-    saveUnitMobileOwnerAgentUnitAddNotReg(line);
-    saveUnitMobileOwnerNok(line);
-    saveUnitMobileAgentNok(line);
-    saveUnitMobileUnitNok(line);
-    saveUnitMobileOwnerAgentNok(line);
-    saveUnitMobileOwnerUnitNok(line);
-    saveUnitMobileAgentUnitNok(line);
-    saveUnitMobileOwnerAgentUnitNok(line);
-    saveUnitFixedOk(line);
-    saveUnitFixedOwnerNotReg(line);
-    saveUnitFixedAgentNotReg(line);
-    saveUnitFixedUnitNotReg(line);
-    saveUnitFixedOwnerAgentNotReg(line);
-    saveUnitFixedOwnerUnitNotReg(line);
-    saveUnitFixedAgentUnitNotReg(line);
-    saveUnitFixedOwnerAgentUnitAddNotReg(line);
-    saveUnitFixedAgentNok(line);
-    saveUnitFixedUnitNok(line);
-    saveUnitFixedAgentUnitNok(line);
-    saveTradeMobileOk(line);
-    saveTradeMobileAgentNotReg(line);
-    saveTradeMobileUnitNotReg(line);
-    saveTradeMobileLiableNotReg(line);
-    saveTradeMobileAgentUnitNotReg(line);
-    saveTradeMobileLiableAgentNotReg(line);
-    saveTradeMobileLiableUnitNotReg(line);
-    saveTradeMobileLiableAgentUnitAddNotReg(line);
-    saveTradeMobileAgentNok(line);
-    saveTradeMobileAgentUnitNok(line);
-    saveTradeMobileLiableAgentNok(line);
-    saveTradeMobileLiableAgentUnitAddNok(line);
-    saveTradeMobileUnitNok(line);
-    saveTradeMobileLiableNok(line);
-    saveTradeMobileLiableUnitNok(line);
-    saveTradeFixedOk(line);
-    saveTradeFixedAgentNotReg(line);
-    saveTradeFixedUnitNotReg(line);
-    saveTradeFixedAgentUnitNotReg(line);
-    saveTradeFixedAgentNok(line);
-    saveTradeFixedAgentUnitNok(line);
-    saveTradeFixedUnitNok(line);
-    saveOneCard(line);
+//    savePersonMobileOwnerTypeNotReg(line);
+//    savePersonMobileOwnerNumNotReg(line);
+//    savePersonMobileOwnerAddNotReg(line);
+//    savePersonMobileOwnerNameNumNotReg(line);
+//    savePersonMobileOwnerNameAddNotReg(line);
+//    savePersonMobileOwnerNumAddNotReg(line);
+//    savePersonMobileOwnerNameNumAddNotReg(line);
+//    savePeronMobileOwnerTyteNok(line);
+//    savePeronMobileOwnerNameNok(line);
+//    savePeronMobileOwnerNumNok(line);
+//    savePeronMobileOwnerAddNok(line);
+//    savePeronMobileOwnerNameNumNok(line);
+//    savePeronMobileOwnerNameAddNok(line);
+//    savePeronMobileOwnerNumAddNok(line);
+//    savePeronMobileOwnerNameNumAddNok(line);
+//    savePersonFixedOk(line);
+//    saveAllNotReg(line);
+//    saveAllNok(line);
+//    saveAbnormal(line);
+//    saveFieldAbnormal(line);
+//    saveAllOk(line);
+//    saveWaitData(line);
+//    savePersonMobileOk(line);
+//    savePersonFixedOwnerNameNotReg(line);
+//    savePersonFixedOwnerTypeNotReg(line);
+//    savePersonFixedOwnerNumNotReg(line);
+//    savePersonFixedOwnerAddNotReg(line);
+//    savePersonFixedOwnerNameNumNotReg(line);
+//    savePersonFixedOwnerNameAddNotReg(line);
+//    savePersonFixedOwnerNumAddNotReg(line);
+//    savePersonFixedOwnerNameNumAddNotReg(line);
+//    savePersonFixedOwnerTypeNok(line);
+//    savePersonFixedOwnerNameNok(line);
+//    savePersonFixedOwnerNumNok(line);
+//    savePersonFixedOwnerAddNok(line);
+//    savePersonFixedOwnerNameNumNok(line);
+//    savePersonFixedOwnerNameAddNok(line);
+//    savePersonFixedOwnerNumAddNok(line);
+//    savePersonFixedOwnerNameNumAddNok(line);
+//    savePeronMobileAgentNotReg(line);
+//    savePersonFixedAgentNotReg(line);
+//    savePeronMobileAgentNok(line);
+//    savePersonFixedAgentNok(line);
+//    saveUnitMobileOk(line);
+//    saveUnitMobileOwnerNotReg(line);
+//    saveUnitMobileOwnerAgentNotReg(line);
+//    saveUnitMobileUnitNotReg(line);
+//    saveUnitMobileOwnerUnitNotReg(line);
+//    saveUnitMobileAgentUnitNotReg(line);
+//    saveUnitMobileOwnerAgentUnitAddNotReg(line);
+//    saveUnitMobileOwnerNok(line);
+//    saveUnitMobileAgentNok(line);
+//    saveUnitMobileUnitNok(line);
+//    saveUnitMobileOwnerAgentNok(line);
+//    saveUnitMobileOwnerUnitNok(line);
+//    saveUnitMobileAgentUnitNok(line);
+//    saveUnitMobileOwnerAgentUnitNok(line);
+//    saveUnitFixedOk(line);
+//    saveUnitFixedOwnerNotReg(line);
+//    saveUnitFixedAgentNotReg(line);
+//    saveUnitFixedUnitNotReg(line);
+//    saveUnitFixedOwnerAgentNotReg(line);
+//    saveUnitFixedOwnerUnitNotReg(line);
+//    saveUnitFixedAgentUnitNotReg(line);
+//    saveUnitFixedOwnerAgentUnitAddNotReg(line);
+//    saveUnitFixedAgentNok(line);
+//    saveUnitFixedUnitNok(line);
+//    saveUnitFixedAgentUnitNok(line);
+//    saveTradeMobileOk(line);
+//    saveTradeMobileAgentNotReg(line);
+//    saveTradeMobileUnitNotReg(line);
+//    saveTradeMobileLiableNotReg(line);
+//    saveTradeMobileAgentUnitNotReg(line);
+//    saveTradeMobileLiableAgentNotReg(line);
+//    saveTradeMobileLiableUnitNotReg(line);
+//    saveTradeMobileLiableAgentUnitAddNotReg(line);
+//    saveTradeMobileAgentNok(line);
+//    saveTradeMobileAgentUnitNok(line);
+//    saveTradeMobileLiableAgentNok(line);
+//    saveTradeMobileLiableAgentUnitAddNok(line);
+//    saveTradeMobileUnitNok(line);
+//    saveTradeMobileLiableNok(line);
+//    saveTradeMobileLiableUnitNok(line);
+//    saveTradeFixedOk(line);
+//    saveTradeFixedAgentNotReg(line);
+//    saveTradeFixedUnitNotReg(line);
+//    saveTradeFixedAgentUnitNotReg(line);
+//    saveTradeFixedAgentNok(line);
+//    saveTradeFixedAgentUnitNok(line);
+//    saveTradeFixedUnitNok(line);
+//    saveOneCard(line);
 }
 
 void UserDb::saveAllNotReg(QList<QString> line){
@@ -638,6 +1075,9 @@ void UserDb::savePersonMobileOwnerTypeNotReg(QList<QString> line){
     qDebug()<<"个人移动用户-证件类型未登记.nreg"<<line;
 }
 void UserDb::savePersonMobileOwnerNameNotReg(QList<QString> line){
+    report->personMobileOwnerNameNotReg += 1;
+    writeFile("个人移动用户-用户姓名未登记.nreg",line);
+//    if(line.at(getColName("机主姓名")))
     qDebug()<<"个人移动用户-用户姓名未登记.nreg"<<line;
 }
 void UserDb::savePersonMobileOwnerNumNotReg(QList<QString> line){
@@ -893,3 +1333,10 @@ void UserDb::saveOneCard(QList<QString> line){
     qDebug()<<"个人移动一证五卡不合规.nck"<<line;
 }
 
+void UserDb::writeFile(QString filename, QList<QString> line){
+    QFile file("e:/"+filename);
+    file.open(QFile::WriteOnly|QFile::Truncate);
+    for(int i=0;i<line.size();i++)
+        file.write(line.at(i).toLocal8Bit());
+    file.close();
+}

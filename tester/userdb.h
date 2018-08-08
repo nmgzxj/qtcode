@@ -32,6 +32,7 @@ public:
     void printData(QString table);
     QString filename;
     void createReport();
+    bool countData();
     void processLine(QList<QString> line);
     void savePersonMobileOwnerNameNotReg(QList<QString> line);
     void savePersonMobileOwnerTypeNotReg(QList<QString> line);
@@ -126,11 +127,13 @@ public:
     void saveTradeFixedUnitNok(QList<QString> line);
     void saveOneCard(QList<QString> line);
 private:
+    QString getColName(QString name);
     QString getCol(QString name);
     QMap<QString,int> col_name_map;
     XMLConfigReader *xmlConfig;
     volatile bool stopped;
     Report* report;
+    void writeFile(QString filename, QList<QString> line);
 
 signals:
     void message(const QString& info);
