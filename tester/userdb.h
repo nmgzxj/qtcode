@@ -77,11 +77,11 @@ public:
     void savePersonFixedAgentNok(QString line);
     void saveUnitMobileOk(QString line);
     void saveUnitMobileOwnerNotReg(QString line);
-    void saveUnitMobileOwnerAgentNotReg(QString line);
+    void saveUnitMobileAgentNotReg(QString line);
     void saveUnitMobileUnitNotReg(QString line);
     void saveUnitMobileOwnerUnitNotReg(QString line);
     void saveUnitMobileAgentUnitNotReg(QString line);
-    void saveUnitMobileOwnerAgentUnitAddNotReg(QString line);
+    void saveUnitMobileOwnerAgentUnitNotReg(QString line);
     void saveUnitMobileOwnerNok(QString line);
     void saveUnitMobileAgentNok(QString line);
     void saveUnitMobileUnitNok(QString line);
@@ -96,7 +96,7 @@ public:
     void saveUnitFixedOwnerAgentNotReg(QString line);
     void saveUnitFixedOwnerUnitNotReg(QString line);
     void saveUnitFixedAgentUnitNotReg(QString line);
-    void saveUnitFixedOwnerAgentUnitAddNotReg(QString line);
+    void saveUnitFixedOwnerAgentUnitNotReg(QString line);
     void saveUnitFixedAgentNok(QString line);
     void saveUnitFixedUnitNok(QString line);
     void saveUnitFixedAgentUnitNok(QString line);
@@ -107,11 +107,11 @@ public:
     void saveTradeMobileAgentUnitNotReg(QString line);
     void saveTradeMobileLiableAgentNotReg(QString line);
     void saveTradeMobileLiableUnitNotReg(QString line);
-    void saveTradeMobileLiableAgentUnitAddNotReg(QString line);
+    void saveTradeMobileLiableAgentUnitNotReg(QString line);
     void saveTradeMobileAgentNok(QString line);
     void saveTradeMobileAgentUnitNok(QString line);
     void saveTradeMobileLiableAgentNok(QString line);
-    void saveTradeMobileLiableAgentUnitAddNok(QString line);
+    void saveTradeMobileLiableAgentUnitNok(QString line);
     void saveTradeMobileUnitNok(QString line);
     void saveTradeMobileLiableNok(QString line);
     void saveTradeMobileLiableUnitNok(QString line);
@@ -125,6 +125,7 @@ public:
     void saveOneCard(QString line);
 private:
     QString getColName(QString name);
+    int getColNum(QString name);
     QString getCol(QString name);
     QMap<QString,int> col_name_map;
     XMLConfigReader *xmlConfig;
@@ -132,6 +133,7 @@ private:
     Report* report;
     void writeFile(QString filename, QString line);
     QString delimeter;
+    QMap<QString,QString> userType;
 signals:
     void message(const QString& info);
     void progress(int present);
