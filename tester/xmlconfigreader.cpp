@@ -880,10 +880,10 @@ void XMLConfigReader::writeDelimiterValue(QString delimiter){
  * @brief XMLConfigReader::readWorkingpathValue 读取字段间分隔符
  * @return
  */
-QMap<QString,QString> XMLConfigReader::readDelimiterValue(){
+QString XMLConfigReader::readDelimiterValue(){
     qDebug()<<QStringLiteral("调用 readDelimiterValue 函数：");
     QString outputFilePath = getConfigPath()+"/config/config-autoid.xml";
-    QMap<QString,QString> rtn_map;
+    QString rtn;
 
     QFile file(outputFilePath);
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
@@ -906,9 +906,9 @@ QMap<QString,QString> XMLConfigReader::readDelimiterValue(){
     }
     else {
         qDebug()<<lists.at(0).toElement().text();
-        rtn_map.insert("delimiter",lists.at(0).toElement().text());
+        rtn = lists.at(0).toElement().text();
     }
-    return rtn_map;
+    return rtn;
 }
 
 /**

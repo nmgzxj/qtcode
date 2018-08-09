@@ -24,7 +24,7 @@ public:
     void writeWorkingpathValue(QString workingpath);
     QMap<QString,QString> readWorkingpathValue();
     void writeDelimiterValue(QString delimiter);
-    QMap<QString,QString> readDelimiterValue();
+    QString readDelimiterValue();
     void writeItemnumValue(QString delimiter);
     QMap<QString,QString> readItemnumValue();
     void writeDateformatValue(QString dateformat);

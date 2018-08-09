@@ -326,8 +326,8 @@ DelimiterPage::DelimiterPage(QWidget *parent) : QWidget(parent)
 }
 
 void DelimiterPage::init(){
-    QMap<QString,QString> map = xmlConfig->readDelimiterValue();
-    this->delimiterEdit->setText(map.value("delimiter"));
+    QString delimeter = xmlConfig->readDelimiterValue();
+    this->delimiterEdit->setText(delimeter);
 }
 
 void DelimiterPage::save(){
