@@ -122,7 +122,7 @@ public:
     void saveTradeFixedAgentNok(QString line);
     void saveTradeFixedAgentUnitNok(QString line);
     void saveTradeFixedUnitNok(QString line);
-    void saveOneCard(QString line);
+    void savePersonMobileOneCard(QString line);
 private:
     QString getColName(QString name);
     int getColNum(QString name);

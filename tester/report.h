@@ -51,7 +51,7 @@ public:
     int unitFixedOwnerAgentNotReg;//单位固话用户-使用人代办人信息未登记
     int unitFixedOwnerUnitNotReg;//单位固话用户-使用人单位信息未登记
     int unitFixedAgentUnitNotReg;//单位固话用户-代办人单位信息未登记
-    int unitFixedOwnerAgentUnitAddNotReg;//单位固话用户-单位信息未登记
+    int unitFixedOwnerAgentUnitNotReg;//单位固话用户-单位信息未登记
 
     int tradeMobileAgentNotReg;//行业移动用户-单位信息未登记
     int tradeMobileUnitNotReg;//行业移动用户-单位信息未登记
@@ -66,56 +66,57 @@ public:
 
     int allData;
     int allNotReg;
-    int formatNotRight;
-    int fieldNotRight;
+    int formatNok;
+    int fieldNok;
     int allOk;
     int personMobileFormatRight;
-    int personMobileOwnerTypeIllegal;
-    int personMobileOwnerNameIllegal;
-    int personMobileOwnerNumIllegal;
-    int personMobileOwnerAddIllegal;
-    int personMobileOwnerNameNumIllegal;
-    int personMobileOwnerNameAddIllegal;
-    int personMobileOwnerNumAddIllegal;
-    int personMobileOwnerNameNumAddIllegal;
-    int personFixedLegal;
-    int personFixedOwnerTypeIllegal;
-    int personFixedOwnerNameIllegal;
-    int personFixedOwnerNumIllegal;
-    int personFixedOwnerAddIllegal;
-    int personFixedOwnerNameNumIllegal;
-    int personFixedOwnerNameAddIllegal;
-    int personFixedOwnerNumAddIllegal;
-    int personFixedOwnerNameNumAddIllegal;
+    int personMobileOwnerTypeNok;
+    int personMobileOwnerNameNok;
+    int personMobileOwnerNumNok;
+    int personMobileOwnerAddNok;
+    int personMobileOwnerNameNumNok;
+    int personMobileOwnerNameAddNok;
+    int personMobileOwnerNumAddNok;
+    int personMobileOwnerNameNumAddNok;
+    int personFixedOk;
+    int personFixedOwnerTypeNok;
+    int personFixedOwnerNameNok;
+    int personFixedOwnerNumNok;
+    int personFixedOwnerAddNok;
+    int personFixedOwnerNameNumNok;
+    int personFixedOwnerNameAddNok;
+    int personFixedOwnerNumAddNok;
+    int personFixedOwnerNameNumAddNok;
     int personMobileAgentNotReg;
     int personFixedAgentNotReg;
-    int personMobileAgentIllegal;
-    int personFixedAgentIllegal;
-    int unitMobileLegal;
+    int personMobileAgentNok;
+    int personFixedAgentNok;
+    int unitMobileOk;
     int unitMobileOwnerAgentUnitNotReg;
-    int unitMobileOwnerIllegal;
-    int unitMobileAgentIllegal;
-    int unitMobileUnitIllegal;
-    int unitMobileOwnerAgentIllegal;
-    int unitMobileAgentUnitIllegal;
-    int unitMobileOwnerAgentUnitIllegal;
-    int unitFixedLegal;
-    int unitFixedAgentIllegal;
-    int unitFixedUnitIllegal;
-    int unitFixedAgentUnitIllegal;
-    int tradeMobileLegal;
+    int unitMobileOwnerNok;
+    int unitMobileOwnerUnitNok;
+    int unitMobileAgentNok;
+    int unitMobileUnitNok;
+    int unitMobileOwnerAgentNok;
+    int unitMobileAgentUnitNok;
+    int unitMobileOwnerAgentUnitNok;
+    int unitFixedOk;
+    int unitFixedAgentNok;
+    int unitFixedUnitNok;
+    int unitFixedAgentUnitNok;
+    int tradeMobileOk;
     int tradeMobileLiableAgentUnitNotReg;
-    int tradeMobileAgentIllegal;
-    int tradeMobileAgentUnitIllegal;
-    int tradeMobileLiableAgentIllegal;
-    int tradeMobileLiableAgentUnitIllegal;
-    int tradeMobileUnitIllegal;
-    int tradeMobileLiableIllegal;
-    int tradeMobileLiableUnitIllegal;
-    int tradeFixedLegal;
-    int tradeFixedAgentIllegal;
-    int tradeFixedAgentUnitIllegal;
-    int tradeFixedUnitIllegal;
+    int tradeMobileAgentNok;
+    int tradeMobileAgentUnitNok;
+    int tradeMobileLiableAgentNok;
+    int tradeMobileLiableAgentUnitNok;
+    int tradeMobileUnitNok;
+    int tradeMobileLiableNok;
+    int tradeMobileLiableUnitNok;
+    int tradeFixedOk;
+    int tradeFixedAgentNok;
+    int tradeFixedAgentUnitNok;
+    int tradeFixedUnitNok;
     int personMobileOneCard= 0;
 
 
