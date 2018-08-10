@@ -732,8 +732,13 @@ void UserDb::createReport(){
          qDebug()<<"update tradeFixedUnitIllegal is:"<<query.exec(sql)<<sql;
 
     //个人移动一证五卡不合规
-         sql = "update report set personMobileOneCard="+QString::number(report->personMobileOneCard);
-         qDebug()<<"update is:"<<query.exec(sql)<<sql;
+         if(!report->personMobileOneCard){
+             sql = "update report set personMobileOneCard=(select count(1) from file group by col"+getColName("机主证件号码")+" having count(1)>5)";
+         }
+         else{
+            sql = "update report set personMobileOneCard="+QString::number(report->personMobileOneCard);
+         }
+         qDebug()<<"update personMobileOneCard is:"<<query.exec(sql)<<sql;
 
 }
 
@@ -1704,8 +1709,9 @@ void UserDb::saveOneCard(QString line){
 }
 
 void UserDb::writeFile(QString filename, QString line){
-    qDebug()<<"writeFile "<<filename;
-    QFile file("e:/"+filename);
+    QString path = xmlConfig->readWorkingpathValue().value("workingpath");
+    qDebug()<<"writeFile "<<path<<filename;
+    QFile file(path+filename);
     file.open(QFile::Append);
     line += "\n";
     file.write(line.toLocal8Bit());
