@@ -753,7 +753,7 @@ QString UserDb::getColName(QString name){
 int UserDb::getColNum(QString name){
     //    int rtn = ;
         qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
-        return col_name_map.value(name)+1;
+        return col_name_map.value(name);
 }
 
 //创建数据库表
@@ -945,15 +945,9 @@ bool UserDb::countData(){
          do {
             line = stream.readLine();
 
-//            col =  line.split(strItemDelimeter);
 
-//            if(col.size() != COL_NUM){
-//                qDebug()<<"列数不对"<<col.size();
-//                //todo
-//                continue;
-//            }
             processLine(line);
-//            qDebug()<<"tmp is :"<<qPrintable(line);
+            qDebug()<<"line "<<line_num<<" finish :"<<qPrintable(line);
 
             if(!stopped && line_num%10000==0)
             {
@@ -982,9 +976,9 @@ void UserDb::processLine(QString line){
         saveAbnormal(line);
         return;
     }
-
+    qDebug()<<"userType.value(person)="<<userType.value("person");
     if(col.at(getColNum("用户类型"))==userType.value("person")){
-        if(col.at(getColNum("用户业务类型"))=="移动"){
+        if(col.at(getColNum("用户业务类型"))=="移动手机号码"){
             bool p_m_o_t_r=false;//"个人移动用户-证件类型未登记
             bool p_m_o_name_r=false;//个人移动用户-用户姓名未登记
             bool p_m_o_num_r=false;//个人移动用户-证件号码未登记

@@ -231,7 +231,7 @@ void Tester::loadFile(QString filename)
                  if (!line.isEmpty())
                  {
                         model->insertRows(row, 1, QModelIndex());
-                        QStringList pieces = line.split("||", QString::SkipEmptyParts);
+                        QStringList pieces = line.split("||");//, QString::SkipEmptyParts
                         for(int i=0; i<col_num; i++)//循环填充所有列，该值在tester.h中定义。
                         {
                             model->setData(model->index(row, i, QModelIndex()), pieces.value(i));
