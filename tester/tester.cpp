@@ -268,10 +268,10 @@ void Tester::startObjThread()
         m_Thread = new QThread();
 
         userdb->moveToThread(m_Thread);
-        connect(m_Thread,&QThread::finished,m_Thread,&QObject::deleteLater);
-        connect(m_Thread,&QThread::finished,userdb,&QObject::deleteLater);
-        connect(this,&Tester::startObjThreadWork,userdb,&UserDb::run);
-        connect(userdb,&UserDb::message,this,&Tester::setStatus);
+        connect(m_Thread,&QThread::finished,m_Thread,&QObject::deleteLater,Qt::QueuedConnection);
+        connect(m_Thread,&QThread::finished,userdb,&QObject::deleteLater,Qt::QueuedConnection);
+        connect(this,&Tester::startObjThreadWork,userdb,&UserDb::run,Qt::QueuedConnection);
+        connect(userdb,&UserDb::message,this,&Tester::setStatus,Qt::QueuedConnection);
         m_Thread->start();
        qDebug()<<"m_thread is running?"<< m_Thread->isRunning();
     }
@@ -303,6 +303,7 @@ void Tester::stopCheckFile()
     userdb->stop();
     if(m_Thread!=NULL){
         m_Thread->quit();
+        m_Thread->wait(2000);
         m_Thread=NULL;
     }
     qDebug()<<QStringLiteral("停止处理文件");

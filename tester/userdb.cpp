@@ -46,7 +46,7 @@ void UserDb::run()
 ////    todo
     qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb(filename);//"C:\\test.txt");// /Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //
     createReport();
-    emit message("finished.");
+//    emit message("finished.");
 }
 void UserDb::createReport(){
     QSqlQuery query;
