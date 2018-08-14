@@ -1,5 +1,6 @@
 ﻿#include "report.h"
 #include "ui_report.h"
+#include <QString>
 
 Report::Report(QWidget *parent)
     :QDialog(parent),
@@ -21,8 +22,8 @@ Report::Report(QWidget *parent)
             {
                 int id = query.value(0).toInt();
                 int j=0;//i行j列
-                for(int i=1;i<100;i++){
-                    ui->tableWidget->setItem(i-1, j, new QTableWidgetItem(query.value(i).toString()));
+                for(int i=0;i<100;i++){
+                    ui->tableWidget->setItem(i, j,new QTableWidgetItem(query.value(i+1).toString()));
                 }
 
             }
@@ -83,7 +84,7 @@ void Report::init(){
     formatNok = 0;
     fieldNok = 0;
     allOk = 0;
-    personMobileFormatRight = 0;
+    personMobileOk = 0;
     personMobileOwnerTypeNok = 0;
     personMobileOwnerNameNok = 0;
     personMobileOwnerNumNok = 0;

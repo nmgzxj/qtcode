@@ -69,7 +69,7 @@ public:
     int formatNok;
     int fieldNok;
     int allOk;
-    int personMobileFormatRight;
+    int personMobileOk;
     int personMobileOwnerTypeNok;
     int personMobileOwnerNameNok;
     int personMobileOwnerNumNok;

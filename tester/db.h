@@ -18,7 +18,7 @@ static void createConnection()
     {
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setHostName("localhost");
-        db.setDatabaseName("data.db");
+        db.setDatabaseName("data.dat");
         db.setUserName("king");
         db.setPassword("123456");
         if(db.open())

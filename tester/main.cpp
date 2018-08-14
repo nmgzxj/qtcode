@@ -56,7 +56,14 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
     QString current_date = QString("(%1)").arg(current_date_time);
     QString message = QString("%1 %2 %3 %4").arg(text).arg(context_info).arg(msg).arg(current_date);
 
-    QFile file("log.txt");
+    QDateTime dt;
+    QTime time;
+    QDate date;
+    dt.setTime(time.currentTime());
+    dt.setDate(date.currentDate());
+    QString currentDate = dt.toString("yyyyMMdd");
+
+    QFile file("log"+currentDate+".txt");
     file.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream text_stream(&file);
     text_stream << message << "\r\n";
@@ -81,7 +88,7 @@ int main(int argc, char *argv[])
 
 
 
-    //注册MessageHandler
+    //注册MessageHandler写log
 //        qInstallMessageHandler(outputMessage);
     qInstallMessageHandler(0);
 

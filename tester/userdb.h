@@ -123,6 +123,8 @@ public:
     void saveTradeFixedAgentUnitNok(QString line);
     void saveTradeFixedUnitNok(QString line);
     void savePersonMobileOneCard(QString line);
+    bool isNotReg(QString str);
+    bool isNotOk(QString str);
 private:
     QString getColName(QString name);
     int getColNum(QString name);

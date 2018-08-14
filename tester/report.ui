@@ -308,6 +308,11 @@
      </row>
      <row>
       <property name="text">
+       <string>单位移动用户-使用人&amp;单位信息校验不合规</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
        <string>单位移动用户-经办人&amp;单位信息校验不合规</string>
       </property>
      </row>
