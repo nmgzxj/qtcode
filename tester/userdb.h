@@ -124,7 +124,15 @@ public:
     void saveTradeFixedUnitNok(QString line);
     void savePersonMobileOneCard(QString line);
     bool isNotReg(QString str);
-    bool isNotOk(QString str);
+    bool isPersonTypeNok(QString str);
+    bool isUnitTypeNok(QString str);
+    bool isPersonNameNok(QString str);
+    bool isUnitNameNok(QString str);
+    bool isPersonNumNok(QString str);
+    bool isUnitNumNok(QString str);
+    bool isPersonAddNok(QString str);
+    bool isUnitAddNok(QString str);
+
 private:
     QString getColName(QString name);
     int getColNum(QString name);
@@ -134,8 +142,34 @@ private:
     volatile bool stopped;
     Report* report;
     void writeFile(QString filename, QString line);
+    QString readValueToString(QString query);
     QString delimeter;
     QMap<QString,QString> userType;
+    QString maxlimit;
+    QString bizTypeFixed;
+    QString personType;
+    QString personNameMin;
+    QString personNameMax;
+    QString personNamePermit;
+    QString personNumMin;
+    QString personNumMax;
+    QString personIntervalTime;
+    QString personAddMin;
+    QString personAddMax;
+    QString unitType;
+    QString unitNameMin;
+    QString unitNameMax;
+    QString unitNumMin;
+    QString unitNumMax;
+    QString unitIntervalTime;
+    QString unitAddMin;
+    QString unitAddMax;
+    QString personNameRule;
+    QString unitNameRule;
+    QString numRule;
+    QString addRule;
+
+
 signals:
     void message(const QString& info);
     void progress(int present);
