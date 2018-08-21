@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
 
 
     //注册MessageHandler写log
-//        qInstallMessageHandler(outputMessage);
-    qInstallMessageHandler(0);
+        qInstallMessageHandler(outputMessage);
+//    qInstallMessageHandler(0);
 
 
 //    ProgressDlg w;
@@ -99,15 +99,18 @@ int main(int argc, char *argv[])
 
     createConnection();
     Tester w;
-    LoginDialog dlg;
-    if(dlg.exec() == QDialog::Accepted)
-    {
-        w.show();
+    w.show();
 
-        return a.exec();
-    }
-    else
-    {
-        return 0;
-    }
+    return a.exec();
+//    LoginDialog dlg;
+//    if(dlg.exec() == QDialog::Accepted)
+//    {
+//        w.show();
+
+//        return a.exec();
+//    }
+//    else
+//    {
+//        return 0;
+//    }
 }

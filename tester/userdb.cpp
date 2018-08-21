@@ -46,7 +46,7 @@ void UserDb::run()
 ////    todo
     qDebug()<<"bool UserDb::insertDb(QString filename)"<<insertDb(filename);//"C:\\test.txt");// /Users/zhangxianjin/qtcode/test.txt");//test_data.txt"); //
     createReport();
-//    emit message("finished.");
+    emit message("finished.");
 }
 void UserDb::createReport(){
     QSqlQuery query;
@@ -971,11 +971,11 @@ bool UserDb::isNotReg(QString str){
         return true;
     else if(str.isEmpty())
         return true;
-    else if(str.trimmed()=='null')
+    else if(str.trimmed()=="null")
         return true;
-    else if(str.trimmed()=='NULL')
+    else if(str.trimmed()=="NULL")
         return true;
-    else if(str.trimmed()=='Null')
+    else if(str.trimmed()=="Null")
         return true;
     else
         return false;

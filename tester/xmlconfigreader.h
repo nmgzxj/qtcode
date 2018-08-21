@@ -33,7 +33,7 @@ public:
     QMap<QString,QString> readCommonRuleValue(QList<QString> queryList);
     QMap<QString,QString> readUserType();
     QString PATH;
-    void writeUserType(QList<QList<QString>> userTypeList);
+    void writeUserType(QMap<QString,QString> userTypeList);
 };
 
 #endif // XMLCONFIGREADER_H

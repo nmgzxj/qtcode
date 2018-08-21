@@ -71,6 +71,7 @@ class WorkPathPage : public QWidget
     Q_OBJECT
 public:
     WorkPathPage(QWidget *parent = 0);
+    ~WorkPathPage();
 public slots:
     void save();
 private:
@@ -180,12 +181,17 @@ class UserTypePage : public QWidget
     Q_OBJECT
 public:
     UserTypePage(QWidget *parent = 0);
+    ~UserTypePage();
 public slots:
-    void add();
-    void del();
-    void valueSave();
+    void save();
 private:
-    QTableWidget *table;
+    void init();
+    QLabel *personLabel;
+    QLineEdit *personEdit;
+    QLabel *unitLabel;
+    QLineEdit *unitEdit;
+    QLabel *industryLabel;
+    QLineEdit *industryEdit;
     QMap<QString,QString> value;
     QString currnt_menu;
     XMLConfigReader *xmlConfig;

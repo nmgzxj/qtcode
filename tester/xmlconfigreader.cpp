@@ -501,27 +501,41 @@ void XMLConfigReader::writeAutoid(QList<QList<QString>> autoid){
     //updateAutoid(temp,qqq,0);
 }
 
-void XMLConfigReader::writeUserType(QList<QList<QString>> userTypeList){
+void XMLConfigReader::writeUserType(QMap<QString,QString> userTypeList){
     qDebug()<<"=========================in writeUserType =======================";
-    QString temp="";
-    QList<QList<QString>> qqq;
-    for(int i=0; i<userTypeList.size(); i++){
-        qDebug()<<"userType is "<<userTypeList.at(i).at(1);
-//        if(temp=="")
-        {
-            if(temp!=""&&userTypeList.at(i).at(0)!=temp){
-                qDebug()<<"temp is "<<temp;
-
-                updateAutoid(temp,qqq,0);//autoid.at(i),offset++);
-                qqq.clear();
-            }
-            qqq.append(userTypeList.at(i));
-            temp = userTypeList.at(i).at(0);
-        }
-
-        updateAutoid(temp,qqq,0);
+    QString outputFilepath = getConfigPath()+"/config/config-usertype.xml";
+    QFile file(outputFilepath);
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+            qDebug()<<"open for config-usertype.xml error..." ;
     }
-    //updateAutoid(temp,qqq,0);
+    QDomDocument doc;
+    QString errorStr;
+    int errorLine;
+    int errorColumn;
+    if (!doc.setContent(&file, false, &errorStr, &errorLine, &errorColumn)) {
+            qDebug()<<"add setcontent error..." ;
+            file.close();
+    }
+    file.close();
+    QMapIterator<QString, QString> tmpIter(userTypeList);
+    while (tmpIter.hasNext())
+    {
+        tmpIter.next();
+        qDebug() <<tmpIter.key() << ": " <<tmpIter.value();
+        QDomNodeList lists = doc.elementsByTagName(tmpIter.key());
+        if(lists.size()==0)
+        {
+            qDebug()<<QStringLiteral("没有找到节点")<<tmpIter.key();
+        }
+        else {
+            lists.at(0).toElement().firstChild().setNodeValue(tmpIter.value());// 修改对应XML值。
+        }
+    }
+    if(!file.open(QIODevice::WriteOnly|QIODevice::Text))
+        qDebug() << "open for write userType error!";
+    QTextStream out(&file);
+    doc.save(out,4);
+    file.close();
 }
 
 /**
@@ -640,7 +654,7 @@ void XMLConfigReader::writeSystemValue(QString dataRange, QString compliantDate,
     QFile file(outputFilePath);
 
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-            qDebug()<<"open for add error..." ;
+            qDebug()<<"open for config-system.xml error..." ;
     }
     QDomDocument doc;
     QString errorStr;

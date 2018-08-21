@@ -298,6 +298,13 @@ void WorkPathPage::save(){
     xmlConfig->writeWorkingpathValue(workPathEdit->text());
 }
 
+WorkPathPage::~WorkPathPage(){
+    delete workPathLabel;// = new QLabel(tr("工作路径:"));
+    delete workPathEdit;// = new QLineEdit;
+    delete saveButton;// = new QPushButton;
+    delete xmlConfig;
+}
+
 DelimiterPage::DelimiterPage(QWidget *parent) : QWidget(parent)
 {
     delimiterLabel = new QLabel(QStringLiteral("字段间分隔符:"));
@@ -591,145 +598,58 @@ void CommonRulePage::save(){
 
 UserTypePage::UserTypePage(QWidget *parent) : QWidget(parent)
 {
-//    QLabel *serverLabel = new QLabel(QStringLiteral("用户类型:"));
-    table = new QTableWidget;
-    table->setColumnCount(2);
-    QTableWidgetItem *item0 = new QTableWidgetItem;
-    item0->setText("key");
-    QTableWidgetItem *item1 = new QTableWidgetItem;
-    item1->setText("value");
-    table->setHorizontalHeaderItem(0, item0);
-    table->setHorizontalHeaderItem(1, item1);
-
-//     QVBoxLayout *mainLayout = new QVBoxLayout;
-//     mainLayout->addWidget(table);
-//     mainLayout->addStretch(1);
-//     setLayout(mainLayout);
-
-     //插入数据
-     value=xmlConfig->readUserType();
-     qDebug()<<QStringLiteral("读取用户类型")<<value;
-//     currnt_menu = menu;
-     table->setRowCount(value.count());
- //    bool ok=true;
-     qDebug()<<"value count "<<value.count();
-     QMap<QString, QString>::const_iterator it;
-     int i=0;
-     for( it=value.constBegin(); it!=value.constEnd(); it++){
-         table->setItem(i, 0, new QTableWidgetItem(it.key()));
-         table->setItem(i++, 1, new QTableWidgetItem(it.value()));
-     }
-//     for(int i=0; i<value.size(); i++){
-//         table->setItem(i, 0, new QTableWidgetItem(value.key(i)));
-//         table->setItem(i, 1, new QTableWidgetItem(value.value(i)));
-//         qDebug()<<"value is "<<value.value(i);
-//     }
+    personLabel = new QLabel(QStringLiteral("person:"));
+    personEdit = new QLineEdit;
+    unitLabel = new QLabel(QStringLiteral("unit:"));
+    unitEdit = new QLineEdit;
+    industryLabel = new QLabel(QStringLiteral("industry:"));
+    industryEdit = new QLineEdit;
+    QPushButton *saveButton = new QPushButton;
+    saveButton->setText("save");
 
 
-
-     table->horizontalHeader()->setVisible(true);
-     table->verticalHeader()->setVisible(false);
-     table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-     table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-     table->setSelectionBehavior(QAbstractItemView::SelectRows);
-
-     //增加行按钮
-     QPushButton *addButton = new QPushButton;
-     addButton->setText("+");
-     addButton->setStyleSheet("width:30px");
-
-     //删除行按钮
-     QPushButton *delButton = new QPushButton;
-     delButton->setText("-");
-     delButton->setStyleSheet("width:30px");
-
-     //保存按钮
-     QPushButton *saveButton = new QPushButton;
-     saveButton->setText("save");
-
-     connect(addButton, SIGNAL(clicked()), this, SLOT(add()));
-     connect(delButton, SIGNAL(clicked()), this, SLOT(del()));
-     connect(saveButton, SIGNAL(clicked()), this, SLOT(valueSave()));
-
-     QHBoxLayout *buttonLayout = new QHBoxLayout;
-     buttonLayout->addWidget(addButton);
-     buttonLayout->addWidget(delButton);
-     buttonLayout->addWidget(saveButton);
+     connect(saveButton, SIGNAL(clicked()), this, SLOT(save()));
 
 
-     QVBoxLayout *mainLayout = new QVBoxLayout;
-//     mainLayout->addWidget(serverLabel);
-     mainLayout->addWidget(table);
-     mainLayout->addLayout(buttonLayout);
-     mainLayout->setSpacing(1);
-     setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+     QGridLayout *mainLayout = new QGridLayout;
+
+     mainLayout->addWidget(personLabel,0,0,1,1);
+     mainLayout->addWidget(personEdit,0,1,1,1);
+     mainLayout->addWidget(unitLabel,1,0,1,1);
+     mainLayout->addWidget(unitEdit,1,1,1,1);
+     mainLayout->addWidget(industryLabel,2,0,1,1);
+     mainLayout->addWidget(industryEdit,2,1,1,1);
+     mainLayout->addWidget(saveButton,3,0,2,1);
+
+
      setLayout(mainLayout);
+     init();
 }
-void UserTypePage::add(){
-    //结尾添加一行
-    int row = table->rowCount();
-    table->insertRow(row);
-    table->setItem(row, 0, new QTableWidgetItem("new row"));
-    table->setItem(row, 1, new QTableWidgetItem("new row"));
-}
-void UserTypePage::del(){
-    qDebug()<<QStringLiteral("del方法")<<table;
-    //空行无法选择
-        QList<QTableWidgetItem*> items = table->selectedItems();
-        //选择模式器
-        QItemSelectionModel *smodel = table->selectionModel();
-        //获取所有的选择索引
-        QModelIndexList slist = smodel->selectedIndexes();
-
-        //获取所有被选中的行号
-        std::set<int> rows;
-        for (int i = 0; i < slist.size(); i++)
-        {
-            //重复的插入失败
-            rows.insert(slist[i].row());
-        }
-
-       //给用户提示
-        QString msg = QStringLiteral("您确认删除:");
-
-        for (std::set<int>::iterator itr = rows.begin(); itr != rows.end(); itr++)
-        {
-            QTableWidgetItem *item = table->item(*itr, 0);
-            msg += "[";
-            msg += QString::number(*itr+1);
-            msg += ":";
-            if (item)
-                msg += item->text();
-            msg += "]";
-        }
-        int re = QMessageBox::information(this, "", msg, QStringLiteral("确认"), QStringLiteral("取消"));
-        if (re != 0)
-        {
-            return;
-        }
-
-        //删除多行
-        for (;;)
-        {
-            //获取所有的选择索引
-            QModelIndexList s = smodel->selectedIndexes();
-            if (s.size() <= 0) break;
-            //每次只删除一行
-            table->removeRow(s[0].row());
-        }
+void UserTypePage::init(){
+    QMap<QString,QString> map = xmlConfig->readUserType();
+    this->personEdit->setText(map.value("person"));
+    this->unitEdit->setText(map.value("unit"));
+    this->industryEdit->setText(map.value("industry"));
 }
 
-void UserTypePage::valueSave(){
-    qDebug()<<" ===================in valueSave==================== ";
-    qDebug()<<"row count is "<<table->rowCount();
-    qDebug()<<"col count is "<<table->columnCount();
+void UserTypePage::save(){
     value.clear();
-    for(int i=0; i<table->rowCount();i++){
-        value.insert(table->item(i,0)->text(),table->item(i,1)->text());
-    }
-//    xmlConfig->writeValue(currnt_menu,value);
-    //保存 todu
+    value.insert("person", personEdit->text());
+    value.insert("unit",unitEdit->text());
+    value.insert("industry", industryEdit->text());
+    xmlConfig->writeUserType(value);
 }
+
+UserTypePage::~UserTypePage(){
+    delete personLabel;
+    delete  personEdit;
+    delete unitLabel;
+    delete unitEdit;
+    delete industryLabel;
+    delete industryEdit;
+    delete xmlConfig;
+}
+
 //BizTypePage::BizTypePage(QWidget *parent,QString menu): QWidget(parent)
   BizTypePage::BizTypePage(QString menu): QWidget()
 {
