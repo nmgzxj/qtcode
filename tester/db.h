@@ -18,9 +18,8 @@ static void createConnection()
     {
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setHostName("localhost");
-        db.setDatabaseName("data.dat");
-        db.setUserName("king");
-        db.setPassword("123456");
+        db.setDatabaseName(":memory:");
+
         if(db.open())
         {
             qDebug()<<"数据库连接成功！";
