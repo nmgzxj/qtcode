@@ -581,8 +581,8 @@ void UserDb::createReport(){
          sql = "update report set unitMobileOwnerAgentNok="+QString::number(report->unitMobileOwnerAgentNok);
          qDebug()<<"update unitMobileOwnerAgentNok is:"<<query.exec(sql)<<sql;
     //单位移动用户-使用人&amp;单位信息校验不合规
-         sql = "update report set unitMobileOwnerUnitNok="+
-                 QString::number(report->unitMobileOwnerUnitNok);
+         sql = "update report set unitMobileOwnerUnitNok="+ QString::number(report->unitMobileOwnerUnitNok);
+         qDebug()<<"update unitMobileOwnerUnitNok is:"<<query.exec(sql)<<sql;
     //单位移动用户-经办人&amp;单位信息校验不合规
          sql = "update report set unitMobileAgentUnitNok="+QString::number(report->unitMobileAgentUnitNok);
          qDebug()<<"update unitMobileAgentUnitNok is:"<<query.exec(sql)<<sql;
@@ -1587,7 +1587,7 @@ void UserDb::saveAllNotReg(QString line){
     writeFile("全量未登记.nreg",line);
 }
 void UserDb::saveAllNok(QString line){
-    report->allOk+=1;
+    report->allNok+=1;
     writeFile("全量形式不合规.nck",line);
 }
 void UserDb::saveAbnormal(QString line){
@@ -1827,27 +1827,27 @@ void UserDb::saveUnitFixedOwnerNotReg(QString line){
 }
 void UserDb::saveUnitFixedAgentNotReg(QString line){
     report->unitFixedAgentNotReg+=1;
-    writeFile("单位固话用户-经办人信息未登记",line);
+    writeFile("单位固话用户-经办人信息未登记.nreg",line);
 }
 void UserDb::saveUnitFixedUnitNotReg(QString line){
     report->unitFixedUnitNotReg+=1;
-    writeFile("单位固话用户-单位信息未登记",line);
+    writeFile("单位固话用户-单位信息未登记.nreg",line);
 }
 void UserDb::saveUnitFixedOwnerAgentNotReg(QString line){
     report->unitFixedOwnerAgentNotReg+=1;
-    writeFile("单位固话用户-使用人&经办人信息未登记",line);
+    writeFile("单位固话用户-使用人&经办人信息未登记.nreg",line);
 }
 void UserDb::saveUnitFixedOwnerUnitNotReg(QString line){
     report->unitFixedOwnerUnitNotReg+=1;
-    writeFile("单位固话用户-使用人&单位信息未登记",line);
+    writeFile("单位固话用户-使用人&单位信息未登记.nreg",line);
 }
 void UserDb::saveUnitFixedAgentUnitNotReg(QString line){
     report->unitFixedAgentUnitNotReg+=1;
-    writeFile("单位固话用户-经办人&单位信息未登记",line);
+    writeFile("单位固话用户-经办人&单位信息未登记.nreg",line);
 }
 void UserDb::saveUnitFixedOwnerAgentUnitNotReg(QString line){
     report->unitFixedOwnerAgentUnitNotReg+=1;
-    writeFile("单位固话用户-使用人&经办人&单位信息未登记",line);
+    writeFile("单位固话用户-使用人&经办人&单位信息未登记.nreg",line);
 }
 void UserDb::saveUnitFixedAgentNok(QString line){
     report->unitFixedAgentNok+=1;
@@ -1867,31 +1867,31 @@ void UserDb::saveTradeMobileOk(QString line){
 }
 void UserDb::saveTradeMobileAgentNotReg(QString line){
     report->tradeMobileAgentNotReg+=1;
-    writeFile("行业移动应用-经办人信息未登记",line);
+    writeFile("行业移动应用-经办人信息未登记.nreg",line);
 }
 void UserDb::saveTradeMobileAgentUnitNotReg(QString line){
     report->tradeMobileAgentUnitNotReg+=1;
-    writeFile("行业移动应用-经办人&单位信息未登记",line);
+    writeFile("行业移动应用-经办人&单位信息未登记.nreg",line);
 }
 void UserDb::saveTradeMobileLiableAgentNotReg(QString line){
     report->tradeMobileLiableAgentNotReg+=1;
-    writeFile("行业移动应用-责任人&经办人信息未登记",line);
+    writeFile("行业移动应用-责任人&经办人信息未登记.nreg",line);
 }
 void UserDb::saveTradeMobileLiableAgentUnitNotReg(QString line){
     report->tradeMobileLiableAgentUnitNotReg+=1;
-    writeFile("行业移动应用-责任人&经办人&单位信息未登记",line);
+    writeFile("行业移动应用-责任人&经办人&单位信息未登记.nreg",line);
 }
 void UserDb::saveTradeMobileUnitNotReg(QString line){
     report->tradeMobileUnitNotReg+=1;
-    writeFile("行业移动应用-单位信息未登记",line);
+    writeFile("行业移动应用-单位信息未登记.nreg",line);
 }
 void UserDb::saveTradeMobileLiableNotReg(QString line){
     report->tradeMobileLiableNotReg+=1;
-    writeFile("行业移动应用-责任人信息未登记",line);
+    writeFile("行业移动应用-责任人信息未登记.nreg",line);
 }
 void UserDb::saveTradeMobileLiableUnitNotReg(QString line){
     report->tradeMobileLiableUnitNotReg+=1;
-    writeFile("行业移动应用-责任人&单位信息未登记",line);
+    writeFile("行业移动应用-责任人&单位信息未登记.nreg",line);
 }
 void UserDb::saveTradeMobileAgentNok(QString line){
     report->tradeMobileAgentNok+=1;

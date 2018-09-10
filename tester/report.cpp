@@ -81,6 +81,7 @@ void Report::init(){
 
     allData = 0;
     allNotReg = 0;
+    allNok = 0;
     formatNok = 0;
     fieldNok = 0;
     allOk = 0;

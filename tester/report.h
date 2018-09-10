@@ -66,6 +66,7 @@ public:
 
     int allData;
     int allNotReg;
+    int allNok;
     int formatNok;
     int fieldNok;
     int allOk;
