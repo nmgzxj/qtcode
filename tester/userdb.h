@@ -123,6 +123,7 @@ public:
     void saveTradeFixedAgentUnitNok(QString line);
     void saveTradeFixedUnitNok(QString line);
     void savePersonMobileOneCard(QString line);
+    void saveLeaveNet(QString line);
     bool isNotReg(QString str);
     bool isPersonTypeNok(QString str);
     bool isUnitTypeNok(QString str);
@@ -145,6 +146,7 @@ private:
     QString readValueToString(QString query);
     QString delimeter;
     QMap<QString,QString> userType;
+
     QString maxlimit;
     QString bizTypeFixed;
     QString personType;
@@ -168,6 +170,8 @@ private:
     QString unitNameRule;
     QString numRule;
     QString addRule;
+    QString nonRealName;
+    QString leaveNet;
 
 
 signals:

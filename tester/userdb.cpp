@@ -86,6 +86,9 @@ UserDb::UserDb()
     //初始化单位证件地址不合规
     addRule = readValueToString("证件地址addr-rule");
     addRule += readValueToString("证件地址match-rule");
+
+    nonRealName = readValueToString("业务状态非实名制停机");
+    leaveNet = readValueToString("业务状态不在网");
 }
 
 QString UserDb::readValueToString(QString query){
@@ -1058,6 +1061,11 @@ bool UserDb::isNotReg(QString str){
         return false;
 }
 
+/**
+ * @brief UserDb::isPersonTypeNok
+ * @param str 证件类型
+ * @return 个人证件类型是否不合规
+ */
 bool UserDb::isPersonTypeNok(QString str){
     return !personType.contains(str);
 }
@@ -1131,6 +1139,23 @@ void UserDb::processLine(QString line){
         saveAbnormal(line);
         return;
     }
+
+    //非实名停机和销户的，不纳入检查范围，单独统计数字，加在报表里。
+    if(nonRealName.contains(col.at(getColNum("使用状态")))||leaveNet.contains(col.at(getColNum("使用状态")))){
+        saveLeaveNet(line);
+        return;
+    }
+
+    /*
+
+
+入网时间在20130901的不能用15位身份证，身份证校验规则问景欣。
+入网时间格式不同。期望可以配置
+年月日、时分秒、- /    :    等10多类包括欧美格式的，改为下拉选择？
+20170401以后开卡的超过5张的算违规，证件号有多少？开了多少号？
+一证多名，所有身份证、使用人、责任人、经办人、所有证件号码对于超过1个名字。
+名字里面不能出现特殊字符，规则里面是不合规的。
+多字段、少字段、时间类型、编码格式（可设置）、用户类型*/
 
     if(col.at(getColNum("用户类型"))==userType.value("person")){
         if(bizTypeFixed.contains(col.at(getColNum("用户业务类型")))){
