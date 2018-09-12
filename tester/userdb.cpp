@@ -845,7 +845,7 @@ bool UserDb::createTable(){
     sql.append(")");
 
 
-//    QSqlQuery query;
+    QSqlQuery query;
 
     qDebug()<<"drop table"<<query.exec("drop table file");
     qDebug()<<"createTable()"<<sql;
