@@ -1979,6 +1979,11 @@ void UserDb::savePersonMobileOneCard(QString line){
     writeFile("个人移动一证五卡不合规.nck",line);
 }
 
+void UserDb::saveLeaveNet(QString line){
+    report->leaveNet +=1;
+    writeFile("非实名制停机和离网状态", line);
+}
+
 void UserDb::writeFile(QString filename, QString line){
     QString path = xmlConfig->readWorkingpathValue().value("workingpath");
     qDebug()<<"writeFile "<<path<<filename;

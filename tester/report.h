@@ -119,6 +119,7 @@ public:
     int tradeFixedAgentUnitNok;
     int tradeFixedUnitNok;
     int personMobileOneCard= 0;
+    int leaveNet;
 
 
 private:

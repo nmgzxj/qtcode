@@ -134,6 +134,7 @@ void Report::init(){
     tradeFixedAgentUnitNok = 0;
     tradeFixedUnitNok = 0;
     personMobileOneCard= 0;
+    leaveNet = 0;
 }
 
 Report::~Report()
