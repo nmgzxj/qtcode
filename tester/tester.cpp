@@ -10,7 +10,7 @@ Tester::Tester(QWidget *parent)
 {
 //    setWindowIcon(QIcon(":/Images/logo.icns"));
     setWindowTitle(QStringLiteral("实名制检测系统"));			//设置窗体标题
-    resize(1280,960);
+    resize(800,600);
     showWidget =new ShowWidget(this);		//设置文本显示窗体
     setCentralWidget(showWidget);
 
@@ -20,7 +20,7 @@ Tester::Tester(QWidget *parent)
     setupModel();
     setupView();
 //    userfile = new UserFile();
-//    userdb = new UserDb();
+    userdb = new UserDb();
 }
 
 void Tester::createMenus()
@@ -283,7 +283,7 @@ void Tester::startCheckFile()
 {
     statusBar()->showMessage("start process file", 3000);
     qDebug()<<QStringLiteral("开始处理文件");
-    if(m_Thread==NULL)
+//    if(m_Thread==nullptr)
     {
        qDebug()<<QStringLiteral("开始处理文件xiancheng");
        userdb->start();
@@ -301,10 +301,10 @@ void Tester::stopCheckFile()
 {
     statusBar()->showMessage("stop process file", 3000);
     userdb->stop();
-    if(m_Thread!=NULL){
+    if(m_Thread!=nullptr){
         m_Thread->quit();
         m_Thread->wait(2000);
-        m_Thread=NULL;
+//        m_Thread=NULL;
     }
     qDebug()<<QStringLiteral("停止处理文件");
 }

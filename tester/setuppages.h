@@ -10,6 +10,7 @@
 #include <QHash>
 #include "xmlconfigreader.h"
 #include <QLineEdit>
+#include <QComboBox>
 
 
 using namespace std;
@@ -26,7 +27,7 @@ class ColumnPage : public QWidget
 {
     Q_OBJECT
 public:
-    ColumnPage(QWidget *parent = 0);
+    ColumnPage(QWidget *parent = nullptr);
 public slots:
     void add();
     void del();
@@ -42,14 +43,14 @@ private:
 class RulePage : public QWidget
 {
 public:
-    RulePage(QWidget *parent = 0);
+    RulePage(QWidget *parent = nullptr);
 };
 
 class SystemPage : public QWidget
 {
     Q_OBJECT
 public:
-    SystemPage(QWidget *parent = 0);
+    SystemPage(QWidget *parent = nullptr);
 public slots:
     void save();
 private:
@@ -70,7 +71,7 @@ class WorkPathPage : public QWidget
 {
     Q_OBJECT
 public:
-    WorkPathPage(QWidget *parent = 0);
+    WorkPathPage(QWidget *parent = nullptr);
     ~WorkPathPage();
 public slots:
     void save();
@@ -86,7 +87,7 @@ class DelimiterPage : public QWidget
 {
     Q_OBJECT
 public:
-    DelimiterPage(QWidget *parent = 0);
+    DelimiterPage(QWidget *parent = nullptr);
 public slots:
     void save();
 private:
@@ -101,7 +102,7 @@ class ItemnumPage : public QWidget
 {
     Q_OBJECT
 public:
-    ItemnumPage(QWidget *parent = 0);
+    ItemnumPage(QWidget *parent = nullptr);
 public slots:
     void save();
 private:
@@ -116,12 +117,13 @@ class DateformatPage : public QWidget
 {
     Q_OBJECT
 public:
-    DateformatPage(QWidget *parent = 0);
+    DateformatPage(QWidget *parent = nullptr);
 public slots:
     void save();
 private:
     QLabel *dateformatLabel;// = new QLabel(tr("时间格式:"));
-    QLineEdit *dateformatEdit;// = new QLineEdit;
+//    QLineEdit *dateformatEdit;// = new QLineEdit;
+    QComboBox *dateformatEdit;
     QPushButton *saveButton;// = new QPushButton;
     XMLConfigReader *xmlConfig;
     void init();
@@ -131,7 +133,7 @@ class CommonRulePage : public QWidget
 {
     Q_OBJECT
 public:
-    CommonRulePage(QWidget *parent = 0);
+    CommonRulePage(QWidget *parent = nullptr);
 
 public slots:
     void save();
@@ -180,7 +182,7 @@ class UserTypePage : public QWidget
 {
     Q_OBJECT
 public:
-    UserTypePage(QWidget *parent = 0);
+    UserTypePage(QWidget *parent = nullptr);
     ~UserTypePage();
 public slots:
     void save();
@@ -201,8 +203,8 @@ class BizTypePage : public QWidget
 {
     Q_OBJECT
 public:
-    BizTypePage(QWidget *parent = 0);
-    BizTypePage(QWidget *parent = 0,QString menu="");
+    BizTypePage(QWidget *parent = nullptr);
+    BizTypePage(QWidget *parent = nullptr,QString menu="");
     BizTypePage(QString menu="");
 public slots:
     void add();

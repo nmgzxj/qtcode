@@ -382,7 +382,20 @@ void ItemnumPage::save(){
 DateformatPage::DateformatPage(QWidget *parent) : QWidget(parent)
 {
     dateformatLabel = new QLabel(QStringLiteral("时间格式:"));
-    dateformatEdit = new QLineEdit;
+    dateformatEdit = new QComboBox;
+    dateformatEdit->addItem("YYYY-MM-DD");
+    dateformatEdit->addItem("MM-DD-YYYY");
+    dateformatEdit->addItem("DD-MM-YYYY");
+    dateformatEdit->addItem("YYYYMMDD");
+    dateformatEdit->addItem("MMDDYYYY");
+    dateformatEdit->addItem("DDMMYYYY");
+    dateformatEdit->addItem("YYYY-MM-DD HH:MI:SS");
+    dateformatEdit->addItem("MM-DD-YYYY HH:MI:SS");
+    dateformatEdit->addItem("DD-MM-YYYY HH:MI:SS");
+    dateformatEdit->addItem("YYYYMMDDHHMISS");
+    dateformatEdit->addItem("MMDDYYYYHHMISS");
+    dateformatEdit->addItem("DDMMYYYYHHMISS");
+
     saveButton = new QPushButton;
     saveButton->setText("save");
 
@@ -408,12 +421,12 @@ DateformatPage::DateformatPage(QWidget *parent) : QWidget(parent)
 
 void DateformatPage::init(){
     QMap<QString,QString> map = xmlConfig->readDateformatValue();
-    this->dateformatEdit->setText(map.value("dateformat"));
+    this->dateformatEdit->setCurrentText(map.value("dateformat"));
 }
 
 void DateformatPage::save(){
     qDebug()<<" ===================in save==================== ";
-    xmlConfig->writeDateformatValue(dateformatEdit->text());
+    xmlConfig->writeDateformatValue(dateformatEdit->currentText());
 }
 
 CommonRulePage::CommonRulePage(QWidget *parent) : QWidget(parent)
