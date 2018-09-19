@@ -860,7 +860,7 @@ bool UserDb::createTable(){
 
 QString UserDb::getCol(QString str){
     if(str=="null")
-        return NULL;//"'"+str+"'";
+        return nullptr;//"'"+str+"'";
     else
         return str;
 }

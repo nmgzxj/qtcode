@@ -433,7 +433,7 @@ CommonRulePage::CommonRulePage(QWidget *parent) : QWidget(parent)
 {
 //    QRegExp regnum("[0-9]+$");//只能输入数字
 //    QValidator *validatorNum = new QRegExpValidator(regnum);
-    QRegExp regnumdash("[0-9\-]+$");//只能输入或横线
+    QRegExp regnumdash("[0-9\-]+$");//只能输入数字或横线
     QValidator *validatorNumDash = new QRegExpValidator(regnumdash);
 //    QRegExp regchar("[a-zA-Z]+$");//只能输入字符
 //    QValidator *validatorChar = new QRegExpValidator(regchar);
