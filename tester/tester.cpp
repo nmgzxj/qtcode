@@ -87,7 +87,7 @@ void Tester::createActions()
     startAction->setStatusTip(QStringLiteral("开始检查"));
     connect(startAction,SIGNAL(triggered()),this,SLOT(startCheckFile()));
     //查看报表动作
-    reportAction = new QAction("查看报表",this);
+    reportAction = new QAction(QStringLiteral("查看报表"),this);
     reportAction->setStatusTip("查看运行结果报表");
     connect(reportAction,SIGNAL(triggered()),this,SLOT(report()));
     //“停止”动作

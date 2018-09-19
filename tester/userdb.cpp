@@ -3,6 +3,7 @@
 UserDb::UserDb()
 {
      stopped = false;
+     xmlConfig = new XMLConfigReader();
      QList<QList<QString>> lls = xmlConfig->readAutoid();
      delimeter = xmlConfig->readDelimiterValue();
      qDebug()<<"delimeter="<<delimeter;
@@ -103,6 +104,7 @@ QString UserDb::readValueToString(QString query){
 UserDb::~UserDb()
 {
     delete report;
+    delete xmlConfig;
 }
 void UserDb::printMessage(){
     qDebug()<<QString("%1->%2,thread id:%3").arg(__FUNCTION__).arg(__FILE__).arg((int)QThread::currentThreadId());
@@ -1033,7 +1035,7 @@ bool UserDb::countData(){
             if(!stopped && line_num%10000==0)
             {
                     qDebug()<<"commit";
-                    qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
+                    qDebug()<<QStringLiteral("10000条数据耗时：")<<tmpTime.elapsed()<<"ms"<<endl;
                     tmpTime.start();
                     emit message("已处理"+QString::number(line_num)+"行");
                     qDebug()<<"line_num"<<line_num;
