@@ -506,7 +506,7 @@
    <item>
     <widget class="QPushButton" name="pushButton">
      <property name="text">
-      <string>导出结果</string>
+      <string>生成结果报表</string>
      </property>
     </widget>
    </item>

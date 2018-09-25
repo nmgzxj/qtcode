@@ -3,7 +3,7 @@
 UserDb::UserDb()
 {
      stopped = false;
-     xmlConfig = new XMLConfigReader();
+//     xmlConfig = new XMLConfigReader();
      QList<QList<QString>> lls = xmlConfig->readAutoid();
      delimeter = xmlConfig->readDelimiterValue();
      qDebug()<<"delimeter="<<delimeter;
@@ -57,22 +57,23 @@ UserDb::UserDb()
     queryList.append("unitCard_addLen_max");
 
     QMap<QString,QString> map = xmlConfig->readCommonRuleValue(queryList);
+//    bool ok = true;
     maxlimit = map.value("maxlimit");
-    personNameMin = map.value("personNameLen_min");
-    personNameMax = map.value("personNameLen_max");
+    personNameMin = map.value("personNameLen_min").compare("-")?map.value("personNameLen_min").toInt(&ok,10):-1;
+    personNameMax = map.value("personNameLen_max").compare("-")?map.value("personNameLen_max").toInt(&ok,10):-1;
     personNamePermit = map.value("personNamePermit_char");
     personIntervalTime = map.value("personCardtypeTime_interval");
-    personNumMin = map.value("personCard_numLen_min");
-    personNumMax = map.value("personCard_numLen_max");
-    personAddMin = map.value("personCard_addLen_min");
-    personAddMax = map.value("personCard_addLen_max");
-    unitNameMin = map.value("unitNameLen_min");
-    unitNameMax = map.value("unitNameLen_max");
+    personNumMin = map.value("personCard_numLen_min").compare("-")?map.value("personCard_numLen_min").toInt(&ok,10):-1;
+    personNumMax = map.value("personCard_numLen_max").compare("-")?map.value("personCard_numLen_max").toInt(&ok,10):-1;
+    personAddMin = map.value("personCard_addLen_min").compare("-")?map.value("personCard_addLen_min").toInt(&ok,10):-1;
+    personAddMax = map.value("personCard_addLen_max").compare("-")?map.value("personCard_addLen_max").toInt(&ok,10):-1;
+    unitNameMin = map.value("unitNameLen_min").compare("-")?map.value("unitNameLen_min").toInt(&ok,10):-1;
+    unitNameMax = map.value("unitNameLen_max").compare("-")?map.value("unitNameLen_max").toInt(&ok,10):-1;
     unitIntervalTime = map.value("unitCardtypeTime_interval");
-    unitNumMin = map.value("unitCard_numLen_min");
-    unitNumMax = map.value("unitCard_numLen_max");
-    unitAddMin = map.value("unitCard_addLen_min");
-    unitAddMax = map.value("unitCard_addLen_max");
+    unitNumMin = map.value("unitCard_numLen_min").compare("-")?map.value("unitCard_numLen_min").toInt(&ok,10):-1;
+    unitNumMax = map.value("unitCard_numLen_max").compare("-")?map.value("unitCard_numLen_max").toInt(&ok,10):-1;
+    unitAddMin = map.value("unitCard_addLen_min").compare("-")?map.value("unitCard_addLen_min").toInt(&ok,10):-1;
+    unitAddMax = map.value("unitCard_addLen_max").compare("-")?map.value("unitCard_addLen_max").toInt(&ok,10):-1;
     //初始化个人用户姓名不合规
     personNameRule = readValueToString("个人用户姓名comon-rule");
     personNameRule += readValueToString("个人用户姓名match-rule");
@@ -154,6 +155,7 @@ void UserDb::createReport(){
     QString sql;
     //总量
     if(!report->allData){
+        qDebug()<<"report->allData="<<report->allData;
        sql = "update report set allData=(select count(*) from file)";
     }
     else{
@@ -829,13 +831,13 @@ void UserDb::createReport(){
 
 QString UserDb::getColName(QString name){
     //    int rtn = ;
-        qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
+//        qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
         return "col"+QString::number(col_name_map.value(name)+1);
 }
 
 int UserDb::getColNum(QString name){
     //    int rtn = ;
-        qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
+//        qDebug()<<"查询的列名是"<<name<<"列号是"<<col_name_map.value(name)+1;
         return col_name_map.value(name);
 }
 
@@ -931,7 +933,7 @@ bool UserDb::insertDb(QString filename){
                 break;
            }
 
-            if(!stopped && line_num%10000==0)
+            if(!stopped && line_num%100==0)
             {
                 if(db.commit())
                 {
@@ -1030,9 +1032,10 @@ bool UserDb::countData(){
 
 
             processLine(line);
-            qDebug()<<"line "<<line_num<<" finish :"<<qPrintable(line);
+            report->allData +=1;
+            qDebug()<<"line "<<line_num++<<" finish :"<<(line);//qPrintable
 
-            if(!stopped && line_num%10000==0)
+            if(!stopped && line_num%1000==0)
             {
                     qDebug()<<"commit";
                     qDebug()<<QStringLiteral("10000条数据耗时：")<<tmpTime.elapsed()<<"ms"<<endl;
@@ -1069,64 +1072,104 @@ bool UserDb::isNotReg(QString str){
  * @return 个人证件类型是否不合规
  */
 bool UserDb::isPersonTypeNok(QString str){
+    qDebug()<<"个人证件类型不合规"<<str<<" "<<personType;
     return !personType.contains(str);
 }
 
 bool UserDb::isUnitTypeNok(QString str){
+    qDebug()<<"单位证件类型不合规"<<str;
     return !unitType.contains(str);
 }
+
 bool UserDb::isPersonNameNok(QString str){
-    if(str.length()<personNameMin)
+    if(personNameMin!=-1 && str.length()<personNameMin){
+        qDebug()<<personNameMin<<"姓名字数不够"<<str.length()<<" "<<str;
         return true;
-    else if(str.length()>personNameMax)
+    }
+    else if(personNameMax!=-1 && str.length()>personNameMax){
+        qDebug()<<personNameMax<<"姓名太长"<<str.length()<<" "<<str;
         return true;
-    else if(personNameRule.contains(str))
+    }
+    else if(personNameRule.contains(str)){
+        qDebug()<<"姓名包含非法字符:  "<<str;
         return true;
+    }
     return false;
 }
+
 bool UserDb::isUnitNameNok(QString str){
-    if(str.length()<unitNameMin)
+    if(unitNameMin!=-1 && str.length()<unitNameMin){
+        qDebug()<<unitNameMin<<"单位名称字数不够"<<str.length()<<str;
         return true;
-    else if(str.length()>unitNameMax)
+    }
+    else if(unitNameMax!=-1 && str.length()>unitNameMax){
+        qDebug()<<unitNameMax<<"单位名称超长"<<str.length()<<str;
         return true;
-    else if(unitNameRule.contains(str))
+    }
+    else if(unitNameRule.contains(str)){
+        qDebug()<<"单位名称不合规"<<str;
         return true;
+    }
     return false;
 }
 bool UserDb::isPersonNumNok(QString str){
-    if(str.length()<personNumMin)
+    if(personNumMin!=-1 && str.length()<personNumMin){
+        qDebug()<<personNumMin<<"个人证件号码长度不够"<<str.length()<<str;
         return true;
-    else if(str.length()>personNumMax)
+    }
+    else if(personNumMax!=-1 && str.length()>personNumMax){
+        qDebug()<<personNumMax<<"个人证件号码超长"<<str.length()<<str;
         return true;
-    else if(numRule.contains(str))
+    }
+    else if(numRule.contains(str)){
+        qDebug()<<"个人证件号码不合规"<<str;
         return true;
+    }
     return false;
 }
 bool UserDb::isUnitNumNok(QString str){
-    if(str.length()<unitNumMin)
+    if(unitNumMin!=-1 && str.length()<unitNumMin){
+        qDebug()<<unitNumMin<<"单位证件号码长度不够"<<str.length()<<str;
         return true;
-    else if(str.length()>unitNumMax)
+    }
+    else if(unitNumMax!=-1 &&str.length()>unitNumMax){
+        qDebug()<<unitNumMax<<"单位证件号码超长"<<str.length()<<str;
         return true;
-    else if(numRule.contains(str))
+    }
+    else if(numRule.contains(str)){
+        qDebug()<<"单位证件号码不合规"<<str;
         return true;
+    }
     return false;
 }
 bool UserDb::isPersonAddNok(QString str){
-    if(str.length()<personAddMin)
+    if(-1!=personAddMin && str.length()<personAddMin){
+        qDebug()<<personAddMin<<"个人证件地址不够"<<str.length()<<str;
         return true;
-    else if(str.length()>personAddMax)
+    }
+    else if(-1!=personAddMax && str.length()>personAddMax){
+        qDebug()<<personAddMax<<"个人证件地址超长"<<str.length()<<str;
         return true;
-    else if(addRule.contains(str))
+    }
+    else if(addRule.contains(str)){
+        qDebug()<<"个人证件地址不合规"<<str;
         return true;
+    }
     return false;
 }
 bool UserDb::isUnitAddNok(QString str){
-    if(str.length()<unitAddMin)
+    if(-1!=unitAddMin && str.length()<unitAddMin){
+        qDebug()<<unitAddMin<<"单位地址长度不够"<<str.length()<<str;
         return true;
-    else if(str.length()>unitAddMax)
+    }
+    else if(-1!=unitAddMax && str.length()>unitAddMax){
+        qDebug()<<unitAddMax<<"单位地址超长"<<str.length()<<str;
         return true;
-    else if(addRule.contains(str))
+    }
+    else if(addRule.contains(str)){
+        qDebug()<<"单位地址不合规"<<str;
         return true;
+    }
     return false;
 }
 

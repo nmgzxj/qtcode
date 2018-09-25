@@ -91,8 +91,8 @@ void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QStrin
         *child = QStringLiteral("固定");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
-    else if(QStringLiteral("业务状态非实名停机")==*var){
-        *child = QStringLiteral("非实名停机");
+    else if(QStringLiteral("业务状态非实名制停机")==*var){
+        *child = QStringLiteral("非实名制停机");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
     else if(QStringLiteral("业务状态不在网")==*var){
