@@ -1659,7 +1659,7 @@ void UserDb::processLine(QString line){
                     isUnitAddNok(col.at(getColNum("单位通讯地址")))&&isUnitAddNok(col.at(getColNum("单位装机地址")))&&
                     isPersonNameNok(col.at(getColNum("责任人姓名")))&&isPersonTypeNok(col.at(getColNum("责任人证件类型")))&&isPersonNumNok(col.at(getColNum("责任人证件号码")))&&
                  isPersonAddNok(col.at(getColNum("责任人证件地址")))&&isPersonAddNok(col.at(getColNum("责任人通讯地址")))){
-                 saveAllNok(line);;
+                 saveAllNok(line);
             }
             if(!(t_m_l_r&&t_m_a_r&&t_m_u_r&&t_m_l_n&&t_m_a_n&&t_m_u_n)){
                 saveTradeMobileOk(line);
