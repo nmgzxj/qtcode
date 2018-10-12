@@ -939,12 +939,16 @@ bool UserDb::insertDb(QString filename){
                 break;
            }
 
+<<<<<<< HEAD
             if(line_num%100==0)//!stopped &&
+=======
+            if(!stopped && line_num%1000==0)
+>>>>>>> a44cb82976f53eda9c5e920d2fdcbf9b2e837791
             {
                 if(db.commit())
                 {
                     qDebug()<<"commit";
-                    qDebug()<<"10000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
+                    qDebug()<<"1000条数据耗时："<<tmpTime.elapsed()<<"ms"<<endl;
                     qDebug()<<"db isopen?"<<db.isOpen();
                     qDebug()<<"start transaction"<<db.transaction();
                     tmpTime.start();

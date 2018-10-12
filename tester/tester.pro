@@ -21,6 +21,7 @@ TEMPLATE = app
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+
 #DEFINES += QT_NO_WARNING_OUTPUT
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
@@ -74,6 +75,8 @@ FORMS += \
     report.ui
 
 DISTFILES +=
+
+
 
 RESOURCES += \
     logo.qrc
