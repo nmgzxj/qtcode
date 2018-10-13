@@ -9,7 +9,6 @@ static QSqlDatabase db;
 
 static void createConnection()
 {
-
     if (QSqlDatabase::contains("qt_sql_default_connection"))
     {
         db = QSqlDatabase::database("qt_sql_default_connection");

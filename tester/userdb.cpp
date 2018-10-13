@@ -132,6 +132,7 @@ void UserDb::run()
     createReport();
     emit message("finished.");
 }
+
 void UserDb::createReport(){
     QSqlQuery query;
     qDebug()<<"drop report:"<<query.exec("drop table report");

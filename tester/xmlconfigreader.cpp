@@ -15,6 +15,7 @@ QString getConfigPath(){
 #ifdef Q_OS_MACOS
      return "/Users/zhangxianjin/qtcode/testXml";
 #endif
+
 }
 
 
