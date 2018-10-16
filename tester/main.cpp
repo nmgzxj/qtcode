@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 //    w.show();
 //    return a.exec();
 
-    createConnection();
+//    createConnection();
     Tester w;
     w.show();
 
