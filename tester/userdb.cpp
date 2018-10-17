@@ -1070,7 +1070,7 @@ bool UserDb::countData(){
             if(!stopped && line_num%1000==0)
             {
                     qDebug()<<"commit";
-                    qDebug()<<QStringLiteral("10000条数据耗时：")<<tmpTime.elapsed()<<"ms"<<endl;
+                    qDebug()<<QStringLiteral("1000条数据耗时：")<<tmpTime.elapsed()<<"ms"<<endl;
                     tmpTime.start();
                     emit message("已处理"+QString::number(line_num)+"行");
                     qDebug()<<"line_num"<<line_num;
@@ -1113,7 +1113,7 @@ bool UserDb::isPersonTypeNok(QString str){
 }
 
 bool UserDb::isUnitTypeNok(QString str){
-    qDebug()<<"单位证件类型不合规"<<str;
+    qDebug()<<"单位证件类型不合规"<<str<<" "<<unitType;
     return !unitType.contains(str);
 }
 
@@ -2081,6 +2081,29 @@ void UserDb::saveLeaveNet(QString line){
     writeFile("非实名制停机和离网状态", line);
 }
 
+/**
+ * @brief makeDir 判断结果文件输出文件夹（工作路径）是否存在，不存在则创建。
+ * @return 路径存在，或者创建路径成功。
+ */
+bool makeDir(){
+    QString path = xmlConfig->readWorkingpathValue().value("workingpath");
+    QDir dir(path);
+    if(dir.exists())
+    {
+      return true;
+    }
+    else
+    {
+       bool ok = dir.mkpath(fullPath);//创建多级目录
+       return ok;
+    }
+}
+
+/**
+ * @brief UserDb::writeFile 用于写入结果文件。
+ * @param filename 目标文件。
+ * @param line 欲写入结果文件的行。
+ */
 void UserDb::writeFile(QString filename, QString line){
     QString path = xmlConfig->readWorkingpathValue().value("workingpath");
     qDebug()<<"writeFile "<<path<<filename;

@@ -13,7 +13,7 @@ QString getConfigPath(){
     return QCoreApplication::applicationDirPath();//"/Users/zhangxianjin/qtcode/testXml";
 #endif
 #ifdef Q_OS_MACOS
-     return "/Users/zhangxianjin/qtcode/testXml";
+     return "/Users/zhangxianjin/Downloads/newadd/temp";// /Users/zhangxianjin/qtcode/testXml";
 #endif
 
 }
