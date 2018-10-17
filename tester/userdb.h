@@ -144,12 +144,13 @@ private:
     Report* report;
     void writeFile(QString filename, QString line);
     QString readValueToString(QString query);
+    QList<QString> readValueToList(QList<QString> inList, QString query);
     QString delimeter;
     QMap<QString,QString> userType;
 
     QString maxlimit;
-    QString bizTypeFixed;
-    QString personType;
+    QList<QString> bizTypeFixed;
+    QList<QString> personType;
     int personNameMin;
     int personNameMax;
     QString personNamePermit;
@@ -158,7 +159,7 @@ private:
     QString personIntervalTime;
     int personAddMin;
     int personAddMax;
-    QString unitType;
+    QList<QString> unitType;
     int unitNameMin;
     int unitNameMax;
     int unitNumMin;
@@ -166,12 +167,12 @@ private:
     QString unitIntervalTime;
     int unitAddMin;
     int unitAddMax;
-    QString personNameRule;
-    QString unitNameRule;
-    QString numRule;
-    QString addRule;
-    QString nonRealName;
-    QString leaveNet;
+    QList<QString> personNameRule;
+    QList<QString> unitNameRule;
+    QList<QString> numRule;
+    QList<QString> addRule;
+    QList<QString> nonRealName;
+    QList<QString> leaveNet;
 
 
 signals:

@@ -20,22 +20,36 @@ UserDb::UserDb()
         qDebug()<<"col name is "<<name<<" num is "<<num;
         col_name_map.insert(name,num);
     }
+//    //初始化用户类型为固定电话
+//    bizTypeFixed = readValueToString("业务类型固定");//用户业务类型固定，除固定外全是移动号码
+
+//    //初始化个人合规证件类型
+//    personType = readValueToString("个人证件居民身份证");
+//    personType += readValueToString("个人证件临时居民身份证");
+//    personType += readValueToString("个人证件户口薄");
+//    personType += readValueToString("个人证件中国人民解放军军人身份证件");
+//    personType += readValueToString("个人证件中国人民武装警察身份证件");
+//    personType += readValueToString("个人证件港澳居民来往内地通行证");
+//    personType += readValueToString("个人证件台湾居民来往大陆通行证");
+//    personType += readValueToString("个人证件外国公民护照");
+//    personType += readValueToString("个人证件法律、行政法规和国家规定的其他有效身份证件");
+
     //初始化用户类型为固定电话
-    bizTypeFixed = readValueToString("业务类型固定");//用户业务类型固定，除固定外全是移动号码
+    bizTypeFixed = readValueToList(bizTypeFixed, "业务类型固定");//用户业务类型固定，除固定外全是移动号码
 
     //初始化个人合规证件类型
-    personType = readValueToString("个人证件居民身份证");
-    personType += readValueToString("个人证件临时居民身份证");
-    personType += readValueToString("个人证件户口薄");
-    personType += readValueToString("个人证件中国人民解放军军人身份证件");
-    personType += readValueToString("个人证件中国人民武装警察身份证件");
-    personType += readValueToString("个人证件港澳居民来往内地通行证");
-    personType += readValueToString("个人证件台湾居民来往大陆通行证");
-    personType += readValueToString("个人证件外国公民护照");
-    personType += readValueToString("个人证件法律、行政法规和国家规定的其他有效身份证件");
+    personType = readValueToList(personType, "个人证件居民身份证");
+    personType = readValueToList(personType, "个人证件临时居民身份证");
+    personType = readValueToList(personType, "个人证件户口薄");
+    personType = readValueToList(personType, "个人证件中国人民解放军军人身份证件");
+    personType = readValueToList(personType, "个人证件中国人民武装警察身份证件");
+    personType = readValueToList(personType, "个人证件港澳居民来往内地通行证");
+    personType = readValueToList(personType, "个人证件台湾居民来往大陆通行证");
+    personType = readValueToList(personType, "个人证件外国公民护照");
+    personType = readValueToList(personType, "个人证件法律、行政法规和国家规定的其他有效身份证件");
 
     //初始化单位合规证件类型
-    unitType = readValueToString("单位证件组织机构代码证");
+    unitType  = readValueToList(unitType, "单位证件组织机构代码证");
 
 
     QList<QString> queryList;
@@ -75,22 +89,22 @@ UserDb::UserDb()
     unitAddMin = map.value("unitCard_addLen_min").compare("-")?map.value("unitCard_addLen_min").toInt(&ok,10):-1;
     unitAddMax = map.value("unitCard_addLen_max").compare("-")?map.value("unitCard_addLen_max").toInt(&ok,10):-1;
     //初始化个人用户姓名不合规
-    personNameRule = readValueToString("个人用户姓名comon-rule");
-    personNameRule += readValueToString("个人用户姓名match-rule");
+    personNameRule = readValueToList(personNameRule, "个人用户姓名comon-rule");
+    personNameRule = readValueToList(personNameRule, "个人用户姓名match-rule");
     //初始化单位/行业用户名称不合规
-    unitNameRule = readValueToString("行业用户姓名comon-rule");
-    unitNameRule += readValueToString("行业用户姓名match-rule");
+    unitNameRule = readValueToList(unitNameRule, "行业用户姓名comon-rule");
+    unitNameRule = readValueToList(unitNameRule, "行业用户姓名match-rule");
     //初始化个人证件号码不合规
     //初始化单位证件号码不合规
-    numRule = readValueToString("证件号码comon-rule");
-    numRule += readValueToString("证件号码match-rule");
+    numRule = readValueToList(numRule, "证件号码comon-rule");
+    numRule = readValueToList(numRule, "证件号码match-rule");
     //初始化个人证件地址不合规
     //初始化单位证件地址不合规
-    addRule = readValueToString("证件地址addr-rule");
-    addRule += readValueToString("证件地址match-rule");
+    addRule = readValueToList(addRule, "证件地址addr-rule");
+    addRule = readValueToList(addRule, "证件地址match-rule");
 
-    nonRealName = readValueToString("业务状态非实名制停机");
-    leaveNet = readValueToString("业务状态不在网");
+    nonRealName = readValueToList(nonRealName, "业务状态非实名制停机");
+    leaveNet = readValueToList(leaveNet, "业务状态不在网");
 }
 
 QString UserDb::readValueToString(QString query){
@@ -100,6 +114,15 @@ QString UserDb::readValueToString(QString query){
         rtn.append(list.at(i));
     }
     return rtn;
+}
+
+QList<QString> UserDb::readValueToList(QList<QString> inList, QString query){
+
+    QList<QString> list = xmlConfig->readValue(query);
+    for(int i=0; i<list.size(); i++){
+        inList.append(list.at(i));
+    }
+    return inList;
 }
 
 UserDb::~UserDb()
