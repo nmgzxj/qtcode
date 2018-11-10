@@ -173,6 +173,7 @@ private:
     QList<QString> addRule;
     QList<QString> nonRealName;
     QList<QString> leaveNet;
+    bool makeDir();
 
 
 signals:

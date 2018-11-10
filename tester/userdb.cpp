@@ -2085,7 +2085,7 @@ void UserDb::saveLeaveNet(QString line){
  * @brief makeDir 判断结果文件输出文件夹（工作路径）是否存在，不存在则创建。
  * @return 路径存在，或者创建路径成功。
  */
-bool makeDir(){
+bool UserDb::makeDir(){
     QString path = xmlConfig->readWorkingpathValue().value("workingpath");
     QDir dir(path);
     if(dir.exists())
@@ -2094,7 +2094,7 @@ bool makeDir(){
     }
     else
     {
-       bool ok = dir.mkpath(fullPath);//创建多级目录
+       bool ok = dir.mkpath(path);//创建多级目录
        return ok;
     }
 }
