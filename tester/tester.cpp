@@ -19,7 +19,7 @@ Tester::Tester(QWidget *parent)
     createMenus();
     setupModel();
     setupView();
-//    userfile = new UserFile();
+    createToolBars();\
     userdb = new UserDb();
 }
 
@@ -48,20 +48,21 @@ void Tester::createMenus()
 
 void Tester::createToolBars()
 {
-//    //文件工具条
-//    fileTool =addToolBar("File");					//(a)
-//    fileTool->addAction(openFileAction);			//(b)
-//    fileTool->addAction(NewFileAction);
-//    fileTool->addAction(PrintTextAction);
-//    fileTool->addAction(PrintImageAction);
-//    //编辑工具条
-//    zoomTool =addToolBar("Edit");
-//    zoomTool->addAction(copyAction);
-//    zoomTool->addAction(cutAction);
-//    zoomTool->addAction(pasteAction);
-//    zoomTool->addSeparator();
-//    zoomTool->addAction(zoomInAction);
-//    zoomTool->addAction(zoomOutAction);
+    //文件工具条
+
+    fileTool =addToolBar("File");
+    fileTool->addAction(openFileAction);
+    fileTool->addAction(NewFileAction);
+    fileTool->addAction(setupAction);
+    fileTool->addAction(exitAction);
+  //  运行工具条
+    runTool =addToolBar("Run");
+    runTool->addAction(startAction);
+    runTool->addAction(stopAction);
+    runTool->addAction(reportAction);
+    runTool->addSeparator();
+    runTool->addAction(helpAction);
+    runTool->addAction(aboutAction);
 }
 
 void Tester::createActions()
@@ -138,61 +139,6 @@ void Tester::setupModel()
     for(int i=0; i<lls.size(); i++){
         model->setHeaderData(i,Qt::Horizontal,lls.at(i).at(1));
     }
-//    delete xmlConfig;
-//    机主
-//    model->setHeaderData(0,Qt::Horizontal,QStringLiteral("姓名"));
-//    model->setHeaderData(1,Qt::Horizontal,QStringLiteral("证件类型"));
-//    model->setHeaderData(2,Qt::Horizontal,QStringLiteral("证件号码"));
-//    model->setHeaderData(3,Qt::Horizontal,QStringLiteral("证件地址"));
-//    model->setHeaderData(4,Qt::Horizontal,QStringLiteral("通讯地址"));
-//    model->setHeaderData(5,Qt::Horizontal,QStringLiteral("装机地址"));
-//    //代（经）办人
-//    model->setHeaderData(6,Qt::Horizontal,QStringLiteral("姓名"));
-//    model->setHeaderData(7,Qt::Horizontal,QStringLiteral("证件类型"));
-//    model->setHeaderData(8,Qt::Horizontal,QStringLiteral("证件号码"));
-//    model->setHeaderData(9,Qt::Horizontal,QStringLiteral("证件地址"));
-//    model->setHeaderData(10,Qt::Horizontal,QStringLiteral("通讯地址"));
-//    //责任人
-//    model->setHeaderData(11,Qt::Horizontal,QStringLiteral("姓名"));
-//    model->setHeaderData(12,Qt::Horizontal,QStringLiteral("证件类型"));
-//    model->setHeaderData(13,Qt::Horizontal,QStringLiteral("证件号码"));
-//    model->setHeaderData(14,Qt::Horizontal,QStringLiteral("证件地址"));
-//    model->setHeaderData(15,Qt::Horizontal,QStringLiteral("通讯地址"));
-//    //单位或行业
-//    model->setHeaderData(16,Qt::Horizontal,QStringLiteral("单位名称"));
-//    model->setHeaderData(17,Qt::Horizontal,QStringLiteral("单位证件号码"));
-//    model->setHeaderData(18,Qt::Horizontal,QStringLiteral("单位证件类型"));
-//    model->setHeaderData(19,Qt::Horizontal,QStringLiteral("单位证件地址"));
-//    model->setHeaderData(20,Qt::Horizontal,QStringLiteral("单位通讯地址"));
-//    model->setHeaderData(21,Qt::Horizontal,QStringLiteral("单位装机地址"));
-//    //电话卡信息
-//    model->setHeaderData(22,Qt::Horizontal,QStringLiteral("MSISDN号码"));
-//    model->setHeaderData(23,Qt::Horizontal,QStringLiteral("登记激活时间"));
-//    model->setHeaderData(24,Qt::Horizontal,QStringLiteral("号码状态"));
-//    model->setHeaderData(25,Qt::Horizontal,QStringLiteral("用户业务类型"));
-//    //营业网点信息
-//    model->setHeaderData(26,Qt::Horizontal,QStringLiteral("网点编号"));
-//    model->setHeaderData(27,Qt::Horizontal,QStringLiteral("网点名称"));
-//    model->setHeaderData(28,Qt::Horizontal,QStringLiteral("网点地址"));
-//    model->setHeaderData(29,Qt::Horizontal,QStringLiteral("网点所在区县"));
-//    model->setHeaderData(30,Qt::Horizontal,QStringLiteral("网点类型"));
-//    model->setHeaderData(31,Qt::Horizontal,QStringLiteral("开通商编号"));
-//    //支付信息
-//    model->setHeaderData(32,Qt::Horizontal,QStringLiteral("交易流水账单号"));
-//    model->setHeaderData(33,Qt::Horizontal,QStringLiteral("交易平台用户账号"));
-//    model->setHeaderData(34,Qt::Horizontal,QStringLiteral("用户交易的银行卡卡号或第三方支付账号名称"));
-//    model->setHeaderData(35,Qt::Horizontal,QStringLiteral("支付时间"));
-//    model->setHeaderData(36,Qt::Horizontal,QStringLiteral("机主证件电子复印件图片名称"));
-//    model->setHeaderData(37,Qt::Horizontal,QStringLiteral("代办人证件电子复印件图片名称"));
-//    //用户类型
-//    model->setHeaderData(38,Qt::Horizontal,QStringLiteral("用户类型"));
-//    //渠道类型
-//    model->setHeaderData(39,Qt::Horizontal,QStringLiteral("渠道类型"));
-//    //使用状态
-//    model->setHeaderData(40,Qt::Horizontal,QStringLiteral("使用状态"));
-//    //预留字段
-//    model->setHeaderData(41,Qt::Horizontal,QStringLiteral("预留字段"));
-
 }
 
 void Tester::setupView()
@@ -200,7 +146,7 @@ void Tester::setupView()
 
     table = new QTableView;			//新建一个QTableView对象
     table->setModel(model);			//为QTableView对象设置相同的Model
-    QItemSelectionModel *selectionModel=new QItemSelectionModel(model);//(a)
+    QItemSelectionModel *selectionModel=new QItemSelectionModel(model);
     table->setSelectionModel(selectionModel);
     connect(selectionModel,SIGNAL(selectionChanged(QItemSelection, QItemSelection)),table,SLOT(selectionChanged(QItemSelection,QItemSelection)));									//(b)
     splitter = new QSplitter;
@@ -282,18 +228,10 @@ void Tester::startObjThread()
 void Tester::startCheckFile()
 {
     statusBar()->showMessage("start process file", 3000);
-    qDebug()<<QStringLiteral("开始处理文件");
-//    if(m_Thread==nullptr)
-    {
-       qDebug()<<QStringLiteral("开始处理文件xiancheng");
-       userdb->start();
-       startObjThread();
-    }
-
-//主线程通过信号唤起子线程的槽函数
-
+    userdb->start();
+    startObjThread();
+    //主线程通过信号唤起子线程的槽函数
     emit startObjThreadWork();
-
 }
 
 
@@ -317,9 +255,6 @@ void Tester::setupTester()
 
 void Tester::aboutTester()
 {
-//    About *newAbout =new About;
-//    newAbout->show();
-//    label->setText(tr("About Message Box"));
     QMessageBox::about(this, QStringLiteral("About消息框"),QStringLiteral("实名制检测系统\n "
                                                                           "Version 1.0 \n"
                                                                           "本系统为实名制检查工具。"));
@@ -341,6 +276,6 @@ void Tester::setStatus(QString str){
 }
 Tester::~Tester()
 {
-    delete userdb;
+   // delete userdb;
 }
 

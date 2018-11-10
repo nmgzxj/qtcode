@@ -22,7 +22,6 @@
 #include "showwidget.h"
 #include "setup.h"
 #include "setuppages.h"
-//#include "userfile.h"
 #include "userdb.h"
 
 //#include <QMessagebox>
@@ -34,7 +33,7 @@ class Tester : public QMainWindow
     Q_OBJECT
 
 public:
-    Tester(QWidget *parent = 0);
+    Tester(QWidget *parent = nullptr);
     ~Tester();
     void createActions();                        	//创建动作
     void createMenus();                           	//创建菜单
@@ -51,8 +50,6 @@ private:
     QMenu *fileMenu;                           		//各项菜单栏
     QMenu *runMenu;
     QMenu *helpMenu;
-//    QMenu *mirrorMenu;
-//    QImage img;
     ShowWidget *showWidget;
     QAction *openFileAction;                     	//文件菜单项
     QAction *NewFileAction;
@@ -65,8 +62,9 @@ private:
     QAction *helpAction;
     QTableView *table;
     QSplitter *splitter;
-//    UserFile *userfile;
     UserDb *userdb;
+    QToolBar *fileTool;
+    QToolBar *runTool;
 
 
 protected slots:
