@@ -19,8 +19,6 @@ class UserDb: public QObject
 public:
     UserDb();
     ~UserDb();
-    bool insertDb(QString filename);
-    bool createTable();
     bool fileIsExists(QString filename);
     void printMessage();
     void start();
@@ -147,6 +145,7 @@ private:
     QList<QString> readValueToList(QList<QString> inList, QString query);
     QString delimeter;
     QMap<QString,QString> userType;
+    bool needAgent(QString idCardNum, QString activeTime);
 
     QString maxlimit;
     QList<QString> bizTypeFixed;

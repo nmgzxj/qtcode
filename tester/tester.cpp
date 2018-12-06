@@ -8,10 +8,9 @@
 Tester::Tester(QWidget *parent)
     : QMainWindow(parent)
 {
-//    setWindowIcon(QIcon(":/Images/logo.icns"));
-    setWindowTitle(QStringLiteral("实名制检测系统"));			//设置窗体标题
+    setWindowTitle(QStringLiteral("实名制检测系统"));			//设置主窗体标题
     resize(800,600);
-    showWidget =new ShowWidget(this);		//设置文本显示窗体
+    showWidget =new ShowWidget(this);		//显示主窗体
     setCentralWidget(showWidget);
 
 //    /* 创建动作、菜单、工具栏的函数 */
@@ -19,15 +18,15 @@ Tester::Tester(QWidget *parent)
     createMenus();
     setupModel();
     setupView();
-    createToolBars();\
+    createToolBars();
     userdb = new UserDb();
 }
 
 void Tester::createMenus()
 {
     //文件菜单
-    fileMenu =menuBar()->addMenu(QStringLiteral("文件"));			//(a)
-    fileMenu->addAction(openFileAction);				//(b)
+    fileMenu =menuBar()->addMenu(QStringLiteral("文件"));
+    fileMenu->addAction(openFileAction);
     fileMenu->addAction(NewFileAction);
     fileMenu->addSeparator();
     fileMenu->addAction(setupAction);
@@ -68,46 +67,46 @@ void Tester::createToolBars()
 void Tester::createActions()
 {
     //“打开”动作
-    openFileAction =new QAction(QStringLiteral("打开"),this);//QIcon(":/Images/images/open.png"), (a) /users/zhangxianjin/qtcode/build-ImageProcessor-Desktop_Qt_5_8_0_clang_64bit-Debug
+    openFileAction =new QAction(QIcon(":/images/open.png"),QStringLiteral("打开"),this);
     openFileAction->setShortcut(QStringLiteral("Ctrl+O"));                    //(b)
     openFileAction->setStatusTip(QStringLiteral("打开一个文件"));               //(c)
     connect(openFileAction,SIGNAL(triggered()),this,SLOT(showOpenFile()));
     //“新建”动作
-    NewFileAction =new QAction(QStringLiteral("新建"),this);//,QIcon(":/Images/images/new.png"),
+    NewFileAction =new QAction(QIcon(":/images/plus.png"),QStringLiteral("新建"),this);//,QIcon(":/Images/images/new.png"),
     NewFileAction->setShortcut(QStringLiteral("Ctrl+N"));
     NewFileAction->setStatusTip(QStringLiteral("新建一个文件"));
     connect(NewFileAction,SIGNAL(triggered()),this,SLOT(showNewFile()));
     //“设置”动作
-    setupAction =new QAction(QStringLiteral("设置"),this);//QIcon("../../../new.png"),
+    setupAction =new QAction(QIcon(":/images/maintenance.png"),QStringLiteral("设置"),this);//QIcon("../../../new.png"),
     setupAction->setShortcut(QStringLiteral("Ctrl+S"));
     setupAction->setStatusTip(QStringLiteral("设置运行参数"));
     connect(setupAction,SIGNAL(triggered()),this,SLOT(setupTester()));
     //“开始”动作
-    startAction =new QAction(QStringLiteral("开始"),this);//QIcon("../../../new.png"),
+    startAction =new QAction(QIcon(":/images/play.png"),QStringLiteral("开始"),this);//QIcon("../../../new.png"),
     startAction->setShortcut(QStringLiteral("Ctrl+R"));
     startAction->setStatusTip(QStringLiteral("开始检查"));
     connect(startAction,SIGNAL(triggered()),this,SLOT(startCheckFile()));
     //查看报表动作
-    reportAction = new QAction(QStringLiteral("查看报表"),this);
+    reportAction = new QAction(QIcon(":/images/chart.png"),QStringLiteral("查看报表"),this);
     reportAction->setStatusTip("查看运行结果报表");
     connect(reportAction,SIGNAL(triggered()),this,SLOT(report()));
     //“停止”动作
-    stopAction =new QAction(QStringLiteral("停止"),this);//QIcon("../../../new.png"),
+    stopAction =new QAction(QIcon(":/images/stop.png"),QStringLiteral("停止"),this);//QIcon("../../../new.png"),
     stopAction->setShortcut(QStringLiteral("Ctrl+C"));
     stopAction->setStatusTip(QStringLiteral("停止检查"));
     connect(stopAction,SIGNAL(triggered()),this,SLOT(stopCheckFile()));
     //“退出”动作
-    exitAction =new QAction(QStringLiteral("退出"),this);
+    exitAction =new QAction(QIcon(":/images/cancel.png"),QStringLiteral("退出"),this);
     exitAction->setShortcut(QStringLiteral("Ctrl+Q"));
     exitAction->setStatusTip(QStringLiteral("退出程序"));
     connect(exitAction,SIGNAL(triggered()),this,SLOT(close()));
     //“帮助”动作
-    helpAction =new QAction(QStringLiteral("帮助"),this);
+    helpAction =new QAction(QIcon(":/images/faq.png"),QStringLiteral("帮助"),this);
     exitAction->setShortcut(QStringLiteral("Ctrl+H"));
     helpAction->setStatusTip("程序使用说明");
     connect(helpAction,SIGNAL(triggered()),this,SLOT(helpTester()));
     //“关于”动作
-    aboutAction =new QAction(QStringLiteral("关于"),this);
+    aboutAction =new QAction(QIcon(":/images/about.png"),QStringLiteral("关于"),this);
     aboutAction->setStatusTip("关于本程序");
     connect(aboutAction,SIGNAL(triggered()),this,SLOT(aboutTester()));
 }

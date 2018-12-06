@@ -503,13 +503,6 @@
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>生成结果报表</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>

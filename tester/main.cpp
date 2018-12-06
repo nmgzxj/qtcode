@@ -79,8 +79,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 #ifdef Q_OS_WIN
-    a.setWindowIcon(QIcon(":/Images/config.png"));
-    //    a.setWindowIcon(QIcon(QApplication::applicationDirPath()+"/images/config.png"));
+    a.setWindowIcon(QIcon(":/images/logo.png"));
 #endif
 #ifdef Q_OS_MACOS
 
@@ -97,7 +96,7 @@ int main(int argc, char *argv[])
 //    w.show();
 //    return a.exec();
 
-//    createConnection();
+    createConnection();
     Tester w;
     w.show();
 

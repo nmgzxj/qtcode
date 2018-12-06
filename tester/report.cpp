@@ -20,7 +20,7 @@ Report::Report(QWidget *parent)
         {
             while(query.next())
             {
-                int id = query.value(0).toInt();
+//                int id = query.value(0).toInt();
                 int j=0;//i行j列
                 for(int i=0;i<100;i++){
                     ui->tableWidget->setItem(i, j,new QTableWidgetItem(query.value(i+1).toString()));

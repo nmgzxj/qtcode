@@ -7,7 +7,7 @@
 QT       += core gui
 QT       += xml sql
 
-ICON = logo.icns
+ICON = logo.ico
 
 #CONFIG += console
 
