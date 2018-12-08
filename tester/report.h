@@ -53,6 +53,8 @@ public:
     int unitFixedAgentUnitNotReg;//单位固话用户-代办人单位信息未登记
     int unitFixedOwnerAgentUnitNotReg;//单位固话用户-单位信息未登记
 
+    int tradeMobileOwnerNotReg; //行业移动用户-使用人信息未登记
+    int tradeMobileOwnerNok; //行业移动用户-使用人信息不合规
     int tradeMobileAgentNotReg;//行业移动用户-单位信息未登记
     int tradeMobileUnitNotReg;//行业移动用户-单位信息未登记
     int tradeMobileLiableNotReg;//行业移动用户-单位信息未登记
@@ -63,6 +65,10 @@ public:
     int tradeFixedAgentNotReg;//行业移动用户-单位信息未登记
     int tradeFixedUnitNotReg;//行业移动用户-单位信息未登记
     int tradeFixedAgentUnitNotReg;//行业移动用户-单位信息未登记
+    int unitFixedUnitLiableNotReg; //单位固话用户-责任人信息未登记
+    int unitFixedUnitLiableNok; //单位固话用户-责任人信息不合规
+    int unitMobileUnitLiableNotReg; //单位移动用户-责任人信息未登记
+    int unitMobileUnitLiableNok; //单位移动用户-责任人信息不合规
 
     int allData;
     int allNotReg;
@@ -101,6 +107,7 @@ public:
     int unitMobileOwnerAgentNok;
     int unitMobileAgentUnitNok;
     int unitMobileOwnerAgentUnitNok;
+    int tradeFixedLiableNotReg;
     int unitFixedOk;
     int unitFixedAgentNok;
     int unitFixedUnitNok;

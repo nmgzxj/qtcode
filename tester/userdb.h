@@ -37,14 +37,14 @@ public:
     void savePersonMobileOwnerNameAddNotReg(QString line);
     void savePersonMobileOwnerNumAddNotReg(QString line);
     void savePersonMobileOwnerNameNumAddNotReg(QString line);
-    void savePeronMobileOwnerTyteNok(QString line);
-    void savePeronMobileOwnerNameNok(QString line);
-    void savePeronMobileOwnerNumNok(QString line);
-    void savePeronMobileOwnerAddNok(QString line);
-    void savePeronMobileOwnerNameNumNok(QString line);
-    void savePeronMobileOwnerNameAddNok(QString line);
-    void savePeronMobileOwnerNumAddNok(QString line);
-    void savePeronMobileOwnerNameNumAddNok(QString line);
+    void savePersonMobileOwnerTyteNok(QString line);
+    void savePersonMobileOwnerNameNok(QString line);
+    void savePersonMobileOwnerNumNok(QString line);
+    void savePersonMobileOwnerAddNok(QString line);
+    void savePersonMobileOwnerNameNumNok(QString line);
+    void savePersonMobileOwnerNameAddNok(QString line);
+    void savePersonMobileOwnerNumAddNok(QString line);
+    void savePersonMobileOwnerNameNumAddNok(QString line);
     void savePersonFixedOk(QString line);
     void saveAllNotReg(QString line);
     void saveAllNok(QString line);
@@ -69,9 +69,9 @@ public:
     void savePersonFixedOwnerNameAddNok(QString line);
     void savePersonFixedOwnerNumAddNok(QString line);
     void savePersonFixedOwnerNameNumAddNok(QString line);
-    void savePeronMobileAgentNotReg(QString line);
+    void savePersonMobileAgentNotReg(QString line);
     void savePersonFixedAgentNotReg(QString line);
-    void savePeronMobileAgentNok(QString line);
+    void savePersonMobileAgentNok(QString line);
     void savePersonFixedAgentNok(QString line);
     void saveUnitMobileOk(QString line);
     void saveUnitMobileOwnerNotReg(QString line);
@@ -99,6 +99,7 @@ public:
     void saveUnitFixedUnitNok(QString line);
     void saveUnitFixedAgentUnitNok(QString line);
     void saveTradeMobileOk(QString line);
+    void saveTradeMobileOwnerNotReg(QString line);
     void saveTradeMobileAgentNotReg(QString line);
     void saveTradeMobileUnitNotReg(QString line);
     void saveTradeMobileLiableNotReg(QString line);
@@ -106,6 +107,7 @@ public:
     void saveTradeMobileLiableAgentNotReg(QString line);
     void saveTradeMobileLiableUnitNotReg(QString line);
     void saveTradeMobileLiableAgentUnitNotReg(QString line);
+    void saveTradeMobileOwnerNok(QString line);
     void saveTradeMobileAgentNok(QString line);
     void saveTradeMobileAgentUnitNok(QString line);
     void saveTradeMobileLiableAgentNok(QString line);
@@ -116,6 +118,7 @@ public:
     void saveTradeFixedOk(QString line);
     void saveTradeFixedAgentNotReg(QString line);
     void saveTradeFixedUnitNotReg(QString line);
+    void saveTradeFixedLiableNotReg(QString line);
     void saveTradeFixedAgentUnitNotReg(QString line);
     void saveTradeFixedAgentNok(QString line);
     void saveTradeFixedAgentUnitNok(QString line);
@@ -146,6 +149,7 @@ private:
     QString delimeter;
     QMap<QString,QString> userType;
     bool needAgent(QString idCardNum, QString activeTime);
+    int getDateForInt(QString activeTime);
 
     QString maxlimit;
     QList<QString> bizTypeFixed;
@@ -173,6 +177,12 @@ private:
     QList<QString> nonRealName;
     QList<QString> leaveNet;
     bool makeDir();
+    void processPersonFixed(QList<QString> col,QString line);
+    void processPersonMobile(QList<QString> col, QString line);
+    void processUnitFixed(QList<QString> col,QString line);
+    void processUnitMobile(QList<QString> col, QString line);
+    void processTradeFixed(QList<QString> col,QString line);
+    void processTradeMobile(QList<QString> col, QString line);
 
 
 signals:

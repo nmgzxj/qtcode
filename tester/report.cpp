@@ -135,6 +135,11 @@ void Report::init(){
     tradeFixedUnitNok = 0;
     personMobileOneCard= 0;
     leaveNet = 0;
+    tradeFixedLiableNotReg =0;
+    unitFixedUnitLiableNotReg = 0;
+    unitFixedUnitLiableNok = 0;
+    unitMobileUnitLiableNotReg = 0;
+    unitMobileUnitLiableNok = 0;
 }
 
 Report::~Report()

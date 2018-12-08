@@ -168,7 +168,8 @@ void UserDb::createReport(){
                                            "tradeMobileLiableAgentUnitNotReg int,tradeMobileUnitNotReg int,tradeMobileLiableNotReg int,tradeMobileLiableUnitNotReg int,tradeMobileAgentNok int,"
                                            "tradeMobileAgentUnitNok int,tradeMobileLiableAgentNok int,tradeMobileLiableAgentUnitNok int,tradeMobileUnitNok int,tradeMobileLiableNok int,"
                                            "tradeMobileLiableUnitNok int,tradeFixedOk int, tradeFixedAgentNotReg int,tradeFixedAgentUnitNotReg int,tradeFixedUnitNotReg int,tradeFixedAgentNok int,"
-                                           "tradeFixedAgentUnitNok int,tradeFixedUnitNok int,personMobileOneCard int)");
+                                           "tradeFixedAgentUnitNok int,tradeFixedUnitNok int,personMobileOneCard int,tradeFixedLiableNotReg,unitFixedUnitLiableNotReg,unitFixedUnitLiableNok,"
+                                           ",unitMobileUnitLiableNotReg,unitMobileUnitLiableNok)");
     qDebug()<<"insert report is:"<<query.exec("insert into report (id) values (1)");
     QString sql;
     //总量
@@ -517,8 +518,28 @@ void UserDb::createReport(){
          qDebug()<<"update tradeFixedUnitNok is:"<<query.exec(sql)<<sql;
 
     //个人移动一证五卡不合规
-            sql = "update report set personMobileOneCard="+QString::number(report->personMobileOneCard);
+          sql = "update report set personMobileOneCard="+QString::number(report->personMobileOneCard);
          qDebug()<<"update personMobileOneCard is:"<<query.exec(sql)<<sql;
+
+        //行业固话应用-责任人未登记
+         sql = "update report set tradeFixedLiableNotReg="+QString::number(report->tradeFixedLiableNotReg);
+        qDebug()<<"update tradeFixedLiableNotReg is:"<<query.exec(sql)<<sql;
+
+        //单位固话-责任人未登记
+         sql = "update report set unitFixedUnitLiableNotReg="+QString::number(report->unitFixedUnitLiableNotReg);
+        qDebug()<<"update unitFixedUnitLiableNotReg is:"<<query.exec(sql)<<sql;
+
+        //单位固话-责任人不合规
+         sql = "update report set unitFixedUnitLiableNok="+QString::number(report->unitFixedUnitLiableNok);
+        qDebug()<<"update unitFixedUnitLiableNok is:"<<query.exec(sql)<<sql;
+
+        //单位移动-责任人未登记
+         sql = "update report set unitMobileUnitLiableNotReg="+QString::number(report->unitMobileUnitLiableNotReg);
+        qDebug()<<"update unitMobileUnitLiableNotReg is:"<<query.exec(sql)<<sql;
+
+        //单位移动-责任人不合规
+         sql = "update report set unitMobileUnitLiableNok="+QString::number(report->unitMobileUnitLiableNok);
+        qDebug()<<"update unitMobileUnitLiableNok is:"<<query.exec(sql)<<sql;
 
 }
 
@@ -635,6 +656,11 @@ bool UserDb::countData(){
     return true;
 }
 
+/**
+ * @brief UserDb::isNotReg
+ * @param str
+ * @return 字段未空指针、null或空字符串。
+ */
 bool UserDb::isNotReg(QString str){
     if(str.isNull())
         return true;
@@ -660,7 +686,6 @@ bool UserDb::isPersonTypeNok(QString str){
         qDebug()<<"个人证件类型不合规"<<str<<" "<<personType;
         return true;
     }
-
     return false;
 }
 
@@ -780,7 +805,7 @@ void UserDb::processLine(QString line){
         return;
     }
 
-    /*除用户类型和用户业务类型之外为空的、字段全部为空的，计入全量未登记。*/
+    /* 除用户类型和用户业务类型之外为空的、字段全部为空的，计入全量未登记。 */
     bool isAllNotReg=false;
     int userTypeCol = getColNum("用户类型");
     int userBizTypeCol = getColNum("用户业务类型");
@@ -793,521 +818,41 @@ void UserDb::processLine(QString line){
         saveAllNotReg(line);
     }
 
+    /* 字段异常数据.abnormal */
+    if(col.at(getColNum("登记激活时间"))==nullptr){
+        saveFieldAbnormal(line);
+    }
 
-    /*
-
-20170401以后开卡的超过5张的算违规，证件号有多少？开了多少号？
-一证多名，所有身份证、使用人、责任人、经办人、所有证件号码对于超过1个名字。
-名字里面不能出现特殊字符，规则里面是不合规的。
-多字段、少字段、时间类型、编码格式（可设置）、用户类型*/
-
-
+    /* 根据用户类型和用户业务类型进入到具体逻辑规则中判断和输出。 */
     if(col.at(getColNum("用户类型"))==userType.value("person")){  /*个人用户*/
 
         if(bizTypeFixed.contains(col.at(getColNum("用户业务类型")))){  /*个人固定用户*/
-
-
-            bool p_f_o_t_r=false; /*个人固定用户-证件类型未登记*/
-
-            bool p_f_o_name_r=false; /*个人固定用户-用户姓名未登记*/
-
-            bool p_f_o_num_r=false; /*个人固定用户-证件号码未登记*/
-
-            bool p_f_o_add_r=false; /*个人固定用户-证件地址未登记*/
-
-            bool p_f_o_agent_r=false; /*个人固定用户-代办人未登记*/
-
-            if(isNotReg(col.at(getColNum("机主证件类型")))){
-                savePersonFixedOwnerTypeNotReg(line);
-                p_f_o_t_r=true;
-                return;
-            }
-            if(isNotReg(col.at(getColNum("机主用户姓名")))){
-                savePersonFixedOwnerNameNotReg(line);
-                p_f_o_name_r=true;
-                return;
-            }
-            if(isNotReg(col.at(getColNum("机主证件号码")))){
-                savePersonFixedOwnerNumNotReg(line);
-                p_f_o_num_r=true;
-                 return;
-            }
-            if(isNotReg(col.at(getColNum("机主证件地址")))){
-                savePersonFixedOwnerAddNotReg(line);
-                p_f_o_add_r=true;
-                 return;
-            }
-            if(p_f_o_name_r&&p_f_o_num_r){
-                savePersonFixedOwnerNameNumNotReg(line);
-                 return;
-            }
-            if(p_f_o_name_r&&p_f_o_add_r){
-                savePersonFixedOwnerNameAddNotReg(line);
-                 return;
-            }
-            if(p_f_o_num_r&&p_f_o_add_r){
-                savePersonFixedOwnerNumAddNotReg(line);
-                 return;
-            }
-            if(p_f_o_name_r&&p_f_o_num_r&&p_f_o_add_r){
-                savePersonFixedOwnerNameNumAddNotReg(line);
-                 return;
-            }
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                if(!p_f_o_num_r&&col.at(getColNum("登记激活时间"))!=nullptr){
-                    if(needAgent(col.at(getColNum("机主证件号码")), col.at(getColNum("登记激活时间")))){
-                        savePersonFixedAgentNotReg(line);
-                        p_f_o_agent_r=true;
-                         return;
-                    }
-                }
-
-            }
-
-
-            bool p_f_o_t_n=false; /*个人固定用户-证件类型不合规*/
-
-            bool p_f_o_name_n=false; /*个人固定用户-用户姓名不合规*/
-
-            bool p_f_o_num_n=false; /*个人固定用户-证件号码不合规*/
-
-            bool p_f_o_add_n=false; /*个人固定用户-证件地址不合规*/
-
-            bool p_f_o_agent_n=false; /*个人固定用户-代办人不合规*/
-
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                        isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                    savePeronMobileAgentNok(line);
-                    p_f_o_agent_n=true;
-            }
-            if(isNotReg(col.at(getColNum("机主证件类型")))){
-                savePersonFixedOwnerTypeNok(line);
-                p_f_o_t_n=true;
-            }
-            if(isNotReg(col.at(getColNum("机主用户姓名")))){
-                savePersonFixedOwnerNameNok(line);
-                p_f_o_name_n=true;
-            }
-            if(isNotReg(col.at(getColNum("机主证件号码")))){
-                savePersonFixedOwnerNumNok(line);
-                p_f_o_num_n=true;
-            }
-            if(isNotReg(col.at(getColNum("机主证件地址")))){
-                savePersonFixedOwnerAddNok(line);
-                p_f_o_add_n=true;
-            }
-            if(p_f_o_name_n&&p_f_o_num_n){
-                savePersonFixedOwnerNameNumNok(line);
-            }
-            if(p_f_o_name_n&&p_f_o_add_n){
-                savePersonFixedOwnerNameAddNok(line);
-            }
-            if(p_f_o_num_n&&p_f_o_add_n){
-                savePersonFixedOwnerNumAddNok(line);
-            }
-            if(p_f_o_name_n&&p_f_o_num_n&&p_f_o_add_n){
-                savePersonFixedOwnerNameNumAddNok(line);
-            }
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                savePersonFixedAgentNotReg(line);
-                p_f_o_agent_r=true;
-            }
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
-                savePersonFixedAgentNok(line);
-                p_f_o_agent_n=true;
-            }
-            if(!(p_f_o_t_r&&p_f_o_name_r&&p_f_o_num_r&&p_f_o_add_r&&p_f_o_t_n&&p_f_o_name_n&&p_f_o_num_n&&p_f_o_add_n&&p_f_o_agent_r&&p_f_o_agent_n)){
-                savePersonFixedOk(line);
-            }
-            if(p_f_o_t_n&&p_f_o_name_n&&p_f_o_num_n&&p_f_o_add_n&&isPersonNameNok(col.at(getColNum("代（经）办人姓名")))&&isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))&&
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
-                saveAllNok(line);//全量不合规
-            }
+            processPersonFixed(col, line);
         }
         else {/*个人移动用户*/
-
-            bool p_m_o_t_r=false; /*个人移动用户-证件类型未登记*/
-
-            bool p_m_o_name_r=false; /*个人移动用户-用户姓名未登记*/
-
-            bool p_m_o_num_r=false; /*个人移动用户-证件号码未登记*/
-
-            bool p_m_o_add_r=false; /*个人移动用户-证件地址未登记*/
-
-            bool p_m_o_agent_r = false; /*个人移动用户-代办人信息未登记*/
-
-            bool p_m_o_t_n=false;  /*个人移动用户-证件类型不合规*/
-
-            bool p_m_o_name_n=false; /*个人移动用户-用户姓名不合规*/
-
-            bool p_m_o_num_n=false; /*个人移动用户-证件号码不合规*/
-
-            bool p_m_o_add_n=false; /*个人移动用户-证件地址不合规*/
-
-            if(isNotReg(col.at(getColNum("机主证件类型")))){
-                savePersonMobileOwnerTypeNotReg(line);
-                p_m_o_t_r = true;
-            }
-            if(isNotReg(col.at(getColNum("机主用户姓名")))){
-                savePersonMobileOwnerNameNotReg(line);
-                p_m_o_name_r=true;
-            }
-            if(isNotReg(col.at(getColNum("机主证件号码")))){
-                savePersonMobileOwnerNumNotReg(line);
-                p_m_o_num_r=true;
-            }
-            if(isNotReg(col.at(getColNum("机主证件地址")))){
-                savePersonMobileOwnerAddNotReg(line);
-                p_m_o_add_r=true;
-            }
-            if(p_m_o_name_r&&p_m_o_num_r){
-                savePersonMobileOwnerNameNumNotReg(line);
-            }
-            if(p_m_o_name_r&&p_m_o_add_r){
-                savePersonMobileOwnerNameAddNotReg(line);
-            }
-            if(p_m_o_num_r&&p_m_o_add_r){
-                savePersonMobileOwnerNumAddNotReg(line);
-            }
-            if(p_m_o_name_r&&p_m_o_num_r&&p_m_o_add_r){
-                savePersonMobileOwnerNameNumAddNotReg(line);
-            }
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                if(!p_m_o_num_r&&col.at(getColNum("登记激活时间"))!=nullptr){
-                    //判断是否需要登记代办人
-                    if(needAgent(col.at(getColNum("机主证件号码")), col.at(getColNum("登记激活时间")))){
-                        savePeronMobileAgentNotReg(line);
-                        p_m_o_agent_r=true;
-                    }
-                }
-
-            }
-
-            if(isPersonTypeNok(col.at(getColNum("机主证件类型")))){
-                savePeronMobileOwnerTyteNok(line);
-                p_m_o_t_n=true;
-            }
-            if(isPersonNameNok(col.at(getColNum("机主用户姓名")))){
-                savePeronMobileOwnerNameNok(line);
-                p_m_o_name_n=true;
-            }
-            if(isPersonNumNok(col.at(getColNum("机主证件号码")))){
-                savePeronMobileOwnerNumNok(line);
-                p_m_o_num_n=true;
-            }
-            if(isPersonAddNok(col.at(getColNum("机主证件地址")))){
-                savePeronMobileOwnerAddNok(line);
-                p_m_o_add_n=true;
-            }
-            if(p_m_o_name_n&&p_m_o_num_n){
-                savePeronMobileOwnerNameNumNok(line);
-            }
-            if(p_m_o_name_n&&p_m_o_add_n){
-                savePeronMobileOwnerNameAddNok(line);
-            }
-            if(p_m_o_num_n&&p_m_o_add_n){
-                savePeronMobileOwnerNumAddNok(line);
-            }
-            if(p_m_o_name_n&&p_m_o_num_n&&p_m_o_add_n){
-                savePeronMobileOwnerNameNumAddNok(line);
-            }
-            if(!(p_m_o_t_r&&p_m_o_t_n&&p_m_o_name_r&&p_m_o_num_r&&p_m_o_add_r&&p_m_o_name_n&&p_m_o_num_n&&p_m_o_add_n)){
-                savePersonMobileOk(line);
-            }
-            if(p_m_o_t_n&&p_m_o_name_n&&p_m_o_num_n&&p_m_o_add_n){
-                saveAllNok(line);//全量不合规
-            }
+            processPersonMobile(col, line);
         }
 
     }
     else if(col.at(getColNum("用户类型"))==userType.value("unit")){  /*单位用户*/
 
         if(bizTypeFixed.contains(col.at(getColNum("用户业务类型")))){ /*单位固话用户*/
-
-            bool u_f_a_r=false; /*单位固话用户-代办人信息未登记*/
-
-            bool u_f_u_r=false;//单位固话用户-单位信息未登记
-
-
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                saveUnitFixedAgentNotReg(line);
-                u_f_a_r=true;
-            }
-            if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-                    isNotReg(col.at(getColNum("单位证件地址")))||isNotReg(col.at(getColNum("单位通讯地址")))){
-                saveUnitFixedUnitNotReg(line);
-                u_f_u_r=true;
-            }
-            if(u_f_a_r&&u_f_u_r){
-                saveUnitFixedAgentUnitNotReg(line);
-            }
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))&&isNotReg(col.at(getColNum("代（经）办人证件类型")))&&
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))&&isNotReg(col.at(getColNum("代（经）办人证件地址")))&&isNotReg(col.at(getColNum("代（经）办人通讯地址")))&&
-                isNotReg(col.at(getColNum("单位名称")))&&isNotReg(col.at(getColNum("单位证件号码")))&&isNotReg(col.at(getColNum("单位证件类型")))&&
-                    isNotReg(col.at(getColNum("单位证件地址")))&&isNotReg(col.at(getColNum("单位通讯地址")))){
-                saveAllNotReg(line);
-            }
-            bool u_f_a_n=false;//单位移动用户-代办人信息不合规
-            bool u_f_u_n=false;//单位移动用户-单位信息不合规
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
-                saveUnitFixedAgentNok(line);
-                u_f_a_n=true;
-            }
-            if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-                    isUnitAddNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
-                saveUnitFixedUnitNok(line);
-                u_f_u_n=true;
-            }
-            if(u_f_a_n&&u_f_u_n){
-                saveUnitMobileAgentUnitNok(line);
-            }
-            if(!(u_f_a_r&&u_f_u_r&&u_f_a_n&&u_f_u_n)){
-                saveUnitFixedOk(line);
-            }
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))&&isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))&&
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))&&isPersonAddNok(col.at(getColNum("代（经）办人证件地址")))&&
-                    isPersonAddNok(col.at(getColNum("代（经）办人通讯地址")))&&isUnitNameNok(col.at(getColNum("单位名称")))&&isUnitNumNok(col.at(getColNum("单位证件号码")))&&
-                    isUnitTypeNok(col.at(getColNum("单位证件类型")))&&
-                    isUnitAddNok(col.at(getColNum("单位证件地址")))&&isUnitAddNok(col.at(getColNum("单位通讯地址")))){
-                saveAllNok(line);
-            }
+            processUnitFixed(col,line);
         }
         else {
-            bool u_m_o_r=false;/*单位移动用户-使用人信息未登记*/
-            bool u_m_a_r=false;/*单位移动用户-代办人信息未登记*/
-            bool u_m_u_r=false;/*单位移动用户-单位信息未登记*/
-
-            if(isNotReg(col.at(getColNum("机主用户姓名")))||isNotReg(col.at(getColNum("机主证件号码")))||isNotReg(col.at(getColNum("机主证件地址")))||isNotReg(col.at(getColNum("机主证件类型")))){
-                saveUnitMobileOwnerNotReg(line);
-                u_m_o_r=true;
-            }
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                saveUnitMobileAgentNotReg(line);
-                u_m_a_r=true;
-            }
-            if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-                    isNotReg(col.at(getColNum("单位证件地址")))||isNotReg(col.at(getColNum("单位通讯地址")))){
-                saveUnitMobileUnitNotReg(line);
-                u_m_u_r=true;
-            }
-            if(u_m_o_r&&u_m_u_r){
-                saveUnitMobileOwnerUnitNotReg(line);
-            }
-            if(u_m_a_r&&u_m_u_r){
-                saveUnitMobileAgentUnitNotReg(line);
-            }
-            if(u_m_o_r&&u_m_a_r&&u_m_u_r){
-                saveUnitMobileOwnerAgentUnitNotReg(line);
-            }
-            if(isNotReg(col.at(getColNum("机主用户姓名")))&&isNotReg(col.at(getColNum("机主证件号码")))&&isNotReg(col.at(getColNum("机主证件地址")))&&
-                    isNotReg(col.at(getColNum("机主证件类型")))&&isNotReg(col.at(getColNum("代（经）办人姓名")))&&isNotReg(col.at(getColNum("代（经）办人证件类型")))&&
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))&&isNotReg(col.at(getColNum("代（经）办人证件地址")))&&isNotReg(col.at(getColNum("代（经）办人通讯地址")))&&
-                isNotReg(col.at(getColNum("单位名称")))&&isNotReg(col.at(getColNum("单位证件号码")))&&isNotReg(col.at(getColNum("单位证件类型")))&&
-                    isNotReg(col.at(getColNum("单位证件地址")))&&isNotReg(col.at(getColNum("单位通讯地址")))){
-                saveAllNotReg(line);
-            }
-            bool u_m_o_n=false;//单位移动用户-使用人信息不合规
-            bool u_m_a_n=false;//单位移动用户-代办人信息不合规
-            bool u_m_u_n=false;//单位移动用户-单位信息不合规
-
-            if(isPersonNameNok(col.at(getColNum("机主用户姓名")))||isPersonNumNok(col.at(getColNum("机主证件号码")))||isPersonAddNok(col.at(getColNum("机主证件地址")))||
-                    isPersonTypeNok(col.at(getColNum("机主证件类型")))||col.at(getColNum("机主用户姓名"))==col.at(getColNum("代（经）办人姓名"))){
-                saveUnitMobileOwnerNok(line);
-                u_m_o_n=true;
-            }
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
-                saveUnitMobileAgentNok(line);
-                u_m_a_n=true;
-            }
-            if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-                    isUnitAddNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
-                saveUnitMobileUnitNok(line);
-                u_m_u_n=true;
-            }
-            if(u_m_o_n&&u_m_a_n){
-                saveUnitMobileOwnerAgentNok(line);
-            }
-            if(u_m_o_n&&u_m_u_n){
-                saveUnitMobileOwnerUnitNok(line);
-            }
-            if(u_m_a_n&&u_m_u_n){
-                saveUnitMobileAgentUnitNok(line);
-            }
-            if(u_m_o_n&&u_m_a_n&&u_m_u_n){
-                saveUnitMobileOwnerAgentUnitNok(line);
-            }
-            if(!(u_m_o_r&&u_m_a_r&&u_m_u_r&&u_m_o_n&&u_m_a_n&&u_m_u_n)){
-                saveUnitMobileOk(line);
-            }
-            if(isPersonNameNok(col.at(getColNum("机主用户姓名")))&&isPersonNumNok(col.at(getColNum("机主证件号码")))&&isPersonAddNok(col.at(getColNum("机主证件地址")))&&
-                    isPersonTypeNok(col.at(getColNum("机主证件类型")))&&col.at(getColNum("机主用户姓名"))==col.at(getColNum("代（经）办人姓名"))&&
-                    isPersonNameNok(col.at(getColNum("代（经）办人姓名")))&&isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))&&
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))&&isPersonAddNok(col.at(getColNum("代（经）办人证件地址")))&&
-                    isPersonAddNok(col.at(getColNum("代（经）办人通讯地址")))&&isUnitNameNok(col.at(getColNum("单位名称")))&&isUnitNumNok(col.at(getColNum("单位证件号码")))&&
-                    isUnitTypeNok(col.at(getColNum("单位证件类型")))&&isUnitAddNok(col.at(getColNum("单位证件地址")))&&isUnitAddNok(col.at(getColNum("单位通讯地址")))){
-                saveAllNok(line);
-            }
+            processUnitMobile(col,line);
         }
     }
     else if(col.at(getColNum("用户类型"))==userType.value("industry")){
         if(bizTypeFixed.contains(col.at(getColNum("用户业务类型")))){
-            bool t_f_a_r=false;//"行业固话用户-代办人未登记
-            bool t_f_u_r=false;//行业固话用户-单位信息未登记
-            bool t_f_l_r=false;//行业固话用户-责任人信息未登记
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                saveTradeMobileAgentNotReg(line);
-                t_f_a_r=true;
-            }
-            if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-                    isNotReg(col.at(getColNum("单位证件地址")))||isNotReg(col.at(getColNum("单位通讯地址")))){
-                saveTradeMobileUnitNotReg(line);
-                t_f_u_r=true;
-            }
-            if(isNotReg(col.at(getColNum("责任人姓名")))||isNotReg(col.at(getColNum("责任人证件类型")))||isNotReg(col.at(getColNum("责任人证件号码")))||
-                    isNotReg(col.at(getColNum("责任人证件地址")))||isNotReg(col.at(getColNum("责任人通讯地址")))){
-                saveTradeMobileLiableNotReg(line);
-                t_f_l_r=true;
-            }
-            if(t_f_a_r&&t_f_u_r){
-                saveTradeFixedAgentUnitNotReg(line);
-            }
-            if(t_f_a_r&&t_f_l_r){
-                saveTradeMobileLiableAgentNotReg(line);
-            }
-            if(t_f_l_r&&t_f_u_r){
-                saveTradeMobileLiableUnitNotReg(line);
-            }
-            if(t_f_l_r&&t_f_a_r&&t_f_u_r){
-                saveTradeMobileLiableAgentUnitNotReg(line);
-            }
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))&&isNotReg(col.at(getColNum("代（经）办人证件类型")))&&
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))&&isNotReg(col.at(getColNum("代（经）办人证件地址")))&&isNotReg(col.at(getColNum("代（经）办人通讯地址")))&&
-                    isNotReg(col.at(getColNum("单位名称")))&&isNotReg(col.at(getColNum("单位证件号码")))&&isNotReg(col.at(getColNum("单位证件类型")))&&
-                                        isNotReg(col.at(getColNum("单位证件地址")))&&isNotReg(col.at(getColNum("单位通讯地址")))&&
-                    isNotReg(col.at(getColNum("责任人姓名")))&&isNotReg(col.at(getColNum("责任人证件类型")))&&isNotReg(col.at(getColNum("责任人证件号码")))&&
-                                        isNotReg(col.at(getColNum("责任人证件地址")))&&isNotReg(col.at(getColNum("责任人通讯地址")))){
-                saveAllNotReg(line);
-            }
-            bool t_f_a_n=false;//"行业固话用户-代办人不合规
-            bool t_f_u_n=false;//行业固话用户-单位信息不合规
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
-                saveTradeFixedAgentNok(line);
-                t_f_a_n=true;
-            }
-            if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-                    isUnitAddNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
-                saveTradeFixedUnitNotReg(line);
-                saveTradeFixedUnitNok(line);
-                t_f_u_n=true;
-            }
-            if(t_f_a_n&&t_f_u_n){
-                saveTradeFixedAgentUnitNok(line);
-            }
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))&&isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))&&
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))&&isPersonAddNok(col.at(getColNum("代（经）办人证件地址")))&&
-                    isPersonAddNok(col.at(getColNum("代（经）办人通讯地址")))&&isUnitNameNok(col.at(getColNum("单位名称")))&&isUnitNumNok(col.at(getColNum("单位证件号码")))&&
-                    isUnitTypeNok(col.at(getColNum("单位证件类型")))&&isUnitAddNok(col.at(getColNum("单位证件地址")))&&isUnitAddNok(col.at(getColNum("单位通讯地址")))){
-                saveAllNok(line);
-            }
-            if(!(t_f_l_r&&t_f_a_r&&t_f_u_r&&t_f_a_n&&t_f_u_n)){
-                saveTradeFixedOk(line);
-            }
+            processTradeFixed(col, line);
         }
         else {
-            bool t_m_a_r=false;//"行业移动用户-代办人未登记
-            bool t_m_u_r=false;//行业移动用户-单位信息未登记
-            bool t_m_l_r=false;//行业移动用户-责任人信息未登记
-            if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-                    isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-                saveTradeMobileAgentNotReg(line);
-                t_m_a_r=true;
-            }
-            if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-                    isNotReg(col.at(getColNum("单位证件地址")))||isNotReg(col.at(getColNum("单位通讯地址")))){
-                saveTradeMobileUnitNotReg(line);
-                t_m_u_r=true;
-            }
-            if(isNotReg(col.at(getColNum("责任人姓名")))||isNotReg(col.at(getColNum("责任人证件类型")))||isNotReg(col.at(getColNum("责任人证件号码")))||
-                    isNotReg(col.at(getColNum("责任人证件地址")))||isNotReg(col.at(getColNum("责任人通讯地址")))){
-                saveTradeMobileLiableNotReg(line);
-                t_m_l_r=true;
-            }
-            if(t_m_a_r&&t_m_u_r){
-                saveTradeMobileAgentUnitNotReg(line);
-            }
-            if(t_m_a_r&&t_m_l_r){
-                saveTradeMobileLiableAgentNotReg(line);
-            }
-            if(t_m_l_r&&t_m_u_r){
-                saveTradeMobileLiableUnitNotReg(line);
-            }
-            if(t_m_l_r&&t_m_a_r&&t_m_u_r){
-                saveTradeMobileLiableAgentUnitNotReg(line);
-                saveAllNotReg(line);
-            }
-            bool t_m_a_n=false;//"行业移动用户-代办人不合规
-            bool t_m_u_n=false;//行业移动用户-单位信息不合规
-            bool t_m_l_n=false;//行业移动用户-责任人信息不合规
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-                    isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
-                saveTradeMobileAgentNok(line);
-                t_m_a_n=true;
-            }
-            if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-                    isUnitNumNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
-                saveTradeMobileUnitNok(line);
-                t_m_u_n=true;
-            }
-            if(isPersonNameNok(col.at(getColNum("责任人姓名")))||isPersonTypeNok(col.at(getColNum("责任人证件类型")))||isPersonNumNok(col.at(getColNum("责任人证件号码")))||
-                    isPersonAddNok(col.at(getColNum("责任人证件地址")))||isPersonAddNok(col.at(getColNum("责任人通讯地址")))){
-                saveTradeMobileLiableNok(line);
-                t_m_l_n=true;
-            }
-            if(t_m_a_n&&t_m_u_n){
-                saveTradeMobileAgentUnitNok(line);
-            }
-            if(t_m_l_n&&t_m_a_n){
-                saveTradeMobileLiableAgentNok(line);
-            }
-            if(t_m_l_n&&t_m_u_n){
-                saveTradeMobileLiableUnitNok(line);
-            }
-            if(t_m_l_n&&t_m_a_n&&t_m_u_n){
-                saveTradeMobileLiableAgentUnitNok(line);
-            }
-            if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))&&isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))&&
-                 isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))&&isPersonAddNok(col.at(getColNum("代（经）办人证件地址")))&&
-                    isPersonAddNok(col.at(getColNum("代（经）办人通讯地址")))&&isUnitNameNok(col.at(getColNum("单位名称")))&&isUnitNumNok(col.at(getColNum("单位证件号码")))&&
-                    isUnitTypeNok(col.at(getColNum("单位证件类型")))&&isUnitNumNok(col.at(getColNum("单位证件地址")))&&
-                    isUnitAddNok(col.at(getColNum("单位通讯地址")))&&
-                    isPersonNameNok(col.at(getColNum("责任人姓名")))&&isPersonTypeNok(col.at(getColNum("责任人证件类型")))&&isPersonNumNok(col.at(getColNum("责任人证件号码")))&&
-                 isPersonAddNok(col.at(getColNum("责任人证件地址")))&&isPersonAddNok(col.at(getColNum("责任人通讯地址")))){
-                 saveAllNok(line);
-            }
-            if(!(t_m_l_r&&t_m_a_r&&t_m_u_r&&t_m_l_n&&t_m_a_n&&t_m_u_n)){
-                saveTradeMobileOk(line);
-            }
+            processTradeMobile(col, line);
+
         }
 
     }
-//
-//    saveAllNotReg(line);
-//    saveAllNok(line);
-//    saveFieldAbnormal(line);
-//    saveAllOk(line);
-//    saveWaitData(line);
-
-//    (line);
 
 //    saveOneCard(line);
 }
@@ -1321,13 +866,11 @@ void UserDb::saveAllNok(QString line){
     writeFile("全量形式不合规.nck",line);
 }
 void UserDb::saveAbnormal(QString line){
-    //不是42列的
-    report->formatNok+=1;
+    report->formatNok+=1;//不是42列的
     writeFile("格式异常数据.abnormal",line);
 }
 void UserDb::saveFieldAbnormal(QString line){
-    //（例如时间格式等不合规）
-    report->fieldNok+=1;
+    report->fieldNok+=1;//（例如时间格式等不合规）
     writeFile("字段异常数据.abnormal",line);
 }
 void UserDb::saveAllOk(QString line){
@@ -1374,35 +917,35 @@ void UserDb::savePersonMobileOwnerNameNumAddNotReg(QString line){
     report->personMobileOwnerNameNumAddNotReg += 1;
     writeFile("个人移动用户-用户姓名&证件号码&证件地址未登记.nreg",line);
 }
-void UserDb::savePeronMobileOwnerTyteNok(QString line){
+void UserDb::savePersonMobileOwnerTyteNok(QString line){
     report->personMobileOwnerTypeNok += 1;
     writeFile("个人移动用户-证件类型校验不合规.nck",line);
 }
-void UserDb::savePeronMobileOwnerNameNok(QString line){
+void UserDb::savePersonMobileOwnerNameNok(QString line){
     report->personMobileOwnerNameNok +=1;
     writeFile("个人移动用户-用户姓名校验不合规.nck",line);
 }
-void UserDb::savePeronMobileOwnerNumNok(QString line){
+void UserDb::savePersonMobileOwnerNumNok(QString line){
     report->personMobileOwnerNumNok +=1;
     writeFile("个人移动用户-证件号码校验不合规.nck",line);
 }
-void UserDb::savePeronMobileOwnerAddNok(QString line){
+void UserDb::savePersonMobileOwnerAddNok(QString line){
     report->personMobileOwnerAddNok += 1;
     writeFile("个人移动用户-证件地址校验不合规.nck",line);
 }
-void UserDb::savePeronMobileOwnerNameNumNok(QString line){
+void UserDb::savePersonMobileOwnerNameNumNok(QString line){
     report->personMobileOwnerNameNumNok+=1;
     writeFile("个人移动用户-用户姓名&证件号码校验不合规.nck",line);
 }
-void UserDb::savePeronMobileOwnerNameAddNok(QString line){
+void UserDb::savePersonMobileOwnerNameAddNok(QString line){
     report->personMobileOwnerNameAddNok+=1;
     writeFile("个人移动用户-用户姓名&证件地址校验不合规.nck",line);
 }
-void UserDb::savePeronMobileOwnerNumAddNok(QString line){
+void UserDb::savePersonMobileOwnerNumAddNok(QString line){
     report->personMobileOwnerNameNumAddNok+=1;
     writeFile("个人移动用户-证件号码&证件地址校验不合规.nck",line);
 }
-void UserDb::savePeronMobileOwnerNameNumAddNok(QString line){
+void UserDb::savePersonMobileOwnerNameNumAddNok(QString line){
     report->personMobileOwnerNameNumAddNok+=1;
     writeFile("个人移动用户-用户姓名&证件号码&证件地址校验不合规.nck",line);
 }
@@ -1475,7 +1018,7 @@ void UserDb::savePersonFixedOwnerNameNumAddNok(QString line){
     report->personFixedOwnerNameNumAddNok+=1;
     writeFile("个人固话用户-用户姓名&证件号码&证件地址校验不合规.nck",line);
 }
-void UserDb::savePeronMobileAgentNotReg(QString line){
+void UserDb::savePersonMobileAgentNotReg(QString line){
     report->personMobileAgentNotReg+=1;
     writeFile("个人移动用户-代办人信息未登记.nreg",line);
 }
@@ -1483,7 +1026,7 @@ void UserDb::savePersonFixedAgentNotReg(QString line){
     report->personFixedAgentNotReg+=1;
     writeFile("个人固话用户-代办人信息未登记.nreg",line);
 }
-void UserDb::savePeronMobileAgentNok(QString line){
+void UserDb::savePersonMobileAgentNok(QString line){
     report->personMobileAgentNok+=1;
     writeFile("个人移动用户-代办人信息校验不合规.nck",line);
 }
@@ -1563,6 +1106,7 @@ void UserDb::saveUnitFixedUnitNotReg(QString line){
     report->unitFixedUnitNotReg+=1;
     writeFile("单位固话用户-单位信息未登记.nreg",line);
 }
+
 void UserDb::saveUnitFixedOwnerAgentNotReg(QString line){
     report->unitFixedOwnerAgentNotReg+=1;
     writeFile("单位固话用户-使用人&经办人信息未登记.nreg",line);
@@ -1659,6 +1203,10 @@ void UserDb::saveTradeFixedAgentNotReg(QString line){
     report->tradeFixedAgentNotReg+=1;
     writeFile("行业固话应用-经办人信息未登记.nreg",line);
 }
+void UserDb::saveTradeFixedLiableNotReg(QString line){
+    report->tradeFixedLiableNotReg+=1;
+    writeFile("行业固话应用-责任人信息未登记.nreg",line);
+}
 void UserDb::saveTradeFixedAgentUnitNotReg(QString line){
     report->tradeFixedAgentUnitNotReg+=1;
     writeFile("行业固话应用-经办人&单位信息未登记.nreg",line);
@@ -1677,6 +1225,14 @@ void UserDb::saveTradeFixedAgentUnitNok(QString line){
 }
 void UserDb::saveTradeFixedUnitNok(QString line){
     report->tradeFixedUnitNok+=1;
+    writeFile("行业固话应用-单位信息校验不合规.nck",line);
+}
+void UserDb::saveTradeMobileOwnerNok(QString line){
+    report->tradeMobileOwnerNok+=1;
+    writeFile("行业固话应用-单位信息校验不合规.nck",line);
+}
+void UserDb::saveTradeMobileOwnerNotReg(QString line){
+    report->tradeMobileOwnerNotReg+=1;
     writeFile("行业固话应用-单位信息校验不合规.nck",line);
 }
 void UserDb::savePersonMobileOneCard(QString line){
@@ -1722,7 +1278,14 @@ void UserDb::writeFile(QString filename, QString line){
     file.close();
 }
 
-// 判断代办人必填规则：2018年9月1日后，16周岁，大约120岁，之前是10周岁，大于120岁，就必须有代办人信息。入网时间-证件号码日期>10年
+
+
+/**
+ * @brief UserDb::needAgent
+ * @param idCardNum 身份证号
+ * @param activeTime 入网激活时间
+ * @return 判断代办人必填规则：2018年9月1日后，16周岁，大约120岁，之前是10周岁，大于120岁，就必须有代办人信息。入网时间-证件号码日期>10年
+ */
 bool UserDb::needAgent(QString idCardNum, QString activeTime){
 
     QDateTime idDate = QDateTime::fromString(idCardNum.mid(6,8), "yyyyMMdd");
@@ -1743,4 +1306,773 @@ bool UserDb::needAgent(QString idCardNum, QString activeTime){
     date2 = idDate.addYears(120);
 
     return date1>time||date2<time;
+}
+
+int UserDb::getDateForInt(QString activeTime){
+
+
+    QString dateFormat = xmlConfig->readDateformatValue().value("dateformat");//"yyyy-MM-dd hh:mm:ss";
+    QDateTime time = QDateTime::fromString(activeTime, dateFormat);
+    QString timeString = time.toString("yyyyMMdd");
+    bool ok;
+    return timeString.toInt(&ok,10);
+}
+
+/**
+ * @brief UserDb::processPersonFixed 处理个人固话信息
+ * @param col
+ * @param line
+ */
+void UserDb::processPersonFixed(QList<QString> col, QString line){
+    /* 个人固定用户-证件类型未登记 */
+   bool typeNotReg = false;
+   if(isNotReg(col.at(getColNum("机主证件类型")))){
+       typeNotReg = true;
+   }
+
+    /* 个人固定用户-用户姓名未登记 */
+   bool nameNotReg = false;
+   if(isNotReg(col.at(getColNum("机主用户姓名")))){
+       nameNotReg = true;
+   }
+
+   /* 个人固定用户-证件号码未登记 */
+   bool numNotReg = false;
+   if(isNotReg(col.at(getColNum("机主证件号码")))){
+       numNotReg = true;
+   }
+
+   /* 个人固定用户-证件地址未登记 */
+   bool addNotReg = false;
+   if(isNotReg(col.at(getColNum("机主证件地址")))){
+       addNotReg = true;
+   }
+
+   /* 个人固定用户-代办人未登记 */
+   if(isNotReg(col.at(getColNum("代（经）办人姓名"))) || isNotReg(col.at(getColNum("代（经）办人证件类型"))) ||
+       isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+       if(needAgent(col.at(getColNum("机主证件号码")), col.at(getColNum("登记激活时间")))){
+           savePersonFixedAgentNotReg(line);
+            return;
+       }
+   }
+
+   if(typeNotReg){
+       savePersonFixedOwnerTypeNotReg(line);
+   }
+   if(nameNotReg && !numNotReg && !addNotReg){
+       savePersonFixedOwnerNameNotReg(line);
+   }
+   if(!nameNotReg && numNotReg && !addNotReg){
+       savePersonFixedOwnerNumNotReg(line);
+   }
+   if(!nameNotReg && !numNotReg && addNotReg){
+       savePersonFixedOwnerAddNotReg(line);
+   }
+   /* 个人固话用户-用户姓名&证件号码未登记 */
+   if(nameNotReg && numNotReg && !addNotReg){
+       savePersonFixedOwnerNameNumNotReg(line);
+   }
+   /* 个人固话用户-用户姓名&证件号码未登记 */
+   if(nameNotReg && !numNotReg && addNotReg){
+       savePersonFixedOwnerNameAddNotReg(line);
+   }
+   /* 个人固话用户-用户姓名&证件号码未登记 */
+   if(!nameNotReg && numNotReg && addNotReg){
+       savePersonFixedOwnerNumAddNotReg(line);
+   }
+   /* 个人固话用户-用户姓名&证件号码&证件地址未登记 */
+   if(nameNotReg && numNotReg && addNotReg){
+       savePersonFixedOwnerNameNumAddNotReg(line);
+   }
+
+   /* 个人固定用户-代办人信息不合规 */
+   bool agentNok = false;
+   if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
+               isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+       agentNok = true;
+   }
+
+   /* 个人固定用户-证件类型不合规 */
+   bool typeNok = false;
+   if(isPersonTypeNok(col.at(getColNum("机主证件类型")))){
+       typeNok = true;
+   }
+
+   /* 个人固定用户-用户姓名不合规 */
+   bool nameNok = false;
+   if(isPersonNameNok(col.at(getColNum("机主用户姓名")))){
+       nameNok = true;
+   }
+
+   /* 个人固定用户-证件号码不合规 */
+   bool numNok = false;
+   if(isPersonNumNok(col.at(getColNum("机主证件号码")))){
+       numNok = true;
+   }
+
+   /* 个人固定用户-证件地址不合规 */
+   bool addNok = false;
+   if(isPersonAddNok(col.at(getColNum("机主证件地址")))){
+       addNok = true;
+   }
+
+   if(agentNok && !typeNok && !nameNok && !numNok && !addNok){
+       savePersonFixedAgentNok(line);
+   }
+   if(!agentNok && typeNok && !nameNok && !numNok && !addNok){
+       savePersonFixedOwnerTypeNok(line);
+   }
+   if(!agentNok && !typeNok && nameNok && !numNok && !addNok){
+       savePersonFixedOwnerNameNok(line);
+   }
+   if(!agentNok && !typeNok && !nameNok && numNok && !addNok){
+       savePersonFixedOwnerNumNok(line);
+   }
+   if(!agentNok && !typeNok && !nameNok && !numNok && addNok){
+       savePersonFixedOwnerAddNok(line);
+   }
+
+   /* 个人固话用户-用户姓名&证件号码校验不合规 */
+   if(!agentNok && !typeNok && nameNok && numNok && !addNok){
+       savePersonFixedOwnerNameNumNok(line);
+   }
+
+   /* 个人固话用户-用户姓名&证件地址校验不合规 */
+   if(!agentNok && !typeNok && nameNok && !numNok && addNok){
+       savePersonFixedOwnerNameAddNok(line);
+   }
+
+   /* 个人固话用户-证件号码&证件地址校验不合规 */
+   if(!agentNok && !typeNok && !nameNok && numNok && addNok){
+       savePersonFixedOwnerNumAddNok(line);
+   }
+
+   /* 个人固话用户-用户姓名&证件号码&证件地址校验不合规 */
+   if(!agentNok && !typeNok && nameNok && numNok && addNok){
+       savePersonFixedOwnerNumAddNok(line);
+   }
+
+   /* 个人固话用户-形式合规数据 */
+   if(!typeNotReg && !nameNotReg && !numNotReg && !addNotReg && !agentNok && !typeNok && !nameNok && !numNok && !addNok){
+       savePersonFixedOk(line);
+       saveAllOk(line);
+   }
+
+}
+
+void UserDb::processPersonMobile(QList<QString> col, QString line){
+    /*个人移动用户-证件类型未登记*/
+    bool typeNotReg = false;
+    if(isNotReg(col.at(getColNum("机主证件类型")))){
+        typeNotReg = true;
+    }
+
+    /*个人移动用户-用户姓名未登记*/
+    bool nameNotReg = false;
+    if(isNotReg(col.at(getColNum("机主用户姓名")))){
+        nameNotReg = true;
+    }
+
+    /*个人移动用户-证件号码未登记*/
+    bool numNotReg = false;
+    if(isNotReg(col.at(getColNum("机主证件号码")))){
+        numNotReg = true;
+    }
+
+    /*个人移动用户-证件地址未登记*/
+    bool addNotReg = false;
+    if(isNotReg(col.at(getColNum("机主证件地址")))){
+        addNotReg = true;
+    }
+
+    if(typeNotReg){
+        savePersonMobileOwnerTypeNotReg(line);
+    }
+    if(nameNotReg){
+        savePersonMobileOwnerNameNotReg(line);
+    }
+    if(numNotReg){
+        savePersonMobileOwnerNumNotReg(line);
+    }
+    if(addNotReg){
+        savePersonMobileOwnerAddNotReg(line);
+    }
+
+    /* 个人移动用户-用户姓名&证件号码未登记 */
+    if(nameNotReg && numNotReg && !addNotReg){
+        savePersonMobileOwnerNameNumNotReg(line);
+    }
+    /* 个人移动用户-用户姓名&证件号码未登记 */
+    if(nameNotReg && !numNotReg && addNotReg){
+        savePersonMobileOwnerNameAddNotReg(line);
+    }
+    /* 个人移动用户-用户姓名&证件号码未登记 */
+    if(!nameNotReg && numNotReg && addNotReg){
+        savePersonMobileOwnerNumAddNotReg(line);
+    }
+    /* 个人移动用户-用户姓名&证件号码&证件地址未登记 */
+    if(nameNotReg && numNotReg && addNotReg){
+        savePersonMobileOwnerNameNumAddNotReg(line);
+    }
+
+
+     /*个人移动用户-代办人信息未登记*/
+    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
+        isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+
+        //判断是否需要登记代办人
+        if(needAgent(col.at(getColNum("机主证件号码")), col.at(getColNum("登记激活时间")))){
+            savePersonMobileAgentNotReg(line);
+            return;
+        }
+    }
+
+    /* 个人移动用户-代办人信息不合规 */
+    bool agentNok = false;
+    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
+                isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+        agentNok = true;
+    }
+
+    /* 个人移动用户-证件类型不合规 */
+    bool typeNok=false;
+    if(isPersonTypeNok(col.at(getColNum("机主证件类型")))){
+        typeNok=true;
+    }
+
+    /* 个人移动用户-用户姓名不合规 */
+    bool nameNok=false;
+    if(isPersonNameNok(col.at(getColNum("机主用户姓名")))){
+        nameNok=true;
+    }
+
+    /* 个人移动用户-证件号码不合规 */
+    bool numNok=false;
+    if(isPersonNumNok(col.at(getColNum("机主证件号码")))){
+        numNok=true;
+    }
+
+     /* 个人移动用户-证件地址不合规 */
+    bool addNok=false;
+    if(isPersonAddNok(col.at(getColNum("机主证件地址")))){
+        addNok=true;
+    }
+
+    if(agentNok && !typeNok && !nameNok && !numNok && !addNok){
+        savePersonMobileAgentNok(line);
+    }
+    if(!agentNok && typeNok && !nameNok && !numNok && !addNok){
+        savePersonMobileOwnerTyteNok(line);
+    }
+    if(!agentNok && !typeNok && nameNok && !numNok && !addNok){
+        savePersonMobileOwnerNameNok(line);
+    }
+    if(!agentNok && !typeNok && !nameNok && numNok && !addNok){
+        savePersonMobileOwnerNumNok(line);
+    }
+    if(!agentNok && !typeNok && !nameNok && !numNok && addNok){
+        savePersonMobileOwnerAddNok(line);
+    }
+
+    /* 个人移动用户-用户姓名&证件号码校验不合规 */
+    if(!agentNok && !typeNok && nameNok && numNok && !addNok){
+        savePersonMobileOwnerNameNumNok(line);
+    }
+
+    /* 个人移动用户-用户姓名&证件地址校验不合规 */
+    if(!agentNok && !typeNok && nameNok && !numNok && addNok){
+        savePersonMobileOwnerNameAddNok(line);
+    }
+
+    /* 个人移动用户-证件号码&证件地址校验不合规 */
+    if(!agentNok && !typeNok && !nameNok && numNok && addNok){
+        savePersonMobileOwnerNumAddNok(line);
+    }
+
+    /* 个人移动用户-用户姓名&证件号码&证件地址校验不合规 */
+    if(!agentNok && !typeNok && nameNok && numNok && addNok){
+        savePersonMobileOwnerNumAddNok(line);
+    }
+
+    /* 个人移动用户-形式合规数据 */
+    if(!nameNotReg && !numNotReg && !addNotReg && !agentNok && !typeNok && !nameNok && !numNok && !addNok){
+        savePersonMobileOk(line);
+        saveAllOk(line);
+    }
+
+}
+
+
+/**
+ * @brief processUnitFixed 处理单位固话信息
+ * @param line
+ *
+ */
+void UserDb::processUnitFixed(QList<QString> col,QString line){
+
+    /* 单位固话用户-代办人信息未登记 */
+    bool agentNotReg = false;
+    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
+            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+        agentNotReg = true;
+    }
+
+    /* 单位固话用户-单位信息未登记 */
+    bool unitNotReg = false;
+    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
+            isNotReg(col.at(getColNum("单位证件地址")))||isNotReg(col.at(getColNum("单位通讯地址")))){
+        unitNotReg = true;
+    }
+
+    /* 单位固话用户-代办人信息不合规 */
+     bool agentNok = false;
+    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
+            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+        agentNok=true;
+    }
+
+    /* 单位固话用户-单位信息不合规 */
+    bool unitNok = false;
+    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
+            isUnitAddNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
+        unitNok=true;
+    }
+
+    int activeDate = getDateForInt(col.at(getColNum("登记激活时间")));
+    /* 2013年9月1日之前入网的单位固话用户需检查经办人或单位信息中任一个条目，该条目需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。*/
+    if(activeDate < 20130901) {
+        if( (agentNotReg || unitNotReg) || (agentNok || unitNok)){
+            if(agentNotReg && !unitNotReg){
+                saveUnitFixedUnitNotReg(line);
+            }
+            if(!agentNotReg && unitNotReg){
+                saveUnitFixedAgentNotReg(line);
+            }
+
+            if(agentNok && !unitNok){
+                saveUnitFixedAgentNok(line);
+            }
+            if(!agentNok && unitNok){
+                saveUnitFixedUnitNok(line);
+            }
+            if(agentNok && unitNok){
+                saveUnitMobileAgentUnitNok(line);
+            }
+        }
+        else {
+            saveUnitFixedOk(line);
+            saveAllNok(line);
+        }
+    }
+    else {
+        /* 2013年9月1日之后入网的单位固话用户需检查经办人和单位信息共2个条目，各条目均需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。*/
+        if(agentNotReg && !unitNotReg){
+            saveUnitFixedUnitNotReg(line);
+        }
+        else if(!agentNotReg && unitNotReg){
+            saveUnitFixedAgentNotReg(line);
+        }
+        else if(agentNotReg && unitNotReg){
+            saveUnitFixedAgentUnitNotReg(line);
+        }
+        else if(agentNok && !unitNok){
+            saveUnitFixedAgentNok(line);
+        }
+        else if(!agentNok && unitNok){
+            saveUnitFixedUnitNok(line);
+        }
+        else if(agentNok && unitNok){
+            saveUnitMobileAgentUnitNok(line);
+        }
+        else {
+            saveUnitFixedOk(line);
+            saveAllNok(line);
+        }
+    }
+}
+
+/**
+ * @brief processUnitMobile
+ * @param col
+ * @param line
+ */
+void UserDb::processUnitMobile(QList<QString> col, QString line){
+    /* 单位移动用户-使用人信息未登记 */
+    bool ownerNotReg = false;
+    if(isNotReg(col.at(getColNum("机主用户姓名"))) || isNotReg(col.at(getColNum("机主证件号码"))) || isNotReg(col.at(getColNum("机主证件地址")))
+            || isNotReg(col.at(getColNum("机主证件类型")))){
+        ownerNotReg = true;
+    }
+
+    /* 单位移动用户-代办人信息未登记 */
+    bool agentNotReg = false;
+    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
+            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+        agentNotReg = true;
+    }
+
+    /* 单位移动用户-单位信息未登记 */
+    bool unitNotReg = false;
+    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
+            isNotReg(col.at(getColNum("单位证件地址")))||isNotReg(col.at(getColNum("单位通讯地址")))){
+        unitNotReg = true;
+    }
+
+    /* 单位移动用户-使用人信息不合规 */
+    bool ownerNok = false;
+    if(isPersonNameNok(col.at(getColNum("机主用户姓名")))||isPersonNumNok(col.at(getColNum("机主证件号码")))||isPersonAddNok(col.at(getColNum("机主证件地址")))||
+            isPersonTypeNok(col.at(getColNum("机主证件类型")))||col.at(getColNum("机主用户姓名"))==col.at(getColNum("代（经）办人姓名"))){
+        ownerNok = true;
+    }
+
+
+    /* 单位移动用户-代办人信息不合规 */
+    bool agentNok = true;
+    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
+            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+        agentNok = true;
+    }
+
+    /* 单位移动用户-单位信息不合规 */
+    bool unitNok = true;
+    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
+            isUnitAddNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
+        unitNok = true;
+    }
+
+
+    /* 如果实际使用人合规，则不需要判断其他字段 */
+    int activeDate = getDateForInt(col.at(getColNum("登记激活时间")));
+    if( ownerNotReg || ownerNok){
+        if(ownerNotReg){
+            saveUnitMobileOwnerNotReg(line);
+        }
+        if(ownerNok){
+            saveUnitMobileOwnerNok(line);
+        }
+        /* 2013年9月1日之前入网的单位移动用户，需检查实际使用人、经办人和单位信息中的任1个条目，该条目中需包含姓名/单位名称、证件类型、证件号码、地址四个字段，
+         * 并符合完整性和真实性要求。 */
+        if(activeDate < 20130901){
+            if(agentNotReg && unitNotReg){
+                saveUnitFixedAgentNotReg(line);
+                saveUnitFixedUnitNotReg(line);
+            }
+            else if(agentNok && unitNok){
+                saveUnitFixedAgentNok(line);
+                saveUnitFixedUnitNok(line);
+            }
+            else{
+                saveUnitMobileOk(line);
+                saveAllNok(line);
+            }
+        }
+        else if(activeDate >= 20130901 && activeDate < 20150101){
+            /* 2013年9月1日之后，2015年1月1日之前入网的单位移动用户，需检查实际使用人或经办人、单位信息共2个条目，各条目中均需包含姓名/单位名称、
+             * 证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。*/
+
+            if(agentNotReg && unitNotReg){
+                saveUnitFixedAgentNotReg(line);
+                saveUnitFixedUnitNotReg(line);
+            }
+            else if(agentNok && unitNok){
+                saveUnitFixedAgentNok(line);
+                saveUnitFixedUnitNok(line);
+            }
+            else{
+                saveUnitMobileOk(line);
+                saveAllNok(line);
+            }
+        }
+        else{
+            /* 2015年1月1日之后入网的单位移动用户，需检查实际使用人、经办人、单位信息共3个条目，各条目中均需包含姓名/单位名称、证件类型、证件号码、
+             * 地址四个字段，并符合完整性和真实性要求。 */
+            if(agentNotReg && !unitNotReg ){
+                saveUnitMobileAgentNotReg(line);
+            }
+            if(!agentNotReg && unitNotReg ){
+                saveUnitMobileUnitNotReg(line);
+            }
+            if(agentNok && !unitNok ){
+                saveUnitMobileAgentNok(line);
+            }
+            if(!agentNok && unitNok ){
+                saveUnitMobileUnitNok(line);
+            }
+            if(ownerNok&&agentNok){
+                saveUnitMobileOwnerAgentNok(line);
+            }
+            if(ownerNok&&agentNok){
+                saveUnitMobileOwnerUnitNok(line);
+            }
+            if(agentNok&&unitNok){
+                saveUnitMobileAgentUnitNok(line);
+            }
+            if(ownerNok&&agentNok&&unitNok){
+                saveUnitMobileOwnerAgentUnitNok(line);
+            }
+            if(!(ownerNok&&agentNok&&unitNok)){
+                saveUnitMobileOk(line);
+                saveAllNok(line);
+            }
+        }
+    }
+    else {
+        saveUnitMobileOk(line);
+        saveAllNok(line);
+    }
+
+}
+
+void UserDb::processTradeFixed(QList<QString> col, QString line){
+    /* 行业固话用户-代办人未登记 */
+    bool agentNotReg = false;
+    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
+            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+        agentNotReg = true;
+    }
+
+    /* 行业固话用户-单位信息未登记 */
+    bool unitNotReg = false;
+    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
+            isNotReg(col.at(getColNum("单位证件地址")))){
+        unitNotReg = true;
+    }
+
+    /* 行业固话用户-责任人信息未登记 */
+    bool liableNotReg = false;
+    if(isNotReg(col.at(getColNum("责任人姓名")))||isNotReg(col.at(getColNum("责任人证件类型")))||isNotReg(col.at(getColNum("责任人证件号码")))||
+            isNotReg(col.at(getColNum("责任人证件地址")))){
+        liableNotReg = true;
+    }
+
+
+    /* 行业固话用户-代办人不合规 */
+    bool agentNok = false;
+    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
+            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+        agentNok = true;
+    }
+
+    /* 行业固话用户-单位信息不合规 */
+    bool unitNok = false;
+    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
+            isUnitAddNok(col.at(getColNum("单位证件地址")))){
+        unitNok=true;
+    }
+
+    /* 2013年9月1日之前入网的行业固话用户需检查经办人或单位信息共1个条目，该条目需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。 */
+    int activeDate = getDateForInt(col.at(getColNum("登记激活时间")));
+    if(activeDate < 20130901) {
+        if( (agentNotReg || unitNotReg) || (agentNok || unitNok)){
+            if(agentNotReg && !unitNotReg){
+                saveTradeFixedUnitNotReg(line);
+            }
+            if(!agentNotReg && unitNotReg){
+                saveTradeFixedAgentNotReg(line);
+            }
+
+            if(agentNok && !unitNok){
+                saveTradeFixedAgentNok(line);
+            }
+            if(!agentNok && unitNok){
+                saveTradeFixedUnitNok(line);
+            }
+            if(agentNok && unitNok){
+                saveTradeMobileAgentUnitNok(line);
+            }
+        }
+        else {
+            saveTradeFixedOk(line);
+            saveAllNok(line);
+        }
+    }
+    else {
+        /* 2013年9月1日之后入网的行业固话用户需检查经办人和单位信息共2个条目，各条目均需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。 */
+        if(agentNotReg && !unitNotReg){
+            saveTradeFixedUnitNotReg(line);
+        }
+        else if(!agentNotReg && unitNotReg){
+            saveTradeFixedAgentNotReg(line);
+        }
+        else if(agentNotReg && unitNotReg){
+            saveTradeFixedAgentUnitNotReg(line);
+        }
+        else if(agentNok && !unitNok){
+            saveTradeFixedAgentNok(line);
+        }
+        else if(!agentNok && unitNok){
+            saveTradeFixedUnitNok(line);
+        }
+        else if(agentNok && unitNok){
+            saveTradeMobileAgentUnitNok(line);
+        }
+        else {
+            saveTradeFixedOk(line);
+            saveAllNok(line);
+        }
+    }
+}
+
+/**
+ * @brief UserDb::processTradeMobile 处理行业移动数据
+ * @param col
+ * @param line
+ */
+void UserDb::processTradeMobile(QList<QString> col, QString line){
+
+    /* 行业移动用户-使用人信息未登记 */
+    bool ownerNotReg = false;
+    if(isNotReg(col.at(getColNum("机主用户姓名"))) || isNotReg(col.at(getColNum("机主证件号码"))) || isNotReg(col.at(getColNum("机主证件地址")))
+            || isNotReg(col.at(getColNum("机主证件类型")))){
+        ownerNotReg = true;
+    }
+
+    /* 行业移动用户-代办人未登记 */
+    bool agentNotReg = false;
+    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
+            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+        agentNotReg = true;
+    }
+
+    /* 行业移动用户-单位信息未登记 */
+    bool unitNotReg = false;
+    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
+            isNotReg(col.at(getColNum("单位证件地址")))){
+        unitNotReg = true;
+    }
+
+    /* 行业移动用户-责任人信息未登记 */
+    bool liableNotReg = false;
+    if(isNotReg(col.at(getColNum("责任人姓名")))||isNotReg(col.at(getColNum("责任人证件类型")))||isNotReg(col.at(getColNum("责任人证件号码")))||
+            isNotReg(col.at(getColNum("责任人证件地址")))){
+        liableNotReg = true;
+    }
+
+    /* 行业移动用户-使用人信息不合规 */
+    bool ownerNok = false;
+    if(isPersonNameNok(col.at(getColNum("机主用户姓名")))||isPersonNumNok(col.at(getColNum("机主证件号码")))||isPersonAddNok(col.at(getColNum("机主证件地址")))||
+            isPersonTypeNok(col.at(getColNum("机主证件类型")))||col.at(getColNum("机主用户姓名"))==col.at(getColNum("代（经）办人姓名"))){
+        ownerNok = true;
+    }
+
+    /* 行业移动用户-代办人不合规 */
+    bool agentNok = false;
+    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
+            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+        agentNok = true;
+    }
+
+    /* 行业移动用户-单位信息不合规 */
+    bool unitNok = false;
+    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
+            isUnitNumNok(col.at(getColNum("单位证件地址")))){
+        unitNok=true;
+    }
+
+    /* 行业移动用户-责任人信息不合规 */
+    bool liableNok = false;
+    if(isPersonNameNok(col.at(getColNum("责任人姓名")))||isPersonTypeNok(col.at(getColNum("责任人证件类型")))||isPersonNumNok(col.at(getColNum("责任人证件号码")))||
+            isPersonAddNok(col.at(getColNum("责任人证件地址")))){
+
+        liableNok=true;
+    }
+    /* 如果实际使用人合规，则不需要判断其他字段 */
+    int activeDate = getDateForInt(col.at(getColNum("登记激活时间")));
+    if( ownerNotReg || ownerNok){
+        if(ownerNotReg){
+            saveTradeMobileOwnerNotReg(line);
+        }
+        if(ownerNok){
+            saveTradeMobileOwnerNok(line);
+        }
+        /* 2013年9月1日之前入网的行业移动用户，需检查责任人、(实际使用人)、经办人和单位信息中任一个条目，该条目中均需包含姓名/单位名称、证件类型、证件号码、地址，
+         * 符合完整性和真实性要求。 */
+        if(activeDate < 20130901){
+            if(agentNotReg && unitNotReg && liableNotReg){
+                saveTradeMobileAgentNotReg(line);
+                saveTradeMobileUnitNotReg(line);
+                saveTradeMobileLiableNotReg(line);
+            }
+            else if(agentNok && unitNok && liableNok){
+                saveTradeMobileAgentNok(line);
+                saveTradeMobileUnitNok(line);
+                saveTradeMobileLiableNok(line);
+            }
+            else{
+                saveTradeMobileOk(line);
+                saveAllNok(line);
+            }
+        }
+        else if(activeDate >= 20130901 && activeDate < 20150101){
+            /* 2013年9月1日之后，2015年1月1日之前入网的行业移动用户，需检查责任人(实际使用人就ok)或经办人、单位信息共2个条目，各条目中均需包含姓名/单位名称、
+             * 证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。*/
+
+            if(agentNotReg && unitNotReg){
+                saveTradeMobileAgentNotReg(line);
+                saveTradeMobileUnitNotReg(line);
+            }
+            else if(unitNotReg && liableNotReg){
+                saveTradeMobileUnitNotReg(line);
+                saveTradeMobileLiableNotReg(line);
+            }
+            else if(agentNotReg && liableNotReg){
+                saveTradeMobileAgentNotReg(line);
+                saveTradeMobileLiableNotReg(line);
+            }
+            else if(agentNok && unitNok){
+                saveTradeMobileAgentNok(line);
+                saveTradeMobileUnitNok(line);
+            }
+            else if(unitNok && liableNok){
+                saveTradeMobileUnitNok(line);
+                saveTradeMobileLiableNok(line);
+            }
+            else if(agentNok && liableNok){
+                saveTradeMobileAgentNok(line);
+                saveTradeMobileLiableNok(line);
+            }
+            else{
+                saveTradeMobileOk(line);
+                saveAllNok(line);
+            }
+        }
+        else{
+            /* 2015年1月1日之后入网的行业移动用户，需检查责任人(实际使用人，优先)、经办人、单位信息共3个条目，各条目中均需包含姓名/单位名称、证件类型、
+             * 证件号码、地址四个字段，并符合完整性和真实性要求。 */
+            if(agentNotReg && !unitNotReg && !liableNotReg){
+                saveTradeMobileAgentNotReg(line);
+            }
+            if(!agentNotReg && unitNotReg && !liableNotReg){
+                saveTradeMobileUnitNotReg(line);
+            }
+            if(!agentNotReg && !unitNotReg && liableNotReg){
+                saveTradeMobileLiableNotReg(line);
+            }
+            if(agentNok && !unitNok && !liableNok){
+                saveTradeMobileAgentNok(line);
+            }
+            if(!agentNok && unitNok && !liableNok){
+                saveTradeMobileUnitNok(line);
+            }
+            if(!agentNok && !unitNok && liableNok){
+                saveTradeMobileLiableNok(line);
+            }
+
+            if(agentNok&&unitNok){
+                saveTradeMobileAgentUnitNok(line);
+            }
+            if(!(ownerNok&&agentNok&&unitNok)){
+                saveTradeMobileOk(line);
+                saveAllNok(line);
+            }
+
+        }
+
+
+    }
+    else {
+        saveTradeMobileOk(line);
+        saveAllNok(line);
+    }
 }
