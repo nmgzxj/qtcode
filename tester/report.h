@@ -3,14 +3,15 @@
 
 #include <QDialog>
 #include <QSqlQuery>
-#include<QDebug>
-#include<QSqlError>
+#include <QDebug>
+#include <QSqlError>
+#include <QTableWidget>
 
 namespace Ui {
 class Report;
 }
 
-class Report : public QDialog
+class Report : public QTableWidget
 {
     Q_OBJECT
 
@@ -18,6 +19,7 @@ public:
     explicit Report(QWidget *parent = 0);
     ~Report();
     void init();
+    void setTableValue();
 
     int personMobileOwnerNameNotReg;//个人移动用户-机主姓名未登记
     int personMobileOwnerTypeNotReg;//个人移动用户-机主证件类型未登记

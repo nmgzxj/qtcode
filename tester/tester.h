@@ -43,6 +43,7 @@ public:
     int col_num = 42; //文件列数
     int row_num = 20; //预览行数
     void startObjThread();
+    UserDb *userdb;
 
 signals:
     void startObjThreadWork();
@@ -62,7 +63,6 @@ private:
     QAction *helpAction;
     QTableView *table;
     QSplitter *splitter;
-    UserDb *userdb;
     QToolBar *fileTool;
     QToolBar *runTool;
 

@@ -3,6 +3,7 @@
 #include <QString>
 #include <QList>
 #include <QStringList>
+#include <QTextCodec>
 #include <QMap>
 //QString QCoreApplication::applicationDirPath()
 

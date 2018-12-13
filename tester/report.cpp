@@ -1,34 +1,52 @@
 ﻿#include "report.h"
 #include "ui_report.h"
 #include <QString>
+#include <QStandardItemModel>
+#include <QStringList>
 
 Report::Report(QWidget *parent)
-    :QDialog(parent),
-    ui(new Ui::Report)
+    :QTableWidget (parent)
 {
+//    QTableWidget *tableWidget = new QTableWidget;
+//    //ui->setupUi(this);
+//    init();
+    this->setWindowTitle("测试结果");
+    this->resize(900, 750);
+    this->setRowCount(100);
+    this->setColumnCount(3);
+    QStringList header;
+    header.append("统计项");
+    header.append("值");
+    header.append("说明");
+    this->setHorizontalHeaderLabels(header);
+    this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //this->resizeColumnsToContents();
+    this->setColumnWidth(0,400);
+    this->setColumnWidth(1,100);
+    this->setColumnWidth(2,400);
+//    setTableValue();
 
-    ui->setupUi(this);
-    init();
-    QSqlQuery query;
 
-        query.prepare("select * from report ");
-        if(!query.exec())
-        {
-            qDebug()<<query.lastError();
-        }
-        else
-        {
-            while(query.next())
-            {
-//                int id = query.value(0).toInt();
-                int j=0;//i行j列
-                for(int i=0;i<100;i++){
-                    ui->tableWidget->setItem(i, j,new QTableWidgetItem(query.value(i+1).toString()));
-                }
+//    QSqlQuery query;
 
-            }
-            qDebug()<<"get report data is finished.";
-        }
+//        query.prepare("select * from report ");
+//        if(!query.exec())
+//        {
+//            qDebug()<<query.lastError();
+//        }
+//        else
+//        {
+//            while(query.next())
+//            {
+////                int id = query.value(0).toInt();
+//                int j=0;//i行j列
+//                for(int i=0;i<100;i++){
+//                    this->setItem(i, j,new QTableWidgetItem(query.value(i+1).toString()));
+//                }
+
+//            }
+//            qDebug()<<"get report data is finished.";
+//        }
 
 }
 
@@ -142,6 +160,388 @@ void Report::init(){
     unitMobileUnitLiableNok = 0;
 }
 
+void Report::setTableValue(){
+    int i=0;
+    this->setItem(i, 0, new QTableWidgetItem("总量"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->allData, 10)));
+    this->setItem(i, 2, new QTableWidgetItem("全部数据行数"));
+    i++;
+
+    this->setItem(i, 0, new QTableWidgetItem("全量未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->allNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+
+    this->setItem(i, 0, new QTableWidgetItem("全量不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->allNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+
+    this->setItem(i, 0, new QTableWidgetItem("格式异常数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->formatNok)));
+    this->setItem(i, 2, new QTableWidgetItem("列数不符"));
+    i++;
+
+    this->setItem(i, 0, new QTableWidgetItem("字段异常数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->fieldNok)));
+    this->setItem(i, 2, new QTableWidgetItem("时间等格式异常"));
+    i++;
+
+    this->setItem(i, 0, new QTableWidgetItem("全量合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->allOk,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-形式合规数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOk,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件类型未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerTypeNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件号码未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNumNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名&证件号码未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameNumAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名&证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件号码&证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNumAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名&证件号码&证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameNumAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件类型校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerTypeNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件号码校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNumNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名&证件号码校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameNumNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名&证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-证件号码&证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNumAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-用户姓名&证件号码&证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOwnerNameNumAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-形式合规数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOk,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件类型未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerTypeNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件号码未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNumNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名&证件号码未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameNumNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名&证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件号码&证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNumAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名&证件号码&证件地址未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameNumAddNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件类型校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerTypeNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件号码校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNumNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名&证件号码校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameNumNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名&证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-证件号码&证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNumAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-用户姓名&证件号码&证件地址校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOwnerNameNumAddNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-代办人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileAgentNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-代办人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedAgentNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动用户-代办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话用户-代办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-形式合规数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOk,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-经办人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileAgentNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人&经办人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerAgentNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-经办人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileAgentUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人&经办人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerAgentUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-经办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人&经办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-经办人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileAgentUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动用户-使用人&经办人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOwnerAgentUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话用户-形式合规数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedOk,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话用户-单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话用户-经办人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedAgentUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话用户-经办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话用户-单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话用户-经办人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedAgentUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-形式合规数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileOk,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-经办人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileAgentNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-经办人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileAgentUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人&经办人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableAgentNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人&经办人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableAgentUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-经办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-经办人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileAgentUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人&经办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人&经办人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableAgentUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动应用-责任人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileLiableUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-形式合规数据"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedOk,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-经办人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedAgentNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-经办人&单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedAgentUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-单位信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedUnitNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-经办人信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedAgentNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-经办人&单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedAgentUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-单位信息校验不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedUnitNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人移动一证五卡不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(0,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话应用-责任人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedLiableNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话应用-单位&责任人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedUnitLiableNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话应用-责任人信息不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedUnitLiableNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动-责任人信息未登记"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileUnitLiableNotReg,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动应用-责任人信息不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileUnitLiableNok,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    i++;
+
+
+}
 Report::~Report()
 {
     delete ui;

@@ -32,6 +32,9 @@ QList<QList<QString>> XMLConfigReader::readAutoid(){
     QTextStream errorStream(stderr);
     QString inputFilePath = getConfigPath()+"/config/config-autoid.xml";
     QFile file(inputFilePath);
+    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+    QTextStream stream(&file);
+    stream.setCodec(code);
     if (!QFile::exists(inputFilePath))
     {
         errorStream << QString("File %1 does not exist.\n").arg(inputFilePath);
@@ -218,6 +221,9 @@ QMap<QString,QString> XMLConfigReader::readUserType(){
     QTextStream errorStream(stderr);
     QString  inputFilePath = getConfigPath()+"/config/config-usertype.xml";
     QFile file(inputFilePath);
+    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+    QTextStream stream(&file);
+    stream.setCodec(code);
     if (!QFile::exists(inputFilePath))
     {
         errorStream << QString("File %1 does not exist.\n").arg(inputFilePath);
@@ -270,6 +276,12 @@ QList<QString> XMLConfigReader::readValue(QString var){
     qDebug()<<QStringLiteral("读取配置文件")<<inputFilePath<<child<<var;
 
     QFile file(inputFilePath);
+    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+    QTextStream stream(&file);
+    stream.setCodec("GBK");
+//    QTextCodec::setCodecForTr(code);
+    QTextCodec::setCodecForLocale(code);
+//    QTextCodec::setCodecForCStrings(code);
     if (!QFile::exists(inputFilePath))
     {
         errorStream << QString("File %1 does not exist.\n").arg(inputFilePath);
@@ -280,12 +292,15 @@ QList<QString> XMLConfigReader::readValue(QString var){
     }
     QList<QString> rtnList;
     QDomDocument doc;
-    if(!doc.setContent(&file))
-     {
-                 file.close();
-//                 return;
-     }
+    QString vXmlDataStr = stream.readAll();
      file.close();
+     doc.setContent(vXmlDataStr);
+//    if(!doc.setContent(&file))
+//     {
+//                 file.close();
+////                 return;
+//     }
+//     file.close();
 //     QDomElement root=doc.documentElement();
      QDomNodeList list=doc.elementsByTagName("sub");
      int count= list.size();
@@ -633,6 +648,7 @@ void XMLConfigReader::writeValue(QString menu,QList<QString> value){
     if(!file.open(QIODevice::WriteOnly|QIODevice::Text))
         qDebug() << "open for add error!";
     QTextStream out(&file);
+    out.setCodec("GBK");
     doc.save(out,4);
     file.close();
 

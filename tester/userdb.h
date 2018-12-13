@@ -8,6 +8,7 @@
 #include <QTime>
 #include<QSqlRecord>
 //#include "userfile.h"UserDb
+#include <QMessageBox>
 #include "xmlconfigreader.h"
 #define COL_NUM 42
 #include "db.h"
@@ -19,6 +20,7 @@ class UserDb: public QObject
 public:
     UserDb();
     ~UserDb();
+    QString mkMutiDir(const QString path);
     bool fileIsExists(QString filename);
     void printMessage();
     void start();
@@ -26,6 +28,7 @@ public:
     QList<QString> readTable(QString sql);
     void printData(QString table);
     QString filename;
+    Report* report;
     void createReport();
     bool countData();
     void processLine(QString line);
@@ -77,6 +80,7 @@ public:
     void saveUnitMobileOwnerNotReg(QString line);
     void saveUnitMobileAgentNotReg(QString line);
     void saveUnitMobileUnitNotReg(QString line);
+    void saveUnitMobileOwnerAgentNotReg(QString line);
     void saveUnitMobileOwnerUnitNotReg(QString line);
     void saveUnitMobileAgentUnitNotReg(QString line);
     void saveUnitMobileOwnerAgentUnitNotReg(QString line);
@@ -142,7 +146,6 @@ private:
     QMap<QString,int> col_name_map;
     XMLConfigReader *xmlConfig;
     volatile bool stopped;
-    Report* report;
     void writeFile(QString filename, QString line);
     QString readValueToString(QString query);
     QList<QString> readValueToList(QList<QString> inList, QString query);
@@ -183,6 +186,8 @@ private:
     void processUnitMobile(QList<QString> col, QString line);
     void processTradeFixed(QList<QString> col,QString line);
     void processTradeMobile(QList<QString> col, QString line);
+    /* 文件输出路径 */
+    QString path;
 
 
 signals:
