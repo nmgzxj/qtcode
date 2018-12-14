@@ -115,6 +115,7 @@ public:
     int unitFixedUnitNok;
     int unitFixedAgentUnitNok;
     int tradeMobileOk;
+    int tradeFixedOwnerNotReg;
     int tradeMobileLiableAgentUnitNotReg;
     int tradeMobileAgentNok;
     int tradeMobileAgentUnitNok;
@@ -124,9 +125,17 @@ public:
     int tradeMobileLiableNok;
     int tradeMobileLiableUnitNok;
     int tradeFixedOk;
+    int tradeFixedOwnerNok;
     int tradeFixedAgentNok;
     int tradeFixedAgentUnitNok;
     int tradeFixedUnitNok;
+    int tradeFixedLiableNok;
+    int tradeFixedAgentLiableNotReg;
+    int tradeFixedLiableUnitNotReg;
+    int tradeFixedAgentLiableUnitNotReg;
+    int tradeFixedAgentLiableNok;
+    int tradeFixedLiableUnitNok;
+    int tradeFixedAgentLiableUnitNok;
     int personMobileOneCard= 0;
     int leaveNet;
 

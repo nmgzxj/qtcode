@@ -120,6 +120,8 @@ public:
     void saveTradeMobileLiableNok(QString line);
     void saveTradeMobileLiableUnitNok(QString line);
     void saveTradeFixedOk(QString line);
+    void saveTradeFixedOwnerNotReg(QString line);
+    void saveTradeFixedOwnerNok(QString line);
     void saveTradeFixedAgentNotReg(QString line);
     void saveTradeFixedUnitNotReg(QString line);
     void saveTradeFixedLiableNotReg(QString line);
@@ -127,6 +129,13 @@ public:
     void saveTradeFixedAgentNok(QString line);
     void saveTradeFixedAgentUnitNok(QString line);
     void saveTradeFixedUnitNok(QString line);
+    void saveTradeFixedLiableNok(QString line);
+    void saveTradeFixedAgentLiableNotReg(QString line);
+    void saveTradeFixedLiableUnitNotReg(QString line);
+    void saveTradeFixedAgentLiableUnitNotReg(QString line);
+    void saveTradeFixedAgentLiableNok(QString line);
+    void saveTradeFixedLiableUnitNok(QString line);
+    void saveTradeFixedAgentLiableUnitNok(QString line);
     void savePersonMobileOneCard(QString line);
     void saveLeaveNet(QString line);
     bool isNotReg(QString str);
