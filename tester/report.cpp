@@ -1,5 +1,4 @@
 ﻿#include "report.h"
-#include "ui_report.h"
 #include <QString>
 #include <QStandardItemModel>
 #include <QStringList>
@@ -12,7 +11,7 @@ Report::Report(QWidget *parent)
 //    init();
     this->setWindowTitle("测试结果");
     this->resize(900, 750);
-    this->setRowCount(100);
+    this->setRowCount(110);
     this->setColumnCount(3);
     QStringList header;
     header.append("统计项");
@@ -166,6 +165,7 @@ void Report::init(){
     unitFixedUnitLiableNok = 0;
     unitMobileUnitLiableNotReg = 0;
     unitMobileUnitLiableNok = 0;
+    tradeFixedLiableNok = 0;
 }
 
 void Report::setTableValue(){
@@ -590,5 +590,5 @@ void Report::setTableValue(){
 }
 Report::~Report()
 {
-    delete ui;
+   // delete ui;
 }
