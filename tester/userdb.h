@@ -198,6 +198,8 @@ private:
     /* 文件输出路径 */
     QString path;
 
+    void readConfig();
+
 
 signals:
     void message(const QString& info);

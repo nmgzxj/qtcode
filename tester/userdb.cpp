@@ -9,112 +9,106 @@
 UserDb::UserDb()
 {
      stopped = false;
-//     xmlConfig = new XMLConfigReader();
-     QList<QList<QString>> lls = xmlConfig->readAutoid();
-     delimeter = xmlConfig->readDelimiterValue();
-     qDebug()<<"delimeter="<<delimeter;
-     userType=xmlConfig->readUserType();
-     path = xmlConfig->readWorkingpathValue().value("workingpath");
-     QDateTime current_date_time = QDateTime::currentDateTime();
-     QString current_date = current_date_time.toString("yyyyMMddhhmmss");
-     path += QDir::separator();
-     path += current_date;
-     mkMutiDir(path);
-     qRegisterMetaType<QVector<int> >("QVector<int>");
-//     QDir *temp = new QDir;
-//        bool exist = temp->exists(path);
-//        if(exist)
-//            qDebug()<<"文件夹已经存在！";
-//        else
-//        {
-//            bool ok = temp->mkdir(path); //temp->mkdir(path);
-//            if( ok )
-//                qDebug()<<"文件夹创建成功！";
-//        }
-     QString name;
      report = new Report();
-//    report->init();
-    int num;
-    bool ok;
-    //初始化列名
-    for(int i=0; i<lls.size(); i++){
-        name = lls.at(i).at(1);
-        num = lls.at(i).at(2).toInt(&ok,10);
-        qDebug()<<"col name is "<<name<<" num is "<<num;
-        col_name_map.insert(name,num);
-    }
+     qRegisterMetaType<QVector<int> >("QVector<int>");
 
-    //初始化用户类型为固定电话
-    bizTypeFixed = readValueToList(bizTypeFixed, "业务类型固定");//用户业务类型固定，除固定外全是移动号码
+    readConfig();
+}
 
-    //初始化个人合规证件类型
-    personType = readValueToList(personType, "个人证件居民身份证");
-    personType = readValueToList(personType, "个人证件临时居民身份证");
-    personType = readValueToList(personType, "个人证件户口薄");
-    personType = readValueToList(personType, "个人证件中国人民解放军军人身份证件");
-    personType = readValueToList(personType, "个人证件中国人民武装警察身份证件");
-    personType = readValueToList(personType, "个人证件港澳居民来往内地通行证");
-    personType = readValueToList(personType, "个人证件台湾居民来往大陆通行证");
-    personType = readValueToList(personType, "个人证件外国公民护照");
-    personType = readValueToList(personType, "个人证件法律、行政法规和国家规定的其他有效身份证件");
+void UserDb::readConfig(){
+    //     xmlConfig = new XMLConfigReader();
+         QList<QList<QString>> lls = xmlConfig->readAutoid();
+         delimeter = xmlConfig->readDelimiterValue();
+         userType=xmlConfig->readUserType();
+         path = xmlConfig->readWorkingpathValue().value("workingpath");
+         QDateTime current_date_time = QDateTime::currentDateTime();
+         QString current_date = current_date_time.toString("yyyyMMddhhmmss");
+         path += QDir::separator();
+         path += current_date;
+         mkMutiDir(path);
 
-    //初始化单位合规证件类型
-    unitType  = readValueToList(unitType, "单位证件组织机构代码证");
+         QString name;
+        int num;
+        bool ok;
+        //初始化列名
+        for(int i=0; i<lls.size(); i++){
+            name = lls.at(i).at(1);
+            num = lls.at(i).at(2).toInt(&ok,10);
+            qDebug()<<"col name is "<<name<<" num is "<<num;
+            col_name_map.insert(name,num);
+        }
+
+        //初始化用户类型为固定电话
+        bizTypeFixed = readValueToList(bizTypeFixed, "业务类型固定");//用户业务类型固定，除固定外全是移动号码
+
+        //初始化个人合规证件类型
+        personType = readValueToList(personType, "个人证件居民身份证");
+        personType = readValueToList(personType, "个人证件临时居民身份证");
+        personType = readValueToList(personType, "个人证件户口薄");
+        personType = readValueToList(personType, "个人证件中国人民解放军军人身份证件");
+        personType = readValueToList(personType, "个人证件中国人民武装警察身份证件");
+        personType = readValueToList(personType, "个人证件港澳居民来往内地通行证");
+        personType = readValueToList(personType, "个人证件台湾居民来往大陆通行证");
+        personType = readValueToList(personType, "个人证件外国公民护照");
+        personType = readValueToList(personType, "个人证件法律、行政法规和国家规定的其他有效身份证件");
+
+        //初始化单位合规证件类型
+        unitType  = readValueToList(unitType, "单位证件组织机构代码证");
 
 
-    QList<QString> queryList;
-    queryList.append("maxlimit");
-    queryList.append("personNameLen_min");
-    queryList.append("personNameLen_max");
-    queryList.append("personNamePermit_char");
-    queryList.append("personCardtypeTime_interval");
-    queryList.append("personCard_numLen_min");
-    queryList.append("personCard_numLen_max");
-    queryList.append("personCard_addLen_min");
-    queryList.append("personCard_addLen_max");
-    queryList.append("unitNameLen_min");
-    queryList.append("unitNameLen_max");
-    queryList.append("unitCardtypeTime_interval");
-    queryList.append("unitCard_numLen_min");
-    queryList.append("unitCard_numLen_max");
-    queryList.append("unitCard_addLen_min");
-    queryList.append("unitCard_addLen_max");
+        QList<QString> queryList;
+        queryList.append("maxlimit");
+        queryList.append("personNameLen_min");
+        queryList.append("personNameLen_max");
+        queryList.append("personNamePermit_char");
+        queryList.append("personCardtypeTime_interval");
+        queryList.append("personCard_numLen_min");
+        queryList.append("personCard_numLen_max");
+        queryList.append("personCard_addLen_min");
+        queryList.append("personCard_addLen_max");
+        queryList.append("unitNameLen_min");
+        queryList.append("unitNameLen_max");
+        queryList.append("unitCardtypeTime_interval");
+        queryList.append("unitCard_numLen_min");
+        queryList.append("unitCard_numLen_max");
+        queryList.append("unitCard_addLen_min");
+        queryList.append("unitCard_addLen_max");
 
-    QMap<QString,QString> map = xmlConfig->readCommonRuleValue(queryList);
-//    bool ok = true;
-    maxlimit = map.value("maxlimit");
-    personNameMin = map.value("personNameLen_min").compare("-")?map.value("personNameLen_min").toInt(&ok,10):-1;
-    personNameMax = map.value("personNameLen_max").compare("-")?map.value("personNameLen_max").toInt(&ok,10):-1;
-    personNamePermit = map.value("personNamePermit_char");
-    personIntervalTime = map.value("personCardtypeTime_interval");
-    personNumMin = map.value("personCard_numLen_min").compare("-")?map.value("personCard_numLen_min").toInt(&ok,10):-1;
-    personNumMax = map.value("personCard_numLen_max").compare("-")?map.value("personCard_numLen_max").toInt(&ok,10):-1;
-    personAddMin = map.value("personCard_addLen_min").compare("-")?map.value("personCard_addLen_min").toInt(&ok,10):-1;
-    personAddMax = map.value("personCard_addLen_max").compare("-")?map.value("personCard_addLen_max").toInt(&ok,10):-1;
-    unitNameMin = map.value("unitNameLen_min").compare("-")?map.value("unitNameLen_min").toInt(&ok,10):-1;
-    unitNameMax = map.value("unitNameLen_max").compare("-")?map.value("unitNameLen_max").toInt(&ok,10):-1;
-    unitIntervalTime = map.value("unitCardtypeTime_interval");
-    unitNumMin = map.value("unitCard_numLen_min").compare("-")?map.value("unitCard_numLen_min").toInt(&ok,10):-1;
-    unitNumMax = map.value("unitCard_numLen_max").compare("-")?map.value("unitCard_numLen_max").toInt(&ok,10):-1;
-    unitAddMin = map.value("unitCard_addLen_min").compare("-")?map.value("unitCard_addLen_min").toInt(&ok,10):-1;
-    unitAddMax = map.value("unitCard_addLen_max").compare("-")?map.value("unitCard_addLen_max").toInt(&ok,10):-1;
-    //初始化个人用户姓名不合规
-    personNameRule = readValueToList(personNameRule, "个人用户姓名comon-rule");
-    personNameRule = readValueToList(personNameRule, "个人用户姓名match-rule");
-    //初始化单位/行业用户名称不合规
-    unitNameRule = readValueToList(unitNameRule, "行业用户姓名comon-rule");
-    unitNameRule = readValueToList(unitNameRule, "行业用户姓名match-rule");
-    //初始化个人证件号码不合规
-    //初始化单位证件号码不合规
-    numRule = readValueToList(numRule, "证件号码comon-rule");
-    numRule = readValueToList(numRule, "证件号码match-rule");
-    //初始化个人证件地址不合规
-    //初始化单位证件地址不合规
-    addRule = readValueToList(addRule, "证件地址addr-rule");
-    addRule = readValueToList(addRule, "证件地址match-rule");
+        QMap<QString,QString> map = xmlConfig->readCommonRuleValue(queryList);
+    //    bool ok = true;
+        maxlimit = map.value("maxlimit");
+        personNameMin = map.value("personNameLen_min").compare("-")?map.value("personNameLen_min").toInt(&ok,10):-1;
+        personNameMax = map.value("personNameLen_max").compare("-")?map.value("personNameLen_max").toInt(&ok,10):-1;
+        personNamePermit = map.value("personNamePermit_char");
+        personIntervalTime = map.value("personCardtypeTime_interval");
+        personNumMin = map.value("personCard_numLen_min").compare("-")?map.value("personCard_numLen_min").toInt(&ok,10):-1;
+        personNumMax = map.value("personCard_numLen_max").compare("-")?map.value("personCard_numLen_max").toInt(&ok,10):-1;
+        personAddMin = map.value("personCard_addLen_min").compare("-")?map.value("personCard_addLen_min").toInt(&ok,10):-1;
+        personAddMax = map.value("personCard_addLen_max").compare("-")?map.value("personCard_addLen_max").toInt(&ok,10):-1;
+        unitNameMin = map.value("unitNameLen_min").compare("-")?map.value("unitNameLen_min").toInt(&ok,10):-1;
+        unitNameMax = map.value("unitNameLen_max").compare("-")?map.value("unitNameLen_max").toInt(&ok,10):-1;
+        unitIntervalTime = map.value("unitCardtypeTime_interval");
+        unitNumMin = map.value("unitCard_numLen_min").compare("-")?map.value("unitCard_numLen_min").toInt(&ok,10):-1;
+        unitNumMax = map.value("unitCard_numLen_max").compare("-")?map.value("unitCard_numLen_max").toInt(&ok,10):-1;
+        unitAddMin = map.value("unitCard_addLen_min").compare("-")?map.value("unitCard_addLen_min").toInt(&ok,10):-1;
+        unitAddMax = map.value("unitCard_addLen_max").compare("-")?map.value("unitCard_addLen_max").toInt(&ok,10):-1;
+        //初始化个人用户姓名不合规
+        personNameRule = readValueToList(personNameRule, "个人用户姓名comon-rule");
+        personNameRule = readValueToList(personNameRule, "个人用户姓名match-rule");
+        //初始化单位/行业用户名称不合规
+        unitNameRule = readValueToList(unitNameRule, "行业用户姓名comon-rule");
+        unitNameRule = readValueToList(unitNameRule, "行业用户姓名match-rule");
+        //初始化个人证件号码不合规
+        //初始化单位证件号码不合规
+        numRule = readValueToList(numRule, "证件号码comon-rule");
+        numRule = readValueToList(numRule, "证件号码match-rule");
+        //初始化个人证件地址不合规
+        //初始化单位证件地址不合规
+        addRule = readValueToList(addRule, "证件地址addr-rule");
+        addRule = readValueToList(addRule, "证件地址match-rule");
 
-    nonRealName = readValueToList(nonRealName, "业务状态非实名制停机");
-    leaveNet = readValueToList(leaveNet, "业务状态不在网");
+        nonRealName = readValueToList(nonRealName, "业务状态非实名制停机");
+        leaveNet = readValueToList(leaveNet, "业务状态不在网");
 }
 
 QString UserDb::mkMutiDir(const QString path){
@@ -170,6 +164,7 @@ void UserDb::stop()
 
 void UserDb::run()
 {
+    readConfig();
     report->init();
     countData();
     qDebug()<<"run begin"<<stopped;
@@ -958,7 +953,7 @@ bool UserDb::makeDir(){
 void UserDb::writeFile(QString filename, QString line){
 
     qDebug()<<"writeFile "<<path<<"\\"<<filename;
-    QFile file(path+"\\"+filename);
+    QFile file(path+QDir::separator()+filename);
     file.open(QFile::Append);
     line += "\n";
     file.write(line.toLocal8Bit());
@@ -1687,152 +1682,11 @@ void UserDb::processUnitMobile(QList<QString> col, QString line){
             saveUnitMobileOwnerAgentUnitNok(line);
             return;
         }
-//        if(ownerNotReg && agentNotReg && unitNotReg ){
-//            saveAllNotReg(line);
-//        }
-//        if(ownerNok && agentNok && unitNok){
-//            saveAllNok(line);
-//        }
 
     }
 
 }
 
-//void aprocessTradeFixed(QList<QString> col, QString line){
-//    /* 行业固话用户-代办人未登记 */
-//    bool agentNotReg = false;
-//    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-//            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
-//        agentNotReg = true;
-//    }
-
-//    /* 行业固话用户-单位信息未登记 */
-//    bool unitNotReg = false;
-//    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-//            isNotReg(col.at(getColNum("单位证件地址")))){
-//        unitNotReg = true;
-//    }
-
-//    /* 行业固话用户-责任人信息未登记 */
-//    bool liableNotReg = false;
-//    if(isNotReg(col.at(getColNum("责任人姓名")))||isNotReg(col.at(getColNum("责任人证件类型")))||isNotReg(col.at(getColNum("责任人证件号码")))||
-//            isNotReg(col.at(getColNum("责任人证件地址")))){
-//        liableNotReg = true;
-//    }
-
-
-//    /* 行业固话用户-代办人不合规 */
-//    bool agentNok = false;
-//    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-//            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
-//        agentNok = true;
-//    }
-//    if(col.at(getColNum("机主用户姓名")).compare(col.at(getColNum("代（经）办人姓名")))){
-//        agentNok = true;
-//    }
-
-//    /* 行业固话用户-单位信息不合规 */
-//    bool unitNok = false;
-//    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-//            isUnitAddNok(col.at(getColNum("单位证件地址")))){
-//        unitNok=true;
-//    }
-
-//    /* 行业固话用户-责任人信息不合规 */
-//    bool liableNok = false;
-//    if(isPersonNameNok(col.at(getColNum("责任人姓名")))||isPersonTypeNok(col.at(getColNum("责任人证件类型")))||isPersonNumNok(col.at(getColNum("责任人证件号码")))||
-//            isPersonAddNok(col.at(getColNum("责任人证件地址")))){
-//        liableNotReg = true;
-//    }
-
-//    /* 2013年9月1日之前入网的行业固话用户需检查经办人或单位信息共1个条目，该条目需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。 */
-//    int activeDate = getDateForInt(col.at(getColNum("登记激活时间")));
-//    if(activeDate < 20130901) {
-//        if( (agentNotReg || unitNotReg || liableNotReg) || (agentNok || unitNok || liableNok)){
-//            if(agentNotReg && !unitNotReg && !liableNotReg){
-//                saveTradeFixedUnitNotReg(line);
-//                return;
-//            }
-//            if(!agentNotReg && unitNotReg && !liableNotReg){
-//                saveTradeFixedAgentNotReg(line);
-//                return;
-//            }
-//            if(!agentNotReg && !unitNotReg && liableNotReg){
-//                saveTradeFixedLiableNotReg(line);
-//                return;
-//            }
-//            if(agentNotReg && unitNotReg && !liableNotReg){
-//                saveTradeFixedAgentUnitNotReg(line);
-//                return;
-//            }
-//            if(agentNotReg && !unitNotReg && liableNotReg){
-//                saveTradeFixedAgentLiableNotReg(line);
-//                return;
-//            }
-//            if(!agentNotReg && unitNotReg && liableNotReg){
-//                saveTradeFixedLiableUnitNotReg(line);
-//                return;
-//            }
-//            if(agentNotReg && unitNotReg && liableNotReg){
-//                saveTradeFixedAgentLiableUnitNotReg(line);
-//                return;
-//            }
-//            if(agentNok && !unitNok && !liableNok){
-//                saveTradeFixedAgentNok(line);
-//                return;
-//            }
-//            if(!agentNok && unitNok && !liableNok){
-//                saveTradeFixedUnitNok(line);
-//                return;
-//            }
-//            if(agentNok && unitNok  && !liableNok){
-//                saveTradeFixedAgentUnitNok(line);
-//                return;
-//            }
-//            if(agentNok && !unitNok  && liableNok){
-//                saveTradeFixedAgentLiableNok(line);
-//                return;
-//            }
-//            if(!agentNok && unitNok  && liableNok){
-//                saveTradeFixedLiableUnitNok(line);
-//                return;
-//            }
-//            if(agentNok && unitNok  && liableNok){
-//                saveTradeFixedAgentLiableUnitNok(line);
-//                return;
-//            }
-//        }
-//        else {
-//            saveTradeFixedOk(line);
-//            saveAllOk(line);
-//        }
-//    }
-//    else {
-//        /* 2013年9月1日之后入网的行业固话用户需检查经办人和单位信息共2个条目，各条目均需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。 */
-//        if(agentNotReg && !unitNotReg){
-//            saveTradeFixedUnitNotReg(line);
-//        }
-//        else if(!agentNotReg && unitNotReg){
-//            saveTradeFixedAgentNotReg(line);
-//        }
-//        else if(agentNotReg && unitNotReg){
-//            saveTradeFixedAgentUnitNotReg(line);
-//        }
-//        else if(agentNok && !unitNok){
-//            saveTradeFixedAgentNok(line);
-//        }
-//        else if(!agentNok && unitNok){
-//            saveTradeFixedUnitNok(line);
-//        }
-//        else if(agentNok && unitNok){
-//            saveTradeMobileAgentUnitNok(line);
-//        }
-//        else {
-//            saveTradeFixedOk(line);
-//            saveAllOk(line);
-//        }
-//    }
-//}
 
 /**
  * @brief UserDb::processTradeMobile 处理行业移动数据
