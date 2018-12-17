@@ -35,28 +35,22 @@ SOURCES += main.cpp\
         tester.cpp \
     showwidget.cpp \
     setup.cpp \
-    util.cpp \
     logindialog.cpp \
-    progressdlg.cpp \
     userfile.cpp \
     statisticresult.cpp \
     user.cpp \
     xmlconfigreader.cpp \
     treeitem.cpp \
-    treemodel.cpp \
     report.cpp \
     setuppages.cpp \
-    userdb.cpp \
-    db.cpp
+    userdb.cpp
 
 HEADERS  += tester.h \
     showwidget.h \
     setup.h \
     util.h \
     logindialog.h \
-    progressdlg.h \
     userfile.h \
-    statisticresult.h \
     user.h \
     xmlconfigreader.h \
     treeitem.h \

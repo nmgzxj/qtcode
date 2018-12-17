@@ -1,10 +1,6 @@
-﻿#include "statisticresult.h"
+﻿
 #include <QFile>
 
-StatisticResult::StatisticResult()
-{
-
-}
 
 //void StatisticResult::test()
 //{
