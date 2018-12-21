@@ -133,11 +133,12 @@ void Tester::showOpenFile()
 void Tester::setupModel()
 {//设置列名
     model = new QStandardItemModel(10,41,this);
-    XMLConfigReader *xmlConfig;
+    XMLConfigReader *xmlConfig = nullptr;
     QList<QList<QString>> lls = xmlConfig->readAutoid();
     for(int i=0; i<lls.size(); i++){
         model->setHeaderData(i,Qt::Horizontal,lls.at(i).at(1));
     }
+    delete xmlConfig;
 }
 
 void Tester::setupView()
@@ -217,6 +218,7 @@ void Tester::startObjThread()
         connect(m_Thread,&QThread::finished,userdb,&QObject::deleteLater,Qt::QueuedConnection);
         connect(this,&Tester::startObjThreadWork,userdb,&UserDb::run,Qt::QueuedConnection);
         connect(userdb,&UserDb::message,this,&Tester::setStatus,Qt::QueuedConnection);
+        connect(userdb,&UserDb::messageWarning, this, &Tester::messageWarningBox, Qt::QueuedConnection);
         m_Thread->start();
        qDebug()<<"m_thread is running?"<< m_Thread->isRunning();
     }
@@ -273,6 +275,11 @@ void Tester::report(){
 void Tester::setStatus(QString str){
      statusBar()->showMessage(str, 3000);
 }
+
+void Tester::messageWarningBox(QString str){
+    QMessageBox::warning(this,"警告",str);
+}
+
 Tester::~Tester()
 {
    // delete userdb;

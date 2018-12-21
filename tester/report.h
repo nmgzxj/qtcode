@@ -1,10 +1,8 @@
 ﻿#ifndef REPORT_H
 #define REPORT_H
 
-#include <QDialog>
-#include <QSqlQuery>
 #include <QDebug>
-#include <QSqlError>
+#include <QFile>
 #include <QTableWidget>
 
 namespace Ui {
@@ -16,10 +14,10 @@ class Report : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit Report(QWidget *parent = 0);
+    explicit Report(QWidget *parent = nullptr);
     ~Report();
     void init();
-    void setTableValue();
+    void setTableValue(QString reportFileName);
 
     int personMobileOwnerNameNotReg;//个人移动用户-机主姓名未登记
     int personMobileOwnerTypeNotReg;//个人移动用户-机主证件类型未登记
@@ -138,10 +136,16 @@ public:
     int tradeFixedAgentLiableUnitNok;
     int personMobileOneCard= 0;
     int leaveNet;
+    int onecardMultiName;
+    int onecardFiveCode;
 
 
 private:
     Ui::Report *ui;
+signals:
+    void message(const QString& info);
+    void messageWarning(const QString& str);
+
 };
 
 #endif // REPORT_H

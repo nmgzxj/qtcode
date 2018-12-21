@@ -1064,7 +1064,7 @@ void XMLConfigReader::writeDateformatValue(QString dateformat){
  * @return
  */
 QMap<QString,QString> XMLConfigReader::readDateformatValue(){
-    qDebug()<<QStringLiteral("调用 readDateformatValue 函数：");
+//    qDebug()<<QStringLiteral("调用 readDateformatValue 函数：");
     QString outputFilePath = getConfigPath()+"/config/config-autoid.xml";
     QMap<QString,QString> rtn_map;
 

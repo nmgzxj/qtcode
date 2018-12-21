@@ -23,7 +23,7 @@ TEMPLATE = app
 DEFINES += QT_DEPRECATED_WARNINGS
 
 #DEFINES += QT_NO_WARNING_OUTPUT
-#DEFINES += QT_NO_DEBUG_OUTPUT
+DEFINES += QT_NO_DEBUG_OUTPUT
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -40,7 +40,6 @@ SOURCES += main.cpp\
     statisticresult.cpp \
     user.cpp \
     xmlconfigreader.cpp \
-    treeitem.cpp \
     report.cpp \
     setuppages.cpp \
     userdb.cpp
@@ -48,17 +47,14 @@ SOURCES += main.cpp\
 HEADERS  += tester.h \
     showwidget.h \
     setup.h \
-    util.h \
     logindialog.h \
     userfile.h \
     user.h \
     xmlconfigreader.h \
-    treeitem.h \
     treemodel.h \
     report.h \
     setuppages.h \
-    userdb.h \
-    db.h
+    userdb.h
 
 FORMS += \
     logindialog.ui \

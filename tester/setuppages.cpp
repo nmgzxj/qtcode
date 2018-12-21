@@ -383,18 +383,18 @@ DateformatPage::DateformatPage(QWidget *parent) : QWidget(parent)
 {
     dateformatLabel = new QLabel(QStringLiteral("时间格式:"));
     dateformatEdit = new QComboBox;
-    dateformatEdit->addItem("YYYY-MM-DD");
-    dateformatEdit->addItem("MM-DD-YYYY");
-    dateformatEdit->addItem("DD-MM-YYYY");
-    dateformatEdit->addItem("YYYYMMDD");
-    dateformatEdit->addItem("MMDDYYYY");
-    dateformatEdit->addItem("DDMMYYYY");
-    dateformatEdit->addItem("YYYY-MM-DD HH:MI:SS");
-    dateformatEdit->addItem("MM-DD-YYYY HH:MI:SS");
-    dateformatEdit->addItem("DD-MM-YYYY HH:MI:SS");
-    dateformatEdit->addItem("YYYYMMDDHHMISS");
-    dateformatEdit->addItem("MMDDYYYYHHMISS");
-    dateformatEdit->addItem("DDMMYYYYHHMISS");
+    dateformatEdit->addItem("yyyy-MM-dd");
+    dateformatEdit->addItem("MM-dd-yyyy");
+    dateformatEdit->addItem("dd-MM-yyyy");
+    dateformatEdit->addItem("yyyyMMdd");
+    dateformatEdit->addItem("MMddyyyy");
+    dateformatEdit->addItem("ddMMyyyy");
+    dateformatEdit->addItem("yyyy-MM-dd hh:mm:ss");
+    dateformatEdit->addItem("MM-dd-yyyy hh:mm:ss");
+    dateformatEdit->addItem("dd-MM-yyyy hh:mm:ss");
+    dateformatEdit->addItem("yyyyMMddhhmmss");
+    dateformatEdit->addItem("MMddyyyyhhmmss");
+    dateformatEdit->addItem("ddMMyyyyhhmmss");
 
     saveButton = new QPushButton;
     saveButton->setText("save");

@@ -19,6 +19,7 @@
 #include <QTextCodec>
 #include <QStatusBar>
 #include <QErrorMessage>
+#include <QMessageBox>
 #include "showwidget.h"
 #include "setup.h"
 #include "setuppages.h"
@@ -78,6 +79,7 @@ protected slots:
     void setupView();
     void report();
     void setStatus(QString str);
+    void messageWarningBox(QString str);
 
 private:
     QStandardItemModel *model;
