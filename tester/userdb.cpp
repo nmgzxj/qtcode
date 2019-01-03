@@ -13,6 +13,7 @@ UserDb::UserDb()
      qRegisterMetaType<QVector<int> >("QVector<int>");
 
     readConfig();
+    initIndex();
 }
 
 void UserDb::readConfig(){
@@ -221,7 +222,30 @@ bool UserDb::fileIsExists(QString filename){
     return file.exists();
 }
 
+void UserDb::initIndex(){
+    codeStatusIndex = getColNum("使用状态");
+    activeTimeIndex = getColNum("登记激活时间");
+    userTypeInex = getColNum("用户类型");
+    bizTypeIndex = getColNum("用户业务类型");
+    ownerNameIndex = getColNum("机主姓名");
+    ownerTypeIndex = getColNum("机主证件类型");
+    ownerNumIndex = getColNum("机主证件号码");
+    ownerAddIndex = getColNum("机主证件地址");
+    agentNameIndex = getColNum("代（经）办人姓名");
+    agentTypeIndex = getColNum("代（经）办人证件类型");
+    agentNumIndex = getColNum("代（经）办人证件号码");
+    agentAddIndex = getColNum("代（经）办人证件地址");
+    liableNameIndex = getColNum("责任人姓名");
+    liableTypeIndex = getColNum("责任人证件类型");
+    liableNumIndex = getColNum("责任人证件号码");
+    liableAddIndex = getColNum("责任人证件地址");
+    unitNameIndex = getColNum("单位名称");
+    unitNumIndex = getColNum("单位证件号码");
+    unitTypeIndex = getColNum("单位证件类型");
+    unitAddIndex = getColNum("单位证件地址");
+    msisdnIndex = getColNum("MSISDN号码");
 
+}
 
 
 
@@ -238,10 +262,9 @@ bool UserDb::countData(){
 
 
 //    QList<QString> col;
-    QString line = "";
+//    QString line = "";
     int line_num = 1;
 
-    QTime    tmpTime;
     if(file.open(QFile::ReadOnly | QFile::Text)){
         //QBuffer buffer(&file);
        // uchar file.map(file.size());
@@ -252,22 +275,18 @@ bool UserDb::countData(){
             line = stream.readLine();
 
 
-            processLine(line);
+            processLine();
             report->allData++;
             line_num++;
-           // qDebug()<<"line "<<line_num<<" finish :"<<(line);//qPrintable
 
-            if(!stopped && line_num%10000==0)
+            if(line_num%1000==0)
             {
-//                qDebug()<<QStringLiteral("10000条数据耗时：")<<tmpTime.elapsed()<<"ms"<<endl;
-//                tmpTime.start();
                 emit message("已处理"+QString::number(line_num)+"行");
-               // emit messageWarning("已处理"+QString::number(line_num)+"行");
             }
         }while(!stopped && !line.isEmpty());
     }
     else{
-        qDebug()<<QStringLiteral("文件打开错误。");
+        emit messageWarning("文件打开错误。");
     }
     return true;
 }
@@ -277,16 +296,23 @@ bool UserDb::countData(){
  * @param str
  * @return 字段未空指针、null或空字符串。
  */
-bool UserDb::isNotReg(QString str){
-    if(str.isNull())
+bool UserDb::isNotReg(QString *str){
+    if(str==nullptr)
+        return true;
+    else if(str->isEmpty())
+        return true;
+    else if((*str).trimmed().contains("null", Qt::CaseInsensitive))
+        return true;
+    else
+        return false;
+}
+
+bool UserDb::isNotReg(QString const str){
+    if(str==nullptr)
         return true;
     else if(str.isEmpty())
         return true;
-    else if(str.trimmed().contains("null"))
-        return true;
-    else if(str.trimmed().contains("NULL"))
-        return true;
-    else if(str.trimmed().contains("Null"))
+    else if(str.trimmed().contains("null", Qt::CaseInsensitive))
         return true;
     else
         return false;
@@ -297,7 +323,7 @@ bool UserDb::isNotReg(QString str){
  * @param str 证件类型
  * @return 个人证件类型是否不合规
  */
-bool UserDb::isPersonTypeNok(QString str){
+bool UserDb::isPersonTypeNok(QString const &str){
     if(!personType.contains(str)){
 //        qDebug()<<"个人证件类型不合规"<<str<<" "<<personType;
         return true;
@@ -305,12 +331,12 @@ bool UserDb::isPersonTypeNok(QString str){
     return false;
 }
 
-bool UserDb::isUnitTypeNok(QString str){
+bool UserDb::isUnitTypeNok(QString const &str){
 //    qDebug()<<"单位证件类型不合规"<<str<<" "<<unitType;
     return !unitType.contains(str);
 }
 
-bool UserDb::isPersonNameNok(QString str){
+bool UserDb::isPersonNameNok(QString const & str){
     if(personNameMin!=-1 && str.length()<personNameMin){
 //        qDebug()<<personNameMin<<"姓名字数不够"<<str.length()<<" "<<str;
         return true;
@@ -326,7 +352,7 @@ bool UserDb::isPersonNameNok(QString str){
     return false;
 }
 
-bool UserDb::isUnitNameNok(QString str){
+bool UserDb::isUnitNameNok(QString const & str){
     if(unitNameMin!=-1 && str.length()<unitNameMin){
 //        qDebug()<<unitNameMin<<"单位名称字数不够"<<str.length()<<str;
         return true;
@@ -341,7 +367,7 @@ bool UserDb::isUnitNameNok(QString str){
     }
     return false;
 }
-bool UserDb::isPersonNumNok(QString str){
+bool UserDb::isPersonNumNok(QString const & str){
     if(personNumMin!=-1 && str.length()<personNumMin){
 //        qDebug()<<personNumMin<<"个人证件号码长度不够"<<str.length()<<str;
         return true;
@@ -356,7 +382,7 @@ bool UserDb::isPersonNumNok(QString str){
     }
     return false;
 }
-bool UserDb::isUnitNumNok(QString str){
+bool UserDb::isUnitNumNok(QString const & str){
     if(unitNumMin!=-1 && str.length()<unitNumMin){
 //        qDebug()<<unitNumMin<<"单位证件号码长度不够"<<str.length()<<str;
         return true;
@@ -371,7 +397,7 @@ bool UserDb::isUnitNumNok(QString str){
     }
     return false;
 }
-bool UserDb::isPersonAddNok(QString str){
+bool UserDb::isPersonAddNok(QString const & str){
     if(-1!=personAddMin && str.length()<personAddMin){
 //        qDebug()<<personAddMin<<"个人证件地址不够"<<str.length()<<str;
         return true;
@@ -386,7 +412,7 @@ bool UserDb::isPersonAddNok(QString str){
     }
     return false;
 }
-bool UserDb::isUnitAddNok(QString str){
+bool UserDb::isUnitAddNok(QString const & str){
     if(-1!=unitAddMin && str.length()<unitAddMin){
 //        qDebug()<<unitAddMin<<"单位地址长度不够"<<str.length()<<str;
         return true;
@@ -403,58 +429,61 @@ bool UserDb::isUnitAddNok(QString str){
 }
 
 
-void UserDb::processLine(QString line){
 
-    QList<QString> col;
+
+void UserDb::processLine(){
+
+
     col =  line.split(delimeter);
 
     /*格式异常数据*/
     if(col.size() != COL_NUM){
 //        qDebug()<<"列数不对"<<col.size();
-        saveAbnormal(line);
+        saveAbnormal();
         return;
     }
 
+
     /*非实名停机和销户的，不纳入检查范围，单独统计数字，加在报表里。*/
-    if(nonRealName.contains(col.at(getColNum("使用状态"))) || leaveNet.contains(col.at(getColNum("使用状态")))){
-        saveLeaveNet(line);
+    if(nonRealName.contains(col.at(codeStatusIndex)) || leaveNet.contains(col.at(codeStatusIndex))){
+        saveLeaveNet();
         return;
     }
 
 
 
     /* 字段异常数据.abnormal */
-    if(col.at(getColNum("登记激活时间"))==nullptr || isNotReg(col.at(getColNum("登记激活时间")))){
-        qDebug()<<"================================================"<<col.at(getColNum("登记激活时间"));
-        saveFieldAbnormal(line);
+    if(col.at(activeTimeIndex)==nullptr || isNotReg(col[activeTimeIndex])){
+        saveFieldAbnormal();
+        return;
     }
 
     /* 根据用户类型和用户业务类型进入到具体逻辑规则中判断和输出。 */
-    if(col.at(getColNum("用户类型"))==userType.value("person")){  /*个人用户*/
+    if(col.at(userTypeInex)==userType.value("person")){  /*个人用户*/
 
-        if(bizTypeFixed.contains(col.at(getColNum("用户业务类型")))){  /*个人固定用户*/
-            processPersonFixed(col, line);
+        if(bizTypeFixed.contains(col.at(bizTypeIndex))){  /*个人固定用户*/
+            processPersonFixed();
         }
         else {/*个人移动用户*/
-            processPersonMobile(col, line);
+            processPersonMobile();
         }
 
     }
-    else if(col.at(getColNum("用户类型"))==userType.value("unit")){  /*单位用户*/
+    else if(col.at(userTypeInex)==userType.value("unit")){  /*单位用户*/
 
-        if(bizTypeFixed.contains(col.at(getColNum("用户业务类型")))){ /*单位固话用户*/
-            processUnitFixed(col,line);
+        if(bizTypeFixed.contains(col.at(bizTypeIndex))){ /*单位固话用户*/
+            processUnitFixed();
         }
         else {
-            processUnitMobile(col,line);
+            processUnitMobile();
         }
     }
-    else if(col.at(getColNum("用户类型"))==userType.value("industry")){
-        if(bizTypeFixed.contains(col.at(getColNum("用户业务类型")))){
-            processTradeFixed(col, line);
+    else if(col.at(userTypeInex)==userType.value("industry")){
+        if(bizTypeFixed.contains(col.at(bizTypeIndex))){
+            processTradeFixed();
         }
         else {
-            processTradeMobile(col, line);
+            processTradeMobile();
 
         }
 
@@ -464,464 +493,464 @@ void UserDb::processLine(QString line){
         //QMessageBox::warning(parent,"警告","未识别的用户类型。")
         emit message("未识别的用户类型！");
 
-        saveFieldAbnormal(line);
+        saveFieldAbnormal();
         /* 除用户类型和用户业务类型之外为空的、字段全部为空的，计入全量未登记。 */
         int notRegCount = 0;
         for(int i=0;i<col.size();i++){
-            if(isNotReg(col.at(i))){
+            if(isNotReg(col[i])){
                 notRegCount ++;
             }
         }
         if(notRegCount>=COL_NUM-2){
-            saveAllNotReg(line);
+            saveAllNotReg();
 //            qDebug()<<"count="<<notRegCount<<",col_num="<<COL_NUM;
             return;
         }
     }
-    processOneCardMultiName(col, line);
-    processOneCardFiveNumber(col, line);
-//    saveOneCard(line);
+//    processOneCardMultiName();
+    processOneCardFiveNumber();
+//    saveOneCard();
 }
 
-void UserDb::saveAllNotReg(QString line){
+void UserDb::saveAllNotReg(){
     report->allNotReg++;
-    writeFile("全量未登记.nreg", line, report->allNotReg);
+    writeFile("全量未登记.nreg", report->allNotReg);
 }
-void UserDb::saveAllNok(QString line){
+void UserDb::saveAllNok(){
     report->allNok++;
-    writeFile("全量形式不合规.nck", line, report->allNok);
+    writeFile("全量形式不合规.nck", report->allNok);
 }
-void UserDb::saveAbnormal(QString line){
+void UserDb::saveAbnormal(){
     report->formatNok++;//不是42列的
-    writeFile("格式异常数据.abnormal", line, report->formatNok);
+    writeFile("格式异常数据.abnormal", report->formatNok);
 }
-void UserDb::saveFieldAbnormal(QString line){
+void UserDb::saveFieldAbnormal(){
     report->fieldNok++;//（例如时间格式等不合规）
-    writeFile("字段异常数据.abnormal", line, report->fieldNok);
+    writeFile("字段异常数据.abnormal", report->fieldNok);
 }
-void UserDb::saveAllOk(QString line){
+void UserDb::saveAllOk(){
     report->allOk++;
-    writeFile("all.ok(全部合规数据)", line, report->allOk);
+    writeFile("all.ok(全部合规数据)", report->allOk);
 }
-void UserDb::saveWaitData(QString line){
+void UserDb::saveWaitData(){
     //todo report->w
-    writeFile("待挖掘记录(-\" + head_loop_num + \".txt)", line, 1);
+    writeFile("待挖掘记录(-\" + head_loop_num + \".txt)", 1);
 }
-void UserDb::savePersonMobileOk(QString line){
+void UserDb::savePersonMobileOk(){
     report->personMobileOk++;
-    writeFile("个人移动用户-形式合规数据.ok", line, report->personMobileOk);
+    writeFile("个人移动用户-形式合规数据.ok", report->personMobileOk);
 }
-void UserDb::savePersonMobileOwnerTypeNotReg(QString line){
+void UserDb::savePersonMobileOwnerTypeNotReg(){
     report->personMobileOwnerTypeNotReg++;
-    writeFile("个人移动用户-证件类型未登记.nreg", line, report->personMobileOwnerTypeNotReg);
+    writeFile("个人移动用户-证件类型未登记.nreg", report->personMobileOwnerTypeNotReg);
 }
-void UserDb::savePersonMobileOwnerNameNotReg(QString line){
+void UserDb::savePersonMobileOwnerNameNotReg(){
     report->personMobileOwnerNameNotReg ++;
-    writeFile("个人移动用户-用户姓名未登记.nreg", line, report->personMobileOwnerNameNotReg);
+    writeFile("个人移动用户-用户姓名未登记.nreg", report->personMobileOwnerNameNotReg);
 }
-void UserDb::savePersonMobileOwnerNumNotReg(QString line){
+void UserDb::savePersonMobileOwnerNumNotReg(){
     report->personMobileOwnerNumNotReg ++;
-    writeFile("个人移动用户-证件号码未登记.nreg", line, report->personMobileOwnerNumNotReg);
+    writeFile("个人移动用户-证件号码未登记.nreg", report->personMobileOwnerNumNotReg);
 }
-void UserDb::savePersonMobileOwnerAddNotReg(QString line){
+void UserDb::savePersonMobileOwnerAddNotReg(){
     report->personMobileOwnerAddNotReg ++;
-    writeFile("个人移动用户-证件地址未登记.nreg", line, report->personMobileOwnerAddNotReg);
+    writeFile("个人移动用户-证件地址未登记.nreg", report->personMobileOwnerAddNotReg);
 }
-void UserDb::savePersonMobileOwnerNameNumNotReg(QString line){
+void UserDb::savePersonMobileOwnerNameNumNotReg(){
     report->personMobileOwnerNameNumNotReg ++;
-    writeFile("个人移动用户-用户姓名&证件号码未登记.nreg", line, report->personMobileOwnerNameNumNotReg);
+    writeFile("个人移动用户-用户姓名&证件号码未登记.nreg", report->personMobileOwnerNameNumNotReg);
 }
-void UserDb::savePersonMobileOwnerNameAddNotReg(QString line){
+void UserDb::savePersonMobileOwnerNameAddNotReg(){
     report->personMobileOwnerNameAddNotReg ++;
-    writeFile("个人移动用户-用户姓名&证件地址未登记.nreg", line, report->personMobileOwnerNameAddNotReg);
+    writeFile("个人移动用户-用户姓名&证件地址未登记.nreg", report->personMobileOwnerNameAddNotReg);
 }
-void UserDb::savePersonMobileOwnerNumAddNotReg(QString line){
+void UserDb::savePersonMobileOwnerNumAddNotReg(){
     report->personMobileOwnerNameAddNotReg ++;
-    writeFile("个人移动用户-证件号码&证件地址未登记.nreg", line, report->personMobileOwnerNameAddNotReg);
+    writeFile("个人移动用户-证件号码&证件地址未登记.nreg", report->personMobileOwnerNameAddNotReg);
 }
-void UserDb::savePersonMobileOwnerNameNumAddNotReg(QString line){
+void UserDb::savePersonMobileOwnerNameNumAddNotReg(){
     report->personMobileOwnerNameNumAddNotReg ++;
-    writeFile("个人移动用户-用户姓名&证件号码&证件地址未登记.nreg", line, report->personMobileOwnerNameNumAddNotReg);
+    writeFile("个人移动用户-用户姓名&证件号码&证件地址未登记.nreg", report->personMobileOwnerNameNumAddNotReg);
 }
-void UserDb::savePersonMobileOwnerTyteNok(QString line){
+void UserDb::savePersonMobileOwnerTyteNok(){
     report->personMobileOwnerTypeNok ++;
-    writeFile("个人移动用户-证件类型校验不合规.nck", line, report->personMobileOwnerTypeNok);
+    writeFile("个人移动用户-证件类型校验不合规.nck", report->personMobileOwnerTypeNok);
 }
-void UserDb::savePersonMobileOwnerNameNok(QString line){
+void UserDb::savePersonMobileOwnerNameNok(){
     report->personMobileOwnerNameNok++;
-    writeFile("个人移动用户-用户姓名校验不合规.nck",line, report->personMobileOwnerNameNok);
+    writeFile("个人移动用户-用户姓名校验不合规.nck",report->personMobileOwnerNameNok);
 }
-void UserDb::savePersonMobileOwnerNumNok(QString line){
+void UserDb::savePersonMobileOwnerNumNok(){
     report->personMobileOwnerNumNok++;
-    writeFile("个人移动用户-证件号码校验不合规.nck",line, report->personMobileOwnerNumNok);
+    writeFile("个人移动用户-证件号码校验不合规.nck",report->personMobileOwnerNumNok);
 }
-void UserDb::savePersonMobileOwnerAddNok(QString line){
+void UserDb::savePersonMobileOwnerAddNok(){
     report->personMobileOwnerAddNok ++;
-    writeFile("个人移动用户-证件地址校验不合规.nck",line, report->personMobileOwnerAddNok);
+    writeFile("个人移动用户-证件地址校验不合规.nck",report->personMobileOwnerAddNok);
 }
-void UserDb::savePersonMobileOwnerNameNumNok(QString line){
+void UserDb::savePersonMobileOwnerNameNumNok(){
     report->personMobileOwnerNameNumNok++;
-    writeFile("个人移动用户-用户姓名&证件号码校验不合规.nck",line, report->personMobileOwnerNameNumNok);
+    writeFile("个人移动用户-用户姓名&证件号码校验不合规.nck",report->personMobileOwnerNameNumNok);
 }
-void UserDb::savePersonMobileOwnerNameAddNok(QString line){
+void UserDb::savePersonMobileOwnerNameAddNok(){
     report->personMobileOwnerNameAddNok++;
-    writeFile("个人移动用户-用户姓名&证件地址校验不合规.nck",line, report->personMobileOwnerNameAddNok);
+    writeFile("个人移动用户-用户姓名&证件地址校验不合规.nck",report->personMobileOwnerNameAddNok);
 }
-void UserDb::savePersonMobileOwnerNumAddNok(QString line){
+void UserDb::savePersonMobileOwnerNumAddNok(){
     report->personMobileOwnerNameNumAddNok++;
-    writeFile("个人移动用户-证件号码&证件地址校验不合规.nck",line, report->personMobileOwnerNameNumAddNok);
+    writeFile("个人移动用户-证件号码&证件地址校验不合规.nck",report->personMobileOwnerNameNumAddNok);
 }
-void UserDb::savePersonMobileOwnerNameNumAddNok(QString line){
+void UserDb::savePersonMobileOwnerNameNumAddNok(){
     report->personMobileOwnerNameNumAddNok++;
-    writeFile("个人移动用户-用户姓名&证件号码&证件地址校验不合规.nck",line, report->personMobileOwnerNameNumAddNok);
+    writeFile("个人移动用户-用户姓名&证件号码&证件地址校验不合规.nck",report->personMobileOwnerNameNumAddNok);
 }
 // 个人-固定电话
-void UserDb::savePersonFixedOk(QString line){
+void UserDb::savePersonFixedOk(){
     report->personFixedOk++;
-    writeFile("个人固话用户-形式合规数据.ok",line, report->personFixedOk);
+    writeFile("个人固话用户-形式合规数据.ok",report->personFixedOk);
 }
-void UserDb::savePersonFixedOwnerTypeNotReg(QString line){
+void UserDb::savePersonFixedOwnerTypeNotReg(){
     report->personFixedOwnerTypeNotReg++;
-    writeFile("个人固话用户-证件类型未登记.nreg",line, report->personFixedOwnerTypeNotReg);
+    writeFile("个人固话用户-证件类型未登记.nreg",report->personFixedOwnerTypeNotReg);
 }
-void UserDb::savePersonFixedOwnerNameNotReg(QString line){
+void UserDb::savePersonFixedOwnerNameNotReg(){
     report->personFixedOwnerNameNotReg++;
-    writeFile("个人固话用户-用户姓名未登记.nreg",line, report->personFixedOwnerNameNotReg);
+    writeFile("个人固话用户-用户姓名未登记.nreg",report->personFixedOwnerNameNotReg);
 }
-void UserDb::savePersonFixedOwnerNumNotReg(QString line){
+void UserDb::savePersonFixedOwnerNumNotReg(){
     report->personFixedOwnerNameNotReg++;
-    writeFile("个人固话用户-证件号码未登记.nreg",line, report->personFixedOwnerNameNotReg);
+    writeFile("个人固话用户-证件号码未登记.nreg",report->personFixedOwnerNameNotReg);
 }
-void UserDb::savePersonFixedOwnerAddNotReg(QString line){
+void UserDb::savePersonFixedOwnerAddNotReg(){
     report->personFixedOwnerAddNotReg++;
-    writeFile("个人固话用户-证件地址未登记.nreg",line, report->personFixedOwnerAddNotReg);
+    writeFile("个人固话用户-证件地址未登记.nreg",report->personFixedOwnerAddNotReg);
 }
-void UserDb::savePersonFixedOwnerNameNumNotReg(QString line){
+void UserDb::savePersonFixedOwnerNameNumNotReg(){
     report->personFixedOwnerNameNumNotReg++;
-    writeFile("个人固话用户-用户姓名&证件号码未登记.nreg",line, report->personFixedOwnerNameNumNotReg);
+    writeFile("个人固话用户-用户姓名&证件号码未登记.nreg",report->personFixedOwnerNameNumNotReg);
 }
-void UserDb::savePersonFixedOwnerNameAddNotReg(QString line){
+void UserDb::savePersonFixedOwnerNameAddNotReg(){
     report->personFixedOwnerNameAddNotReg++;
-    writeFile("个人固话用户-用户姓名&证件地址未登记.nreg",line, report->personFixedOwnerNameAddNotReg);
+    writeFile("个人固话用户-用户姓名&证件地址未登记.nreg",report->personFixedOwnerNameAddNotReg);
 }
-void UserDb::savePersonFixedOwnerNumAddNotReg(QString line){
+void UserDb::savePersonFixedOwnerNumAddNotReg(){
     report->personFixedOwnerNameAddNotReg++;
-    writeFile("个人固话用户-证件号码&证件地址未登记.nreg",line, report->personFixedOwnerNameAddNotReg);
+    writeFile("个人固话用户-证件号码&证件地址未登记.nreg",report->personFixedOwnerNameAddNotReg);
 }
-void UserDb::savePersonFixedOwnerNameNumAddNotReg(QString line){
+void UserDb::savePersonFixedOwnerNameNumAddNotReg(){
     report->personFixedOwnerNameNumAddNotReg++;
-    writeFile("个人固话用户-用户姓名&证件号码&证件地址未登记.nreg",line, report->personFixedOwnerNameNumAddNotReg);
+    writeFile("个人固话用户-用户姓名&证件号码&证件地址未登记.nreg",report->personFixedOwnerNameNumAddNotReg);
 }
-void UserDb::savePersonFixedOwnerTypeNok(QString line){
+void UserDb::savePersonFixedOwnerTypeNok(){
     report->personFixedOwnerTypeNok++;
-    writeFile("个人固话用户-证件类型校验不合规.nck",line, report->personFixedOwnerTypeNok);
+    writeFile("个人固话用户-证件类型校验不合规.nck",report->personFixedOwnerTypeNok);
 }
-void UserDb::savePersonFixedOwnerNameNok(QString line){
+void UserDb::savePersonFixedOwnerNameNok(){
     report->personFixedOwnerNameNok++;
-    writeFile("个人固话用户-用户姓名校验不合规.nck",line, report->personFixedOwnerNameNok);
+    writeFile("个人固话用户-用户姓名校验不合规.nck",report->personFixedOwnerNameNok);
 }
-void UserDb::savePersonFixedOwnerNumNok(QString line){
+void UserDb::savePersonFixedOwnerNumNok(){
     report->personFixedOwnerNameNok++;
-    writeFile("个人固话用户-证件号码校验不合规.nck",line, report->personFixedOwnerNameNok);
+    writeFile("个人固话用户-证件号码校验不合规.nck",report->personFixedOwnerNameNok);
 }
-void UserDb::savePersonFixedOwnerAddNok(QString line){
+void UserDb::savePersonFixedOwnerAddNok(){
     report->personFixedOwnerAddNok++;
-    writeFile("个人固话用户-证件地址校验不合规.nck",line, report->personFixedOwnerAddNok);
+    writeFile("个人固话用户-证件地址校验不合规.nck",report->personFixedOwnerAddNok);
 }
-void UserDb::savePersonFixedOwnerNameNumNok(QString line){
+void UserDb::savePersonFixedOwnerNameNumNok(){
     report->personFixedOwnerNameNumNok++;
-    writeFile("个人固话用户-用户姓名&证件号码校验不合规.nck",line, report->personFixedOwnerNameNumNok);
+    writeFile("个人固话用户-用户姓名&证件号码校验不合规.nck",report->personFixedOwnerNameNumNok);
 }
-void UserDb::savePersonFixedOwnerNameAddNok(QString line){
+void UserDb::savePersonFixedOwnerNameAddNok(){
     report->personFixedOwnerNameAddNok++;
-    writeFile("个人固话用户-用户姓名&证件地址校验不合规.nck",line, report->personFixedOwnerNameAddNok);
+    writeFile("个人固话用户-用户姓名&证件地址校验不合规.nck",report->personFixedOwnerNameAddNok);
 }
-void UserDb::savePersonFixedOwnerNumAddNok(QString line){
+void UserDb::savePersonFixedOwnerNumAddNok(){
     report->personFixedOwnerNumAddNok++;
-    writeFile("个人固话用户-证件号码&证件地址校验不合规.nck",line, report->personFixedOwnerNumAddNok);
+    writeFile("个人固话用户-证件号码&证件地址校验不合规.nck",report->personFixedOwnerNumAddNok);
 }
-void UserDb::savePersonFixedOwnerNameNumAddNok(QString line){
+void UserDb::savePersonFixedOwnerNameNumAddNok(){
     report->personFixedOwnerNameNumAddNok++;
-    writeFile("个人固话用户-用户姓名&证件号码&证件地址校验不合规.nck",line, report->personFixedOwnerNameNumAddNok);
+    writeFile("个人固话用户-用户姓名&证件号码&证件地址校验不合规.nck",report->personFixedOwnerNameNumAddNok);
 }
-void UserDb::savePersonMobileAgentNotReg(QString line){
+void UserDb::savePersonMobileAgentNotReg(){
     report->personMobileAgentNotReg++;
-    writeFile("个人移动用户-代办人信息未登记.nreg",line, report->personMobileAgentNotReg);
+    writeFile("个人移动用户-代办人信息未登记.nreg",report->personMobileAgentNotReg);
 }
-void UserDb::savePersonFixedAgentNotReg(QString line){
+void UserDb::savePersonFixedAgentNotReg(){
     report->personFixedAgentNotReg++;
-    writeFile("个人固话用户-代办人信息未登记.nreg",line, report->personFixedAgentNotReg);
+    writeFile("个人固话用户-代办人信息未登记.nreg",report->personFixedAgentNotReg);
 }
-void UserDb::savePersonMobileAgentNok(QString line){
+void UserDb::savePersonMobileAgentNok(){
     report->personMobileAgentNok++;
-    writeFile("个人移动用户-代办人信息校验不合规.nck",line, report->personMobileAgentNok);
+    writeFile("个人移动用户-代办人信息校验不合规.nck",report->personMobileAgentNok);
 }
-void UserDb::savePersonFixedAgentNok(QString line){
+void UserDb::savePersonFixedAgentNok(){
     report->personFixedAgentNok++;
-    writeFile("个人固话用户-代办人信息校验不合规.nck",line, report->personFixedAgentNok);
+    writeFile("个人固话用户-代办人信息校验不合规.nck",report->personFixedAgentNok);
 }
-void UserDb::saveUnitMobileOk(QString line){
+void UserDb::saveUnitMobileOk(){
     report->unitMobileOk++;
-    writeFile("单位移动用户-形式合规数据.ok",line, report->unitMobileOk);
+    writeFile("单位移动用户-形式合规数据.ok",report->unitMobileOk);
 }
-void UserDb::saveUnitMobileOwnerNotReg(QString line){
+void UserDb::saveUnitMobileOwnerNotReg(){
     report->unitMobileOwnerNotReg++;
-    writeFile("单位移动用户-使用人信息未登记.nreg",line, report->unitMobileOwnerNotReg);
+    writeFile("单位移动用户-使用人信息未登记.nreg",report->unitMobileOwnerNotReg);
 }
-void UserDb::saveUnitMobileAgentNotReg(QString line){
+void UserDb::saveUnitMobileAgentNotReg(){
     report->unitMobileAgentNotReg++;
-    writeFile("单位移动用户-经办人信息未登记.nreg",line, report->unitMobileAgentNotReg);
+    writeFile("单位移动用户-经办人信息未登记.nreg",report->unitMobileAgentNotReg);
 }
-void UserDb::saveUnitMobileUnitNotReg(QString line){
+void UserDb::saveUnitMobileUnitNotReg(){
     report->unitMobileUnitNotReg++;
-    writeFile("单位移动用户-单位信息未登记.nreg",line, report->unitMobileUnitNotReg);
+    writeFile("单位移动用户-单位信息未登记.nreg",report->unitMobileUnitNotReg);
 }
-void UserDb::saveUnitMobileOwnerUnitNotReg(QString line){
+void UserDb::saveUnitMobileOwnerUnitNotReg(){
     report->unitMobileOwnerUnitNotReg++;
-    writeFile("单位移动用户-使用人&单位信息未登记.nreg",line, report->unitMobileOwnerUnitNotReg);
+    writeFile("单位移动用户-使用人&单位信息未登记.nreg",report->unitMobileOwnerUnitNotReg);
 }
-void UserDb::saveUnitMobileAgentUnitNotReg(QString line){
+void UserDb::saveUnitMobileAgentUnitNotReg(){
     report->unitMobileAgentUnitNotReg++;
-    writeFile("单位移动用户-经办人&单位信息未登记.nreg",line, report->unitMobileAgentUnitNotReg);
+    writeFile("单位移动用户-经办人&单位信息未登记.nreg",report->unitMobileAgentUnitNotReg);
 }
-void UserDb::saveUnitMobileOwnerAgentUnitNotReg(QString line){
+void UserDb::saveUnitMobileOwnerAgentUnitNotReg(){
     report->unitMobileOwnerAgentUnitNotReg++;
-    writeFile("单位移动用户-使用人&经办人&单位信息未登记.nreg",line, report->unitMobileOwnerAgentUnitNotReg);
+    writeFile("单位移动用户-使用人&经办人&单位信息未登记.nreg",report->unitMobileOwnerAgentUnitNotReg);
 }
-void UserDb::saveUnitMobileOwnerNok(QString line){
+void UserDb::saveUnitMobileOwnerNok(){
     report->unitMobileOwnerNok++;
-    writeFile("单位移动用户-使用人信息校验不合规.nck",line, report->unitMobileOwnerNok);
+    writeFile("单位移动用户-使用人信息校验不合规.nck",report->unitMobileOwnerNok);
 }
-void UserDb::saveUnitMobileAgentNok(QString line){
+void UserDb::saveUnitMobileAgentNok(){
     report->unitMobileAgentNok++;
-    writeFile("单位移动用户-经办人信息校验不合规.nck",line, report->unitMobileAgentNok);
+    writeFile("单位移动用户-经办人信息校验不合规.nck",report->unitMobileAgentNok);
 }
-void UserDb::saveUnitMobileUnitNok(QString line){
+void UserDb::saveUnitMobileUnitNok(){
     report->unitMobileUnitNok++;
-    writeFile("单位移动用户-单位信息校验不合规.nck",line, report->unitMobileUnitNok);
+    writeFile("单位移动用户-单位信息校验不合规.nck",report->unitMobileUnitNok);
 }
-void UserDb::saveUnitMobileOwnerAgentNok(QString line){
+void UserDb::saveUnitMobileOwnerAgentNok(){
     report->unitMobileAgentNok++;
-    writeFile("单位移动用户-使用人&经办人信息校验不合规.nck",line, report->unitMobileAgentNok);
+    writeFile("单位移动用户-使用人&经办人信息校验不合规.nck",report->unitMobileAgentNok);
 }
-void UserDb::saveUnitMobileOwnerUnitNok(QString line){
+void UserDb::saveUnitMobileOwnerUnitNok(){
     report->unitMobileOwnerUnitNok++;
-    writeFile("单位移动用户-使用人&单位信息校验不合规.nck",line, report->unitMobileOwnerUnitNok);
+    writeFile("单位移动用户-使用人&单位信息校验不合规.nck",report->unitMobileOwnerUnitNok);
 }
-void UserDb::saveUnitMobileAgentUnitNok(QString line){
+void UserDb::saveUnitMobileAgentUnitNok(){
     report->unitMobileAgentUnitNok++;
-    writeFile("单位移动用户-经办人&单位信息校验不合规.nck",line, report->unitMobileAgentUnitNok);
+    writeFile("单位移动用户-经办人&单位信息校验不合规.nck",report->unitMobileAgentUnitNok);
 }
-void UserDb::saveUnitMobileOwnerAgentUnitNok(QString line){
+void UserDb::saveUnitMobileOwnerAgentUnitNok(){
     report->unitMobileAgentUnitNok++;
-    writeFile("单位移动用户-使用人&经办人&单位信息校验不合规.nck",line, report->unitMobileAgentUnitNok);
+    writeFile("单位移动用户-使用人&经办人&单位信息校验不合规.nck",report->unitMobileAgentUnitNok);
 }
-void UserDb::saveUnitFixedOk(QString line){
+void UserDb::saveUnitFixedOk(){
     report->unitFixedOk++;
-    writeFile("单位固话用户-形式合规数据.ok",line, report->unitFixedOk);
+    writeFile("单位固话用户-形式合规数据.ok",report->unitFixedOk);
 }
-void UserDb::saveUnitFixedOwnerNotReg(QString line){
+void UserDb::saveUnitFixedOwnerNotReg(){
     report->unitFixedOwnerNotReg++;
-    writeFile("单位固话用户-形式合规数据.ok",line, report->unitFixedOwnerNotReg);
+    writeFile("单位固话用户-形式合规数据.ok",report->unitFixedOwnerNotReg);
 }
-void UserDb::saveUnitFixedAgentNotReg(QString line){
+void UserDb::saveUnitFixedAgentNotReg(){
     report->unitFixedAgentNotReg++;
-    writeFile("单位固话用户-经办人信息未登记.nreg",line, report->unitFixedAgentNotReg);
+    writeFile("单位固话用户-经办人信息未登记.nreg",report->unitFixedAgentNotReg);
 }
-void UserDb::saveUnitFixedUnitNotReg(QString line){
+void UserDb::saveUnitFixedUnitNotReg(){
     report->unitFixedUnitNotReg++;
-    writeFile("单位固话用户-单位信息未登记.nreg",line, report->unitFixedUnitNotReg);
+    writeFile("单位固话用户-单位信息未登记.nreg",report->unitFixedUnitNotReg);
 }
 
-//void UserDb::saveUnitFixedOwnerAgentNotReg(QString line){
+//void UserDb::saveUnitFixedOwnerAgentNotReg(){
 //    report->unitFixedOwnerAgentNotReg++;
-//    writeFile("单位固话用户-使用人&经办人信息未登记.nreg",line, report->unitFixedOwnerAgentNotReg);
+//    writeFile("单位固话用户-使用人&经办人信息未登记.nreg",report->unitFixedOwnerAgentNotReg);
 //}
-//void UserDb::saveUnitFixedOwnerUnitNotReg(QString line){
+//void UserDb::saveUnitFixedOwnerUnitNotReg(){
 //    report->unitFixedOwnerUnitNotReg++;
-//    writeFile("单位固话用户-使用人&单位信息未登记.nreg",line, report->unitFixedOwnerUnitNotReg);
+//    writeFile("单位固话用户-使用人&单位信息未登记.nreg",report->unitFixedOwnerUnitNotReg);
 //}
-void UserDb::saveUnitFixedAgentUnitNotReg(QString line){
+void UserDb::saveUnitFixedAgentUnitNotReg(){
     report->unitFixedAgentUnitNotReg++;
-    writeFile("单位固话用户-经办人&单位信息未登记.nreg",line, report->unitFixedAgentUnitNotReg);
+    writeFile("单位固话用户-经办人&单位信息未登记.nreg",report->unitFixedAgentUnitNotReg);
 }
-//void UserDb::saveUnitFixedOwnerAgentUnitNotReg(QString line){
+//void UserDb::saveUnitFixedOwnerAgentUnitNotReg(){
 //    report->unitFixedOwnerAgentUnitNotReg++;
-//    writeFile("单位固话用户-使用人&经办人&单位信息未登记.nreg",line, report->unitFixedOwnerAgentUnitNotReg);
+//    writeFile("单位固话用户-使用人&经办人&单位信息未登记.nreg",report->unitFixedOwnerAgentUnitNotReg);
 //}
-void UserDb::saveUnitFixedAgentNok(QString line){
+void UserDb::saveUnitFixedAgentNok(){
     report->unitFixedAgentNok++;
-    writeFile("单位固话用户-经办人信息校验不合规.nck",line, report->unitFixedAgentNok);
+    writeFile("单位固话用户-经办人信息校验不合规.nck",report->unitFixedAgentNok);
 }
-void UserDb::saveUnitFixedUnitNok(QString line){
+void UserDb::saveUnitFixedUnitNok(){
     report->unitFixedUnitNok++;
-    writeFile("单位固话用户-单位信息校验不合规.nck",line, report->unitFixedUnitNok);
+    writeFile("单位固话用户-单位信息校验不合规.nck",report->unitFixedUnitNok);
 }
-void UserDb::saveUnitFixedAgentUnitNok(QString line){
+void UserDb::saveUnitFixedAgentUnitNok(){
     report->unitFixedAgentUnitNok++;
-    writeFile("单位固话用户-经办人&单位信息校验不合规.nck",line, report->unitFixedAgentUnitNok);
+    writeFile("单位固话用户-经办人&单位信息校验不合规.nck",report->unitFixedAgentUnitNok);
 }
-void UserDb::saveTradeMobileOk(QString line){
+void UserDb::saveTradeMobileOk(){
     report->tradeMobileOk++;
-    writeFile("行业移动应用-形式合规数据.ok",line, report->tradeMobileOk);
+    writeFile("行业移动应用-形式合规数据.ok",report->tradeMobileOk);
 }
-void UserDb::saveTradeMobileAgentNotReg(QString line){
+void UserDb::saveTradeMobileAgentNotReg(){
     report->tradeMobileAgentNotReg++;
-    writeFile("行业移动应用-经办人信息未登记.nreg",line, report->tradeMobileAgentNotReg);
+    writeFile("行业移动应用-经办人信息未登记.nreg",report->tradeMobileAgentNotReg);
 }
-void UserDb::saveTradeMobileAgentUnitNotReg(QString line){
+void UserDb::saveTradeMobileAgentUnitNotReg(){
     report->tradeMobileAgentUnitNotReg++;
-    writeFile("行业移动应用-经办人&单位信息未登记.nreg",line, report->tradeMobileAgentUnitNotReg);
+    writeFile("行业移动应用-经办人&单位信息未登记.nreg",report->tradeMobileAgentUnitNotReg);
 }
-void UserDb::saveTradeMobileLiableAgentNotReg(QString line){
+void UserDb::saveTradeMobileLiableAgentNotReg(){
     report->tradeMobileLiableAgentNotReg++;
-    writeFile("行业移动应用-责任人&经办人信息未登记.nreg",line, report->tradeMobileLiableAgentNotReg);
+    writeFile("行业移动应用-责任人&经办人信息未登记.nreg",report->tradeMobileLiableAgentNotReg);
 }
-void UserDb::saveTradeMobileLiableAgentUnitNotReg(QString line){
+void UserDb::saveTradeMobileLiableAgentUnitNotReg(){
     report->tradeMobileLiableAgentUnitNotReg++;
-    writeFile("行业移动应用-责任人&经办人&单位信息未登记.nreg",line, report->tradeMobileLiableAgentUnitNotReg);
+    writeFile("行业移动应用-责任人&经办人&单位信息未登记.nreg",report->tradeMobileLiableAgentUnitNotReg);
 }
-void UserDb::saveTradeMobileUnitNotReg(QString line){
+void UserDb::saveTradeMobileUnitNotReg(){
     report->tradeMobileUnitNotReg++;
-    writeFile("行业移动应用-单位信息未登记.nreg",line, report->tradeMobileUnitNotReg);
+    writeFile("行业移动应用-单位信息未登记.nreg",report->tradeMobileUnitNotReg);
 }
-void UserDb::saveTradeMobileLiableNotReg(QString line){
+void UserDb::saveTradeMobileLiableNotReg(){
     report->tradeMobileLiableNotReg++;
-    writeFile("行业移动应用-责任人信息未登记.nreg",line, report->tradeMobileLiableNotReg);
+    writeFile("行业移动应用-责任人信息未登记.nreg",report->tradeMobileLiableNotReg);
 }
-void UserDb::saveTradeMobileLiableUnitNotReg(QString line){
+void UserDb::saveTradeMobileLiableUnitNotReg(){
     report->tradeMobileLiableUnitNotReg++;
-    writeFile("行业移动应用-责任人&单位信息未登记.nreg",line, report->tradeMobileLiableUnitNotReg);
+    writeFile("行业移动应用-责任人&单位信息未登记.nreg",report->tradeMobileLiableUnitNotReg);
 }
-void UserDb::saveTradeMobileAgentNok(QString line){
+void UserDb::saveTradeMobileAgentNok(){
     report->tradeMobileAgentNok++;
-    writeFile("行业移动应用-经办人信息校验不合规.nck",line, report->tradeMobileAgentNok);
+    writeFile("行业移动应用-经办人信息校验不合规.nck",report->tradeMobileAgentNok);
 }
-void UserDb::saveTradeMobileAgentUnitNok(QString line){
+void UserDb::saveTradeMobileAgentUnitNok(){
     report->tradeMobileAgentUnitNok++;
-    writeFile("行业移动应用-经办人&单位信息校验不合规.nck",line, report->tradeMobileAgentUnitNok);
+    writeFile("行业移动应用-经办人&单位信息校验不合规.nck",report->tradeMobileAgentUnitNok);
 }
-void UserDb::saveTradeMobileLiableAgentNok(QString line){
+void UserDb::saveTradeMobileLiableAgentNok(){
     report->tradeMobileLiableAgentNok++;
-    writeFile("行业移动应用-责任人&经办人信息校验不合规.nck",line, report->tradeMobileLiableAgentNok);
+    writeFile("行业移动应用-责任人&经办人信息校验不合规.nck",report->tradeMobileLiableAgentNok);
 }
-void UserDb::saveTradeMobileLiableAgentUnitNok(QString line){
+void UserDb::saveTradeMobileLiableAgentUnitNok(){
     report->tradeMobileLiableAgentUnitNok++;
-    writeFile("行业移动应用-责任人&经办人&单位信息校验不合规.nck",line, report->tradeMobileLiableAgentUnitNok);
+    writeFile("行业移动应用-责任人&经办人&单位信息校验不合规.nck",report->tradeMobileLiableAgentUnitNok);
 }
-void UserDb::saveTradeMobileUnitNok(QString line){
+void UserDb::saveTradeMobileUnitNok(){
     report->tradeMobileUnitNok++;
-    writeFile("行业移动应用-单位信息校验不合规.nck",line, report->tradeMobileUnitNok);
+    writeFile("行业移动应用-单位信息校验不合规.nck",report->tradeMobileUnitNok);
 }
-void UserDb::saveTradeMobileLiableNok(QString line){
+void UserDb::saveTradeMobileLiableNok(){
     report->tradeMobileLiableNok++;
-    writeFile("行业移动应用-责任人信息校验不合规.nck",line, report->tradeMobileLiableNok);
+    writeFile("行业移动应用-责任人信息校验不合规.nck",report->tradeMobileLiableNok);
 }
-void UserDb::saveTradeMobileLiableUnitNok(QString line){
+void UserDb::saveTradeMobileLiableUnitNok(){
     report->tradeMobileLiableUnitNok++;
-    writeFile("行业移动应用-责任人&单位信息校验不合规.nck",line, report->tradeMobileLiableUnitNok);
+    writeFile("行业移动应用-责任人&单位信息校验不合规.nck",report->tradeMobileLiableUnitNok);
 }
-void UserDb::saveTradeFixedOk(QString line){
+void UserDb::saveTradeFixedOk(){
     report->tradeFixedOk++;
-    writeFile("行业固话应用-形式合规数据.ok",line, report->tradeFixedOk);
+    writeFile("行业固话应用-形式合规数据.ok",report->tradeFixedOk);
 }
-void UserDb::saveTradeFixedOwnerNotReg(QString line){
+void UserDb::saveTradeFixedOwnerNotReg(){
     report->tradeFixedOwnerNotReg++;
-    writeFile("行业固话应用-使用人信息未登记.nreg", line, report->tradeFixedOwnerNotReg);
+    writeFile("行业固话应用-使用人信息未登记.nreg", report->tradeFixedOwnerNotReg);
 }
-void UserDb::saveTradeFixedOwnerNok(QString line){
+void UserDb::saveTradeFixedOwnerNok(){
     report->tradeFixedOwnerNok++;
-    writeFile("行业固话应用-使用人信息校验不合规.nreg", line, report->tradeFixedOwnerNok);
+    writeFile("行业固话应用-使用人信息校验不合规.nreg", report->tradeFixedOwnerNok);
 }
-void UserDb::saveTradeFixedAgentNotReg(QString line){
+void UserDb::saveTradeFixedAgentNotReg(){
     report->tradeFixedAgentNotReg++;
-    writeFile("行业固话应用-经办人信息未登记.nreg",line, report->tradeFixedAgentNotReg);
+    writeFile("行业固话应用-经办人信息未登记.nreg",report->tradeFixedAgentNotReg);
 }
-void UserDb::saveTradeFixedLiableNotReg(QString line){
+void UserDb::saveTradeFixedLiableNotReg(){
     report->tradeFixedLiableNotReg++;
-    writeFile("行业固话应用-责任人信息未登记.nreg",line, report->tradeFixedLiableNotReg);
+    writeFile("行业固话应用-责任人信息未登记.nreg",report->tradeFixedLiableNotReg);
 }
-void UserDb::saveTradeFixedAgentUnitNotReg(QString line){
+void UserDb::saveTradeFixedAgentUnitNotReg(){
     report->tradeFixedAgentUnitNotReg++;
-    writeFile("行业固话应用-经办人&单位信息未登记.nreg",line, report->tradeFixedAgentUnitNotReg);
+    writeFile("行业固话应用-经办人&单位信息未登记.nreg",report->tradeFixedAgentUnitNotReg);
 }
-void UserDb::saveTradeFixedUnitNotReg(QString line){
+void UserDb::saveTradeFixedUnitNotReg(){
     report->tradeFixedUnitNotReg++;
-    writeFile("行业固话应用-单位信息未登记.nreg",line, report->tradeFixedUnitNotReg);
+    writeFile("行业固话应用-单位信息未登记.nreg",report->tradeFixedUnitNotReg);
 }
-void UserDb::saveTradeFixedAgentNok(QString line){
+void UserDb::saveTradeFixedAgentNok(){
     report->tradeFixedAgentNok++;
-    writeFile("行业固话应用-经办人信息校验不合规.nck",line, report->tradeFixedAgentNok);
+    writeFile("行业固话应用-经办人信息校验不合规.nck",report->tradeFixedAgentNok);
 }
-void UserDb::saveTradeFixedAgentUnitNok(QString line){
+void UserDb::saveTradeFixedAgentUnitNok(){
     report->tradeFixedAgentUnitNok++;
-    writeFile("行业固话应用-经办人&单位信息校验不合规.nck",line, report->tradeFixedAgentUnitNok);
+    writeFile("行业固话应用-经办人&单位信息校验不合规.nck",report->tradeFixedAgentUnitNok);
 }
-void UserDb::saveTradeFixedUnitNok(QString line){
+void UserDb::saveTradeFixedUnitNok(){
     report->tradeFixedUnitNok++;
-    writeFile("行业固话应用-单位信息校验不合规.nck",line, report->tradeFixedUnitNok);
+    writeFile("行业固话应用-单位信息校验不合规.nck",report->tradeFixedUnitNok);
 }
-void UserDb::saveTradeMobileOwnerNok(QString line){
+void UserDb::saveTradeMobileOwnerNok(){
     report->tradeMobileOwnerNok++;
-    writeFile("行业移动应用-使用人信息校验不合规.nck",line, report->tradeMobileOwnerNok);
+    writeFile("行业移动应用-使用人信息校验不合规.nck",report->tradeMobileOwnerNok);
 }
-void UserDb::saveTradeMobileOwnerNotReg(QString line){
+void UserDb::saveTradeMobileOwnerNotReg(){
     report->tradeMobileOwnerNotReg++;
-    writeFile("行业移动应用-使用人信息未登记.nreg",line, report->tradeMobileOwnerNotReg);
+    writeFile("行业移动应用-使用人信息未登记.nreg",report->tradeMobileOwnerNotReg);
 }
 
-void UserDb::saveTradeFixedAgentLiableNotReg(QString line){
+void UserDb::saveTradeFixedAgentLiableNotReg(){
     report->tradeFixedAgentLiableNotReg++;
-    writeFile("行业固话应用-经办人&责任人信息未登记.nreg",line, report->tradeFixedAgentLiableNotReg);
+    writeFile("行业固话应用-经办人&责任人信息未登记.nreg",report->tradeFixedAgentLiableNotReg);
 }
 
-void UserDb::saveTradeFixedLiableUnitNotReg(QString line){
+void UserDb::saveTradeFixedLiableUnitNotReg(){
     report->tradeFixedLiableUnitNotReg++;
-    writeFile("行业固话应用-责任人&单位信息未登记.nreg",line, report->tradeFixedLiableUnitNotReg);
+    writeFile("行业固话应用-责任人&单位信息未登记.nreg",report->tradeFixedLiableUnitNotReg);
 }
-void UserDb::saveTradeFixedAgentLiableUnitNotReg(QString line){
+void UserDb::saveTradeFixedAgentLiableUnitNotReg(){
     report->tradeFixedAgentLiableUnitNotReg++;
-    writeFile("行业固话应用-经办人&责任人&单位信息未登记.nreg",line, report->tradeFixedAgentLiableUnitNotReg);
+    writeFile("行业固话应用-经办人&责任人&单位信息未登记.nreg",report->tradeFixedAgentLiableUnitNotReg);
 }
-void UserDb::saveTradeFixedAgentLiableNok(QString line){
+void UserDb::saveTradeFixedAgentLiableNok(){
     report->tradeFixedAgentLiableNok++;
-    writeFile("行业固话应用-经办人&责任人信息校验不合规.nck",line, report->tradeFixedAgentLiableNok);
+    writeFile("行业固话应用-经办人&责任人信息校验不合规.nck",report->tradeFixedAgentLiableNok);
 }
-void UserDb::saveTradeFixedLiableUnitNok(QString line){
+void UserDb::saveTradeFixedLiableUnitNok(){
     report->tradeFixedLiableUnitNok++;
-    writeFile("行业固话应用-责任人&单位信息校验不合规.nck",line, report->tradeFixedLiableUnitNok);
+    writeFile("行业固话应用-责任人&单位信息校验不合规.nck",report->tradeFixedLiableUnitNok);
 }
-void UserDb::saveTradeFixedAgentLiableUnitNok(QString line){
+void UserDb::saveTradeFixedAgentLiableUnitNok(){
     report->tradeFixedAgentLiableUnitNok++;
-    writeFile("行业固话应用-经办人&责任人&单位信息校验不合规.nck",line, report->tradeFixedAgentLiableUnitNok);
+    writeFile("行业固话应用-经办人&责任人&单位信息校验不合规.nck",report->tradeFixedAgentLiableUnitNok);
 }
-void UserDb::saveTradeFixedLiableNok(QString line){
+void UserDb::saveTradeFixedLiableNok(){
     report->tradeFixedLiableNok++;
-    writeFile("行业固话应用-责任人信息校验不合规.nok",line,report->tradeFixedLiableNok);
+    writeFile("行业固话应用-责任人信息校验不合规.nok",report->tradeFixedLiableNok);
 }
-void UserDb::savePersonMobileOneCard(QString line){
+void UserDb::savePersonMobileOneCard(){
     report->personMobileOneCard++;
-    writeFile("个人移动一证五卡不合规.nck",line,report->personMobileOneCard);
+    writeFile("个人移动一证五卡不合规.nck",report->personMobileOneCard);
 }
 
-void UserDb::saveLeaveNet(QString line){
+void UserDb::saveLeaveNet(){
     report->leaveNet++;
-    writeFile("非实名制停机和离网状态.txt", line, report->leaveNet);
+    writeFile("非实名制停机和离网状态.txt", report->leaveNet);
 }
 
-void UserDb::saveUnitMobileOwnerAgentNotReg(QString line){
+void UserDb::saveUnitMobileOwnerAgentNotReg(){
     report->unitMobileOwnerAgentNotReg ++;
-    writeFile("单位移动用户-使用人&经办人信息校验不合规.nck",line,report->unitMobileOwnerAgentNotReg);
+    writeFile("单位移动用户-使用人&经办人信息校验不合规.nck",report->unitMobileOwnerAgentNotReg);
 }
 
-void UserDb::saveOnecardMultiName(QString line){
+void UserDb::saveOnecardMultiName(){
     report->onecardMultiName++;
-    writeFile("一证多名.nok", line, report->onecardMultiName);
+    writeFile("一证多名.nok", report->onecardMultiName);
 }
 
-void UserDb::saveOnecardFiveCode(QString line){
+void UserDb::saveOnecardFiveCode(){
     report->onecardFiveCode++;
-    writeFile("一证超五号不合规.nok", line, report->onecardFiveCode);
+    writeFile("一证超五号不合规.nok", report->onecardFiveCode);
 }
 
 
@@ -948,7 +977,7 @@ bool UserDb::makeDir(){
  * @param filename 目标文件。
  * @param line 欲写入结果文件的行。
  */
-//void UserDb::writeFile(QString filename, QString line, int count){
+//void UserDb::writeFile(QString filename, QString int count){
 
 //    qDebug()<<"writeFile "<<path<<"\\"<<filename;
 //    QFile file(path+QDir::separator()+filename);
@@ -959,7 +988,9 @@ bool UserDb::makeDir(){
 //    out << line << endl;
 //    file.close();
 //}
-void UserDb::writeFile(QString filename, QString line, int count){
+static const int QTEXTSTREAM_BUFFERSIZE = 65536;
+void UserDb::writeFile(QString filename,  int count){
+
     if(count%10000==0){
         QList<QString> lineList = fileBuffer.value(filename);
 //        qDebug()<<"writeFile "<<path<<"\\"<<filename;
@@ -979,7 +1010,7 @@ void UserDb::writeFile(QString filename, QString line, int count){
     else{
         if(fileBuffer.contains(filename)){
             QList<QString> list = fileBuffer.take(filename);
-            list.append(line);
+            list.append(this->line);
             fileBuffer.insert(filename, list);
         }
         else{
@@ -1059,103 +1090,104 @@ int UserDb::getDateForInt(QString activeTime){
  * @param col
  * @param line
  */
-void UserDb::processPersonFixed(QList<QString> col, QString line){
+void UserDb::processPersonFixed(){
     /* 个人固定用户-证件类型未登记 */
    bool typeNotReg = false;
-   if(isNotReg(col.at(getColNum("机主证件类型")))){
+   if(isNotReg(col[ownerTypeIndex])){
        typeNotReg = true;
+       return;
    }
 
     /* 个人固定用户-用户姓名未登记 */
    bool nameNotReg = false;
-   if(isNotReg(col.at(getColNum("机主用户姓名")))){
+   if(isNotReg(col[ownerNameIndex])){
        nameNotReg = true;
    }
 
    /* 个人固定用户-证件号码未登记 */
    bool numNotReg = false;
-   if(isNotReg(col.at(getColNum("机主证件号码")))){
+   if(isNotReg(col[ownerNumIndex])){
        numNotReg = true;
    }
 
    /* 个人固定用户-证件地址未登记 */
    bool addNotReg = false;
-   if(isNotReg(col.at(getColNum("机主证件地址")))){
+   if(isNotReg(col[ownerAddIndex])){
        addNotReg = true;
    }
 
 
    if(typeNotReg){
-       savePersonFixedOwnerTypeNotReg(line);
+       savePersonFixedOwnerTypeNotReg();
        return;
    }
    if(nameNotReg && !numNotReg && !addNotReg){
-       savePersonFixedOwnerNameNotReg(line);
+       savePersonFixedOwnerNameNotReg();
        return;
    }
    if(!nameNotReg && numNotReg && !addNotReg){
-       savePersonFixedOwnerNumNotReg(line);
+       savePersonFixedOwnerNumNotReg();
        return;
    }
    if(!nameNotReg && !numNotReg && addNotReg){
-       savePersonFixedOwnerAddNotReg(line);
+       savePersonFixedOwnerAddNotReg();
        return;
    }
    /* 个人固话用户-用户姓名&证件号码未登记 */
    if(nameNotReg && numNotReg && !addNotReg){
-       savePersonFixedOwnerNameNumNotReg(line);
+       savePersonFixedOwnerNameNumNotReg();
        return;
    }
    /* 个人固话用户-用户姓名&证件号码未登记 */
    if(nameNotReg && !numNotReg && addNotReg){
-       savePersonFixedOwnerNameAddNotReg(line);
+       savePersonFixedOwnerNameAddNotReg();
        return;
    }
    /* 个人固话用户-用户姓名&证件号码未登记 */
    if(!nameNotReg && numNotReg && addNotReg){
-       savePersonFixedOwnerNumAddNotReg(line);
+       savePersonFixedOwnerNumAddNotReg();
        return;
    }
    /* 个人固话用户-用户姓名&证件号码&证件地址未登记 */
    if(nameNotReg && numNotReg && addNotReg){
-       savePersonFixedOwnerNameNumAddNotReg(line);
+       savePersonFixedOwnerNameNumAddNotReg();
        return;
    }
 
    /* 判断是否需要代办人 */
-   bool isNeedAgent = needAgent(col.at(getColNum("机主证件号码")), col.at(getColNum("登记激活时间")));
+   bool isNeedAgent = needAgent(col.at(ownerNumIndex), col.at(getColNum("登记激活时间")));
 
    /* 个人固定用户-代办人未登记 */
-   if(isNotReg(col.at(getColNum("代（经）办人姓名"))) || isNotReg(col.at(getColNum("代（经）办人证件类型"))) ||
-       isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+   if(isNotReg(col[agentNameIndex]) || isNotReg(col[agentTypeIndex]) ||
+       isNotReg(col[agentNumIndex])){
        if(isNeedAgent){
-           savePersonFixedAgentNotReg(line);
+           savePersonFixedAgentNotReg();
            return;
        }
    }
 
    /* 个人固定用户-代办人信息不合规 */
    bool agentNok = false;
-   if(col.at(getColNum("机主用户姓名")).compare(col.at(getColNum("代（经）办人姓名")))){
+   if(col.at(getColNum("机主用户姓名")).compare(col.at(agentNameIndex))){
           agentNok = true;
     }
-    else if(isNeedAgent && (isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-               isPersonNumNok(col.at(getColNum("代（经）办人证件号码"))))){
+    else if(isNeedAgent && (isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+               isPersonNumNok(col.at(agentNumIndex)))){
        agentNok = true;
 
    }
-   else if(needAgent(col.at(getColNum("代（经）办人证件号码")),col.at(getColNum("登记激活时间")))){
+   else if(needAgent(col.at(agentNumIndex),col.at(getColNum("登记激活时间")))){
        //代办人如果不满10岁（2018年9月1日后不满16岁），则判为不合规。
        agentNok = true;
    }
    if( agentNok){
-       savePersonFixedAgentNok(line);
+       savePersonFixedAgentNok();
        return;
    }
 
    /* 个人固定用户-证件类型不合规 */
    bool typeNok = false;
-   if(isPersonTypeNok(col.at(getColNum("机主证件类型")))){
+   if(isPersonTypeNok(col.at(ownerTypeIndex))){
        typeNok = true;
    }
 
@@ -1167,54 +1199,54 @@ void UserDb::processPersonFixed(QList<QString> col, QString line){
 
    /* 个人固定用户-证件号码不合规 */
    bool numNok = false;
-   if(isPersonNumNok(col.at(getColNum("机主证件号码")))){
+   if(isPersonNumNok(col.at(ownerNumIndex))){
        numNok = true;
    }
 
    /* 个人固定用户-证件地址不合规 */
    bool addNok = false;
-   if(isPersonAddNok(col.at(getColNum("机主证件地址")))){
+   if(isPersonAddNok(col.at(ownerAddIndex))){
        addNok = true;
    }
 
    if(typeNok){
-       savePersonFixedOwnerTypeNok(line);
+       savePersonFixedOwnerTypeNok();
        return;
    }
    if( nameNok && !numNok && !addNok){
-       savePersonFixedOwnerNameNok(line);
+       savePersonFixedOwnerNameNok();
        return;
    }
    if( !nameNok && numNok && !addNok){
-       savePersonFixedOwnerNumNok(line);
+       savePersonFixedOwnerNumNok();
        return;
    }
    if( !nameNok && !numNok && addNok){
-       savePersonFixedOwnerAddNok(line);
+       savePersonFixedOwnerAddNok();
        return;
    }
 
    /* 个人固话用户-用户姓名&证件号码校验不合规 */
    if(!agentNok && !typeNok && nameNok && numNok && !addNok){
-       savePersonFixedOwnerNameNumNok(line);
+       savePersonFixedOwnerNameNumNok();
        return;
    }
 
    /* 个人固话用户-用户姓名&证件地址校验不合规 */
    if(!agentNok && !typeNok && nameNok && !numNok && addNok){
-       savePersonFixedOwnerNameAddNok(line);
+       savePersonFixedOwnerNameAddNok();
        return;
    }
 
    /* 个人固话用户-证件号码&证件地址校验不合规 */
    if(!agentNok && !typeNok && !nameNok && numNok && addNok){
-       savePersonFixedOwnerNumAddNok(line);
+       savePersonFixedOwnerNumAddNok();
        return;
    }
 
    /* 个人固话用户-用户姓名&证件号码&证件地址校验不合规 */
    if(!agentNok && !typeNok && nameNok && numNok && addNok){
-       savePersonFixedOwnerNumAddNok(line);
+       savePersonFixedOwnerNumAddNok();
        return;
    }
 
@@ -1222,8 +1254,8 @@ void UserDb::processPersonFixed(QList<QString> col, QString line){
 
    /* 个人固话用户-形式合规数据 */
    if(!typeNotReg && !nameNotReg && !numNotReg && !addNotReg && !agentNok && !typeNok && !nameNok && !numNok && !addNok){
-       savePersonFixedOk(line);
-       saveAllOk(line);
+       savePersonFixedOk();
+       saveAllOk();
        return;
    }
 
@@ -1232,68 +1264,68 @@ void UserDb::processPersonFixed(QList<QString> col, QString line){
 /**
  * @brief UserDb::processPersonMobile 处理个人移动用户信息
  * @param col
- * @param line
+ * @param
  */
-void UserDb::processPersonMobile(QList<QString> col, QString line){
+void UserDb::processPersonMobile(){
     /*个人移动用户-证件类型未登记*/
     bool typeNotReg = false;
-    if(isNotReg(col.at(getColNum("机主证件类型")))){
+    if(isNotReg(col[ownerTypeIndex])){
         typeNotReg = true;
     }
 
     /*个人移动用户-用户姓名未登记*/
     bool nameNotReg = false;
-    if(isNotReg(col.at(getColNum("机主用户姓名")))){
+    if(isNotReg(col[ownerNameIndex])){
         nameNotReg = true;
     }
 
     /*个人移动用户-证件号码未登记*/
     bool numNotReg = false;
-    if(isNotReg(col.at(getColNum("机主证件号码")))){
+    if(isNotReg(col[ownerNumIndex])){
         numNotReg = true;
     }
 
     /*个人移动用户-证件地址未登记*/
     bool addNotReg = false;
-    if(isNotReg(col.at(getColNum("机主证件地址")))){
+    if(isNotReg(col[ownerAddIndex])){
         addNotReg = true;
     }
 
     if(typeNotReg){
-        savePersonMobileOwnerTypeNotReg(line);
+        savePersonMobileOwnerTypeNotReg();
         return;
     }
     if(nameNotReg && !numNotReg && !addNotReg){
-        savePersonMobileOwnerNameNotReg(line);
+        savePersonMobileOwnerNameNotReg();
         return;
     }
     if(!nameNotReg && numNotReg && !addNotReg){
-        savePersonMobileOwnerNumNotReg(line);
+        savePersonMobileOwnerNumNotReg();
         return;
     }
     if(!nameNotReg && !numNotReg && addNotReg){
-        savePersonMobileOwnerAddNotReg(line);
+        savePersonMobileOwnerAddNotReg();
         return;
     }
 
     /* 个人移动用户-用户姓名&证件号码未登记 */
     if(nameNotReg && numNotReg && !addNotReg){
-        savePersonMobileOwnerNameNumNotReg(line);
+        savePersonMobileOwnerNameNumNotReg();
         return;
     }
     /* 个人移动用户-用户姓名&证件地址未登记 */
     if(nameNotReg && !numNotReg && addNotReg){
-        savePersonMobileOwnerNameAddNotReg(line);
+        savePersonMobileOwnerNameAddNotReg();
         return;
     }
     /* 个人移动用户-证件号码&证件地址未登记 */
     if(!nameNotReg && numNotReg && addNotReg){
-        savePersonMobileOwnerNumAddNotReg(line);
+        savePersonMobileOwnerNumAddNotReg();
         return;
     }
     /* 个人移动用户-用户姓名&证件号码&证件地址未登记 */
     if(nameNotReg && numNotReg && addNotReg){
-        savePersonMobileOwnerNameNumAddNotReg(line);
+        savePersonMobileOwnerNameNumAddNotReg();
         return;
     }
 
@@ -1301,8 +1333,13 @@ void UserDb::processPersonMobile(QList<QString> col, QString line){
 
     /* 个人移动用户-证件类型不合规 */
     bool typeNok=false;
-    if(isPersonTypeNok(col.at(getColNum("机主证件类型")))){
+    if(isPersonTypeNok(col.at(ownerTypeIndex))){
         typeNok=true;
+    }
+
+    if(typeNok){
+        savePersonMobileOwnerTyteNok();
+        return;
     }
 
     /* 个人移动用户-用户姓名不合规 */
@@ -1313,88 +1350,84 @@ void UserDb::processPersonMobile(QList<QString> col, QString line){
 
     /* 个人移动用户-证件号码不合规 */
     bool numNok=false;
-    if(isPersonNumNok(col.at(getColNum("机主证件号码")))){
+    if(isPersonNumNok(col.at(ownerNumIndex))){
         numNok=true;
     }
 
      /* 个人移动用户-证件地址不合规 */
     bool addNok=false;
-    if(isPersonAddNok(col.at(getColNum("机主证件地址")))){
+    if(isPersonAddNok(col.at(ownerAddIndex))){
         addNok=true;
     }
 
-    if(typeNok){
-        savePersonMobileOwnerTyteNok(line);
-        return;
-    }
     if(nameNok && !numNok && !addNok){
-        savePersonMobileOwnerNameNok(line);
+        savePersonMobileOwnerNameNok();
         return;
     }
     if(!nameNok && numNok && !addNok){
-        savePersonMobileOwnerNumNok(line);
+        savePersonMobileOwnerNumNok();
         return;
     }
     if(!nameNok && !numNok && addNok){
-        savePersonMobileOwnerAddNok(line);
+        savePersonMobileOwnerAddNok();
         return;
     }
 
     /* 个人移动用户-用户姓名&证件号码校验不合规 */
     if(nameNok && numNok && !addNok){
-        savePersonMobileOwnerNameNumNok(line);
+        savePersonMobileOwnerNameNumNok();
         return;
     }
 
     /* 个人移动用户-用户姓名&证件地址校验不合规 */
     if(nameNok && !numNok && addNok){
-        savePersonMobileOwnerNameAddNok(line);
+        savePersonMobileOwnerNameAddNok();
         return;
     }
 
     /* 个人移动用户-证件号码&证件地址校验不合规 */
     if(!nameNok && numNok && addNok){
-        savePersonMobileOwnerNumAddNok(line);
+        savePersonMobileOwnerNumAddNok();
         return;
     }
 
     /* 个人移动用户-用户姓名&证件号码&证件地址校验不合规 */
     if(nameNok && numNok && addNok){
-        savePersonMobileOwnerNumAddNok(line);
+        savePersonMobileOwnerNumAddNok();
         return;
     }
 
     /* 判断是否需要代办人 */
-    bool isNeedAgent = needAgent(col.at(getColNum("机主证件号码")), col.at(getColNum("登记激活时间")));
+    bool isNeedAgent = needAgent(col.at(ownerNumIndex), col.at(getColNum("登记激活时间")));
 
     /*个人移动用户-代办人信息未登记*/
    bool agentNotReg = false;
-   if(isNeedAgent && (isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-       isNotReg(col.at(getColNum("代（经）办人证件号码"))) || isNotReg(col.at(getColNum("代（经）办人证件地址"))))){
+   if(isNeedAgent && (isNotReg(col[agentNameIndex])||isNotReg(col[agentTypeIndex])||
+       isNotReg(col[agentNumIndex]) || isNotReg(col[agentAddIndex]))){
 
            agentNotReg = true;
-           savePersonMobileAgentNotReg(line);
+           savePersonMobileAgentNotReg();
            return;
    }
 
    /* 个人移动用户-代办人信息不合规 */
    bool agentNok = false;
-   if(isNeedAgent && !agentNotReg && (isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-               isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))||
-           isPersonAddNok(col.at(getColNum("代（经）办人证件地址")))|| col.at(getColNum("机主用户姓名")).compare(col.at(getColNum("代（经）办人姓名"))))){
+   if(isNeedAgent && !agentNotReg && (isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+               isPersonNumNok(col.at(agentNumIndex))||
+           isPersonAddNok(col.at(agentAddIndex))|| col.at(getColNum("机主用户姓名")).compare(col.at(agentNameIndex)))){
        agentNok = true;
    }
 
    if(isNeedAgent && agentNok){
-       savePersonMobileAgentNok(line);
+       savePersonMobileAgentNok();
        return;
    }
 
 
     /* 个人移动用户-形式合规数据 */
     if(!nameNotReg && !numNotReg && !addNotReg && !agentNok && !typeNok && !nameNok && !numNok && !addNok){
-        savePersonMobileOk(line);
-        saveAllOk(line);
+        savePersonMobileOk();
+        saveAllOk();
 //        qDebug()<<"ok ";
     }
     else{
@@ -1413,36 +1446,35 @@ void UserDb::processPersonMobile(QList<QString> col, QString line){
 
 /**
  * @brief processUnitFixed 处理单位固话信息
- * @param line
+ * @param
  *
  */
-void UserDb::processUnitFixed(QList<QString> col,QString line){
+void UserDb::processUnitFixed(){
 
     /* 单位固话用户-代办人信息未登记 */
     bool agentNotReg = false;
-    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+    if(isNotReg(col[agentNameIndex]) || isNotReg(col[agentTypeIndex]) || isNotReg(col[agentNumIndex])){
         agentNotReg = true;
     }
 
     /* 单位固话用户-单位信息未登记 */
     bool unitNotReg = false;
-    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-            isNotReg(col.at(getColNum("单位证件地址")))||isNotReg(col.at(getColNum("单位通讯地址")))){
+    if(isNotReg(col[unitNameIndex])||isNotReg(col[unitNumIndex])||isNotReg(col[unitTypeIndex])||
+            isNotReg(col[unitAddIndex])){
         unitNotReg = true;
     }
 
     /* 单位固话用户-代办人信息不合规 */
      bool agentNok = false;
-    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+    if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+            isPersonNumNok(col.at(agentNumIndex))){
         agentNok=true;
     }
 
     /* 单位固话用户-单位信息不合规 */
     bool unitNok = false;
-    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-            isUnitAddNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
+    if(isUnitNameNok(col.at(unitNameIndex))||isUnitNumNok(col.at(unitNumIndex))||isUnitTypeNok(col.at(unitTypeIndex))||
+            isUnitAddNok(col.at(unitAddIndex))){
         unitNok=true;
     }
 
@@ -1450,32 +1482,32 @@ void UserDb::processUnitFixed(QList<QString> col,QString line){
     /* 2013年9月1日之前入网的单位固话用户需检查经办人或单位信息中任一个条目，该条目需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。*/
     if(activeDate < 20130901) {
         if( (!agentNotReg && !agentNok) || (!unitNotReg && !unitNok))  {
-            saveUnitFixedOk(line);
-            saveAllOk(line);
+            saveUnitFixedOk();
+            saveAllOk();
         }
         else{
             if(agentNotReg && !unitNotReg){
-                saveUnitFixedUnitNotReg(line);
+                saveUnitFixedUnitNotReg();
                 return;
             }
             if(!agentNotReg && unitNotReg){
-                saveUnitFixedAgentNotReg(line);
+                saveUnitFixedAgentNotReg();
                 return;
             }
             if(agentNotReg && unitNotReg){
-                saveUnitFixedAgentUnitNotReg(line);
+                saveUnitFixedAgentUnitNotReg();
                 return;
             }
             if(agentNok && !unitNok){
-                saveUnitFixedAgentNok(line);
+                saveUnitFixedAgentNok();
                 return;
             }
             if(!agentNok && unitNok){
-                saveUnitFixedUnitNok(line);
+                saveUnitFixedUnitNok();
                 return;
             }
             if(agentNok && unitNok){
-                saveUnitFixedAgentUnitNok(line);
+                saveUnitFixedAgentUnitNok();
                 return;
             }
         }
@@ -1483,32 +1515,32 @@ void UserDb::processUnitFixed(QList<QString> col,QString line){
     else {
         /* 2013年9月1日之后入网的单位固话用户需检查经办人和单位信息共2个条目，各条目均需包含姓名/单位名称、证件类型、证件号码、地址四个字段，并符合完整性和真实性要求。*/
         if(agentNotReg && !unitNotReg){
-            saveUnitFixedUnitNotReg(line);
+            saveUnitFixedUnitNotReg();
             return;
         }
         else if(!agentNotReg && unitNotReg){
-            saveUnitFixedAgentNotReg(line);
+            saveUnitFixedAgentNotReg();
             return;
         }
         else if(agentNotReg && unitNotReg){
-            saveUnitFixedAgentUnitNotReg(line);
+            saveUnitFixedAgentUnitNotReg();
             return;
         }
         else if(agentNok && !unitNok){
-            saveUnitFixedAgentNok(line);
+            saveUnitFixedAgentNok();
             return;
         }
         else if(!agentNok && unitNok){
-            saveUnitFixedUnitNok(line);
+            saveUnitFixedUnitNok();
             return;
         }
         else if(agentNok && unitNok){
-            saveUnitFixedAgentUnitNok(line);
+            saveUnitFixedAgentUnitNok();
             return;
         }
         else {
-            saveUnitFixedOk(line);
-            saveAllOk(line);
+            saveUnitFixedOk();
+            saveAllOk();
         }
     }
 }
@@ -1516,52 +1548,52 @@ void UserDb::processUnitFixed(QList<QString> col,QString line){
 /**
  * @brief processUnitMobile
  * @param col
- * @param line
+ * @param
  */
-void UserDb::processUnitMobile(QList<QString> col, QString line){
+void UserDb::processUnitMobile(){
     /* 单位移动用户-使用人信息未登记 */
     bool ownerNotReg = false;
-    if(isNotReg(col.at(getColNum("机主用户姓名"))) || isNotReg(col.at(getColNum("机主证件号码"))) || isNotReg(col.at(getColNum("机主证件地址")))
-            || isNotReg(col.at(getColNum("机主证件类型")))){
+    if(isNotReg(col[ownerNameIndex]) || isNotReg(col[ownerNumIndex]) || isNotReg(col[ownerAddIndex])
+            || isNotReg(col[ownerTypeIndex])){
         ownerNotReg = true;
     }
 
     /* 单位移动用户-代办人信息未登记 */
     bool agentNotReg = false;
-    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-            isNotReg(col.at(getColNum("代（经）办人证件号码"))) || isNotReg(col.at(getColNum("代（经）办人证件地址")))){
+    if(isNotReg(col[agentNameIndex])||isNotReg(col[agentTypeIndex])||
+            isNotReg(col[agentNumIndex]) || isNotReg(col[agentAddIndex])){
         agentNotReg = true;
     }
 
     /* 单位移动用户-单位信息未登记 */
     bool unitNotReg = false;
-    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-            isNotReg(col.at(getColNum("单位证件地址")))){
+    if(isNotReg(col[unitNameIndex])||isNotReg(col[unitNumIndex])||isNotReg(col[unitTypeIndex])||
+            isNotReg(col[unitAddIndex])){
         unitNotReg = true;
     }
 
     /* 单位移动用户-使用人信息不合规 */
     bool ownerNok = false;
-    if(isPersonNameNok(col.at(getColNum("机主用户姓名")))||isPersonNumNok(col.at(getColNum("机主证件号码")))||isPersonAddNok(col.at(getColNum("机主证件地址")))||
-            isPersonTypeNok(col.at(getColNum("机主证件类型")))||col.at(getColNum("机主用户姓名"))==col.at(getColNum("代（经）办人姓名"))){
+    if(isPersonNameNok(col.at(ownerNameIndex))||isPersonNumNok(col.at(ownerNumIndex))||isPersonAddNok(col.at(ownerAddIndex))||
+            isPersonTypeNok(col.at(ownerTypeIndex))){
         ownerNok = true;
     }
 
 
     /* 单位移动用户-代办人信息不合规 */
     bool agentNok = true;
-    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+    if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+            isPersonNumNok(col.at(agentNumIndex))){
         agentNok = true;
     }
-    if(col.at(getColNum("机主用户姓名")).compare(col.at(getColNum("代（经）办人姓名")))){
+    if(col.at(ownerNameIndex).compare(col.at(agentNameIndex))){
         agentNok = true;
     }
 
     /* 单位移动用户-单位信息不合规 */
     bool unitNok = true;
-    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-            isUnitAddNok(col.at(getColNum("单位证件地址")))||isUnitAddNok(col.at(getColNum("单位通讯地址")))){
+    if(isUnitNameNok(col.at(unitNameIndex))||isUnitNumNok(col.at(unitNumIndex))||isUnitTypeNok(col.at(unitTypeIndex))||
+            isUnitAddNok(col.at(unitAddIndex))){
         unitNok = true;
     }
 
@@ -1572,64 +1604,64 @@ void UserDb::processUnitMobile(QList<QString> col, QString line){
      * 并符合完整性和真实性要求。 */
     if(activeDate < 20130901){
         if( (!ownerNotReg && !ownerNok) || (!agentNotReg && !agentNok) || (!unitNotReg&&!unitNok)){
-            saveUnitMobileOk(line);
-            saveAllOk(line);
+            saveUnitMobileOk();
+            saveAllOk();
         }
         else{
             if(ownerNotReg && !agentNotReg && !unitNotReg){
-                saveUnitMobileOwnerNotReg(line);
+                saveUnitMobileOwnerNotReg();
                 return;
             }
             if(!ownerNotReg && agentNotReg && !unitNotReg){
-                saveUnitMobileAgentNotReg(line);
+                saveUnitMobileAgentNotReg();
                 return;
             }
             if(!ownerNotReg && !agentNotReg && unitNotReg){
-                saveUnitMobileUnitNotReg(line);
+                saveUnitMobileUnitNotReg();
                 return;
             }
             if(ownerNotReg && agentNotReg && !unitNotReg){
-                saveUnitMobileOwnerAgentNotReg(line);
+                saveUnitMobileOwnerAgentNotReg();
                 return;
             }
             if(ownerNotReg && !agentNotReg && unitNotReg){
-                saveUnitMobileOwnerUnitNotReg(line);
+                saveUnitMobileOwnerUnitNotReg();
                 return;
             }
             if(!ownerNotReg && agentNotReg && unitNotReg){
-                saveUnitMobileAgentUnitNotReg(line);
+                saveUnitMobileAgentUnitNotReg();
                 return;
             }
             if(ownerNotReg && agentNotReg && unitNotReg){
-                saveUnitMobileOwnerAgentUnitNotReg(line);
+                saveUnitMobileOwnerAgentUnitNotReg();
                 return;
             }
             if(ownerNok && !agentNok && !unitNok){
-                saveUnitMobileOwnerNok(line);
+                saveUnitMobileOwnerNok();
                 return;
             }
             if(!ownerNok && agentNok && !unitNok){
-                saveUnitMobileAgentNok(line);
+                saveUnitMobileAgentNok();
                 return;
             }
             if(!ownerNok && !agentNok && unitNok){
-                saveUnitMobileUnitNok(line);
+                saveUnitMobileUnitNok();
                 return;
             }
             if(ownerNok && agentNok && !unitNok){
-                saveUnitMobileOwnerAgentNok(line);
+                saveUnitMobileOwnerAgentNok();
                 return;
             }
             if(ownerNok && !agentNok && unitNok){
-                saveUnitMobileOwnerUnitNok(line);
+                saveUnitMobileOwnerUnitNok();
                 return;
             }
             if(!ownerNok && agentNok && unitNok){
-                saveUnitMobileAgentUnitNok(line);
+                saveUnitMobileAgentUnitNok();
                 return;
             }
             if(ownerNok && agentNok && unitNok){
-                saveUnitMobileOwnerAgentUnitNok(line);
+                saveUnitMobileOwnerAgentUnitNok();
                 return;
             }
         }
@@ -1640,66 +1672,66 @@ void UserDb::processUnitMobile(QList<QString> col, QString line){
         if( (!ownerNotReg && !agentNotReg && !ownerNok && !agentNok) ||
                 (!ownerNotReg && !unitNotReg && !ownerNok && !unitNok) ||
                 (!agentNotReg && !unitNotReg && !agentNok && !unitNok) ){
-            saveUnitMobileOk(line);
-            saveAllOk(line);
+            saveUnitMobileOk();
+            saveAllOk();
         }
         else{
             if(ownerNotReg && !agentNotReg && !unitNotReg){
-                saveUnitMobileOwnerNotReg(line);
+                saveUnitMobileOwnerNotReg();
                 return;
             }
             if(!ownerNotReg && agentNotReg && !unitNotReg){
-                saveUnitMobileAgentNotReg(line);
+                saveUnitMobileAgentNotReg();
                 return;
             }
             if(!ownerNotReg && !agentNotReg && unitNotReg){
-                saveUnitMobileUnitNotReg(line);
+                saveUnitMobileUnitNotReg();
                 return;
             }
             if(ownerNotReg && agentNotReg && !unitNotReg){
-                saveUnitMobileOwnerAgentNotReg(line);
+                saveUnitMobileOwnerAgentNotReg();
                 return;
             }
             if(ownerNotReg && !agentNotReg && unitNotReg){
-                saveUnitMobileOwnerUnitNotReg(line);
+                saveUnitMobileOwnerUnitNotReg();
                 return;
             }
             if(!ownerNotReg && agentNotReg && unitNotReg){
-                saveUnitMobileAgentUnitNotReg(line);
+                saveUnitMobileAgentUnitNotReg();
                 return;
             }
             if(ownerNotReg && agentNotReg && unitNotReg){
-                saveUnitMobileOwnerAgentUnitNotReg(line);
+                saveUnitMobileOwnerAgentUnitNotReg();
                 return;
             }
 
 
             if(ownerNok && !agentNok && !unitNok){
-                saveUnitMobileOwnerNok(line);
+                saveUnitMobileOwnerNok();
                 return;
             }
             if(!ownerNok && agentNok && !unitNok){
-                saveUnitMobileAgentNok(line);
+                saveUnitMobileAgentNok();
                 return;
             }
             if(!ownerNok && !agentNok && unitNok){
-                saveUnitMobileUnitNok(line);
+                saveUnitMobileUnitNok();
                 return;
             }
             if(ownerNok && agentNok && !unitNok){
-                saveUnitMobileOwnerAgentNok(line);
+                saveUnitMobileOwnerAgentNok();
                 return;
             }
             if(ownerNok && !agentNok && unitNok){
-                saveUnitMobileOwnerUnitNok(line);
+                saveUnitMobileOwnerUnitNok();
                 return;
             }
             if(!ownerNok && agentNok && unitNok){
-                saveUnitMobileAgentUnitNok(line);
+                saveUnitMobileAgentUnitNok();
                 return;
             }
             if(ownerNok && agentNok && unitNok){
-                saveUnitMobileOwnerAgentUnitNok(line);
+                saveUnitMobileOwnerAgentUnitNok();
                 return;
             }
         }
@@ -1709,43 +1741,43 @@ void UserDb::processUnitMobile(QList<QString> col, QString line){
         /* 2015年1月1日之后入网的单位移动用户，需检查实际使用人、经办人、单位信息共3个条目，各条目中均需包含姓名/单位名称、证件类型、证件号码、
          * 地址四个字段，并符合完整性和真实性要求。 */
         if(!(ownerNotReg && agentNotReg && unitNotReg && ownerNok && agentNok && unitNok)){
-            saveUnitMobileOk(line);
-            saveAllOk(line);
+            saveUnitMobileOk();
+            saveAllOk();
         }
         if(ownerNotReg && !agentNotReg && !unitNotReg ){
-            saveUnitMobileOwnerNotReg(line);
+            saveUnitMobileOwnerNotReg();
             return;
         }
         if(!ownerNotReg && agentNotReg && !unitNotReg ){
-            saveUnitMobileAgentNotReg(line);
+            saveUnitMobileAgentNotReg();
             return;
         }
         if(!ownerNotReg && !agentNotReg && unitNotReg ){
-            saveUnitMobileUnitNotReg(line);
+            saveUnitMobileUnitNotReg();
             return;
         }
         if(!ownerNok && agentNok && !unitNok ){
-            saveUnitMobileAgentNok(line);
+            saveUnitMobileAgentNok();
             return;
         }
         if(!ownerNok && !agentNok && unitNok ){
-            saveUnitMobileUnitNok(line);
+            saveUnitMobileUnitNok();
             return;
         }
         if(ownerNok && agentNok && !unitNok){
-            saveUnitMobileOwnerAgentNok(line);
+            saveUnitMobileOwnerAgentNok();
             return;
         }
         if(ownerNok && agentNok && !unitNok){
-            saveUnitMobileOwnerUnitNok(line);
+            saveUnitMobileOwnerUnitNok();
             return;
         }
         if(!ownerNok && agentNok && unitNok){
-            saveUnitMobileAgentUnitNok(line);
+            saveUnitMobileAgentUnitNok();
             return;
         }
         if(ownerNok && agentNok && unitNok){
-            saveUnitMobileOwnerAgentUnitNok(line);
+            saveUnitMobileOwnerAgentUnitNok();
             return;
         }
 
@@ -1757,143 +1789,143 @@ void UserDb::processUnitMobile(QList<QString> col, QString line){
 /**
  * @brief UserDb::processTradeMobile 处理行业移动数据
  * @param col
- * @param line
+ * @param
  */
-void UserDb::processTradeMobile(QList<QString> col, QString line){
+void UserDb::processTradeMobile(){
 
     /* 行业移动用户-使用人信息未登记 */
     bool ownerNotReg = false;
-    if(isNotReg(col.at(getColNum("机主用户姓名"))) || isNotReg(col.at(getColNum("机主证件号码"))) || isNotReg(col.at(getColNum("机主证件地址")))
-            || isNotReg(col.at(getColNum("机主证件类型")))){
+    if(isNotReg(col[ownerNameIndex]) || isNotReg(col[ownerNumIndex]) || isNotReg(col[ownerAddIndex])
+            || isNotReg(col[ownerTypeIndex])){
         ownerNotReg = true;
     }
 
     /* 行业移动用户-代办人未登记 */
     bool agentNotReg = false;
-    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+    if(isNotReg(col[agentNameIndex])||isNotReg(col[agentTypeIndex])||
+            isNotReg(col[agentNumIndex])){
         agentNotReg = true;
     }
 
     /* 行业移动用户-单位信息未登记 */
     bool unitNotReg = false;
-    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-            isNotReg(col.at(getColNum("单位证件地址")))){
+    if(isNotReg(col[unitNameIndex])||isNotReg(col[unitNumIndex])||isNotReg(col[unitTypeIndex])||
+            isNotReg(col[unitAddIndex])){
         unitNotReg = true;
     }
 
     /* 行业移动用户-责任人信息未登记 */
     bool liableNotReg = false;
-    if(isNotReg(col.at(getColNum("责任人姓名")))||isNotReg(col.at(getColNum("责任人证件类型")))||isNotReg(col.at(getColNum("责任人证件号码")))||
-            isNotReg(col.at(getColNum("责任人证件地址")))){
+    if(isNotReg(col[liableNameIndex])||isNotReg(col[liableTypeIndex])||isNotReg(col[liableNumIndex])||
+            isNotReg(col[liableAddIndex])){
         liableNotReg = true;
     }
 
     /* 行业移动用户-使用人信息不合规 */
     bool ownerNok = false;
-    if(isPersonNameNok(col.at(getColNum("机主用户姓名")))||isPersonNumNok(col.at(getColNum("机主证件号码")))||isPersonAddNok(col.at(getColNum("机主证件地址")))||
-            isPersonTypeNok(col.at(getColNum("机主证件类型")))||col.at(getColNum("机主用户姓名"))==col.at(getColNum("代（经）办人姓名"))){
+    if(isPersonNameNok(col.at(ownerNameIndex))||isPersonNumNok(col.at(ownerNumIndex))||isPersonAddNok(col.at(ownerAddIndex))||
+            isPersonTypeNok(col.at(ownerTypeIndex))){
         ownerNok = true;
     }
 
     /* 行业移动用户-代办人不合规 */
     bool agentNok = false;
-    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+    if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+            isPersonNumNok(col.at(agentNumIndex))){
         agentNok = true;
     }
-    if(col.at(getColNum("机主用户姓名")).compare(col.at(getColNum("代（经）办人姓名")))){
+    if(col.at(ownerNameIndex).compare(col.at(agentNameIndex))){
         agentNok = true;
     }
 
     /* 行业移动用户-单位信息不合规 */
     bool unitNok = false;
-    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-            isUnitNumNok(col.at(getColNum("单位证件地址")))){
+    if(isUnitNameNok(col.at(unitNameIndex))||isUnitNumNok(col.at(unitNumIndex))||isUnitTypeNok(col.at(unitTypeIndex))||
+            isUnitNumNok(col.at(unitAddIndex))){
         unitNok=true;
     }
 
     /* 行业移动用户-责任人信息不合规 */
     bool liableNok = false;
-    if(isPersonNameNok(col.at(getColNum("责任人姓名")))||isPersonTypeNok(col.at(getColNum("责任人证件类型")))||isPersonNumNok(col.at(getColNum("责任人证件号码")))||
-            isPersonAddNok(col.at(getColNum("责任人证件地址")))){
+    if(isPersonNameNok(col.at(liableNameIndex))||isPersonTypeNok(col.at(liableTypeIndex))||isPersonNumNok(col.at(liableNumIndex))||
+            isPersonAddNok(col.at(liableAddIndex))){
 
         liableNok=true;
     }
     /* 如果实际使用人合规，则不需要判断其他字段 */
-    int activeDate = getDateForInt(col.at(getColNum("登记激活时间")));
+    int activeDate = getDateForInt(col.at(activeTimeIndex));
     if( ownerNotReg || ownerNok){
         if(ownerNotReg){
-            saveTradeMobileOwnerNotReg(line);
+            saveTradeMobileOwnerNotReg();
             return;
         }
         if(ownerNok){
-            saveTradeMobileOwnerNok(line);
+            saveTradeMobileOwnerNok();
             return;
         }
         /* 2013年9月1日之前入网的行业移动用户，需检查责任人、(实际使用人)、经办人和单位信息中任一个条目，该条目中均需包含姓名/单位名称、证件类型、证件号码、地址，
          * 符合完整性和真实性要求。 */
         if(activeDate < 20130901){
             if((!agentNotReg && !agentNok) || (!unitNotReg && !unitNok) || (!liableNotReg && !liableNok)){
-                saveTradeMobileOk(line);
-                saveAllOk(line);
+                saveTradeMobileOk();
+                saveAllOk();
                 return;
             }
             else {
                 if(liableNotReg && !agentNotReg && !unitNotReg){
-                    saveTradeMobileLiableNotReg(line);
+                    saveTradeMobileLiableNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeMobileAgentNotReg(line);
+                    saveTradeMobileAgentNotReg();
                     return;
                 }
                 if(!liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeMobileUnitNotReg(line);
+                    saveTradeMobileUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeMobileLiableAgentNotReg(line);
+                    saveTradeMobileLiableAgentNotReg();
                     return;
                 }
                 if(liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeMobileLiableUnitNotReg(line);
+                    saveTradeMobileLiableUnitNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeMobileAgentUnitNotReg(line);
+                    saveTradeMobileAgentUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeMobileLiableAgentUnitNotReg(line);
+                    saveTradeMobileLiableAgentUnitNotReg();
                     return;
                 }
                 if(liableNok && !agentNok && !unitNok){
-                    saveTradeMobileLiableNok(line);
+                    saveTradeMobileLiableNok();
                     return;
                 }
                 if(!liableNok && agentNok && !unitNok){
-                    saveTradeMobileAgentNok(line);
+                    saveTradeMobileAgentNok();
                     return;
                 }
                 if(!liableNok && !agentNok && unitNok){
-                    saveTradeMobileUnitNok(line);
+                    saveTradeMobileUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && !unitNok){
-                    saveTradeMobileLiableAgentNok(line);
+                    saveTradeMobileLiableAgentNok();
                     return;
                 }
                 if(liableNok && !agentNok && unitNok){
-                    saveTradeMobileLiableUnitNok(line);
+                    saveTradeMobileLiableUnitNok();
                     return;
                 }
                 if(!liableNok && agentNok && unitNok){
-                    saveTradeMobileAgentUnitNok(line);
+                    saveTradeMobileAgentUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && unitNok){
-                    saveTradeMobileLiableAgentUnitNok(line);
+                    saveTradeMobileLiableAgentUnitNok();
                     return;
                 }
             }
@@ -1904,67 +1936,67 @@ void UserDb::processTradeMobile(QList<QString> col, QString line){
 
             if( (liableNotReg && agentNotReg) || (liableNotReg && unitNotReg) || (agentNotReg && unitNotReg)){
                 if(liableNotReg && !agentNotReg && !unitNotReg){
-                    saveTradeMobileLiableNotReg(line);
+                    saveTradeMobileLiableNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeMobileAgentNotReg(line);
+                    saveTradeMobileAgentNotReg();
                     return;
                 }
                 if(!liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeMobileUnitNotReg(line);
+                    saveTradeMobileUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeMobileLiableAgentNotReg(line);
+                    saveTradeMobileLiableAgentNotReg();
                     return;
                 }
                 if(liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeMobileLiableUnitNotReg(line);
+                    saveTradeMobileLiableUnitNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeMobileAgentUnitNotReg(line);
+                    saveTradeMobileAgentUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeMobileLiableAgentUnitNotReg(line);
+                    saveTradeMobileLiableAgentUnitNotReg();
                     return;
                 }
             }
             if( (liableNok && agentNok) || (liableNok && unitNok) || (agentNok && unitNok)){
                 if(liableNok && !agentNok && !unitNok){
-                    saveTradeMobileLiableNok(line);
+                    saveTradeMobileLiableNok();
                     return;
                 }
                 if(!liableNok && agentNok && !unitNok){
-                    saveTradeMobileAgentNok(line);
+                    saveTradeMobileAgentNok();
                     return;
                 }
                 if(!liableNok && !agentNok && unitNok){
-                    saveTradeMobileUnitNok(line);
+                    saveTradeMobileUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && !unitNok){
-                    saveTradeMobileLiableAgentNok(line);
+                    saveTradeMobileLiableAgentNok();
                     return;
                 }
                 if(liableNok && !agentNok && unitNok){
-                    saveTradeMobileLiableUnitNok(line);
+                    saveTradeMobileLiableUnitNok();
                     return;
                 }
                 if(!liableNok && agentNok && unitNok){
-                    saveTradeMobileAgentUnitNok(line);
+                    saveTradeMobileAgentUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && unitNok){
-                    saveTradeMobileLiableAgentUnitNok(line);
+                    saveTradeMobileLiableAgentUnitNok();
                     return;
                 }
             }
             else{
-                saveTradeMobileOk(line);
-                saveAllOk(line);
+                saveTradeMobileOk();
+                saveAllOk();
                 return;
             }
 
@@ -1973,64 +2005,64 @@ void UserDb::processTradeMobile(QList<QString> col, QString line){
             /* 2015年1月1日之后入网的行业移动用户，需检查责任人(实际使用人，优先)、经办人、单位信息共3个条目，各条目中均需包含姓名/单位名称、证件类型、
              * 证件号码、地址四个字段，并符合完整性和真实性要求。 */
             if(agentNotReg && !unitNotReg && !liableNotReg){
-                saveTradeMobileAgentNotReg(line);
+                saveTradeMobileAgentNotReg();
                 return;
             }
             if(!agentNotReg && unitNotReg && !liableNotReg){
-                saveTradeMobileUnitNotReg(line);
+                saveTradeMobileUnitNotReg();
                 return;
             }
             if(!agentNotReg && !unitNotReg && liableNotReg){
-                saveTradeMobileLiableNotReg(line);
+                saveTradeMobileLiableNotReg();
                 return;
             }
             if(agentNotReg && unitNotReg && !liableNotReg){
-                saveTradeMobileAgentUnitNotReg(line);
+                saveTradeMobileAgentUnitNotReg();
                 return;
             }
             if(!agentNotReg && unitNotReg && liableNotReg){
-                saveTradeMobileLiableUnitNotReg(line);
+                saveTradeMobileLiableUnitNotReg();
                 return;
             }
             if(agentNotReg && !unitNotReg && liableNotReg){
-                saveTradeMobileLiableAgentNotReg(line);
+                saveTradeMobileLiableAgentNotReg();
                 return;
             }
             if(agentNotReg && unitNotReg && liableNotReg){
-                saveTradeMobileLiableAgentUnitNotReg(line);
+                saveTradeMobileLiableAgentUnitNotReg();
                 return;
             }
             if(agentNok && !unitNok && !liableNok){
-                saveTradeMobileAgentNok(line);
+                saveTradeMobileAgentNok();
                 return;
             }
             if(!agentNok && unitNok && !liableNok){
-                saveTradeMobileUnitNok(line);
+                saveTradeMobileUnitNok();
                 return;
             }
             if(!agentNok && !unitNok && liableNok){
-                saveTradeMobileLiableNok(line);
+                saveTradeMobileLiableNok();
                 return;
             }
             if(agentNok && unitNok && !liableNok){
-                saveTradeMobileAgentUnitNok(line);
+                saveTradeMobileAgentUnitNok();
                 return;
             }
             if(!agentNok && unitNok && liableNok){
-                saveTradeMobileAgentUnitNok(line);
+                saveTradeMobileAgentUnitNok();
                 return;
             }
             if(agentNok && !unitNok && liableNok){
-                saveTradeMobileLiableAgentNok(line);
+                saveTradeMobileLiableAgentNok();
                 return;
             }
             if(agentNok && unitNok && liableNok){
-                saveTradeMobileLiableAgentUnitNok(line);
+                saveTradeMobileLiableAgentUnitNok();
                 return;
             }
             if(!(ownerNok&&agentNok&&unitNok)){
-                saveTradeMobileOk(line);
-                saveAllOk(line);
+                saveTradeMobileOk();
+                saveAllOk();
                 return;
             }
 
@@ -2039,8 +2071,8 @@ void UserDb::processTradeMobile(QList<QString> col, QString line){
 
     }
     else {
-        saveTradeMobileOk(line);
-        saveAllOk(line);
+        saveTradeMobileOk();
+        saveAllOk();
     }
 
 }
@@ -2049,66 +2081,66 @@ void UserDb::processTradeMobile(QList<QString> col, QString line){
 /**
  * @brief UserDb::processTradeFixed 处理行业固话数据
  * @param col
- * @param line
+ * @param
  */
-void UserDb::processTradeFixed(QList<QString> col, QString line){
+void UserDb::processTradeFixed(){
 
     /* 行业固话用户-使用人信息未登记 */
     bool ownerNotReg = false;
-    if(isNotReg(col.at(getColNum("机主用户姓名"))) || isNotReg(col.at(getColNum("机主证件号码"))) || isNotReg(col.at(getColNum("机主证件地址")))
-            || isNotReg(col.at(getColNum("机主证件类型")))){
+    if(isNotReg(col[ownerNameIndex]) || isNotReg(col[ownerNumIndex]) || isNotReg(col[ownerAddIndex])
+            || isNotReg(col[ownerTypeIndex])){
         ownerNotReg = true;
     }
 
     /* 行业固话用户-代办人未登记 */
     bool agentNotReg = false;
-    if(isNotReg(col.at(getColNum("代（经）办人姓名")))||isNotReg(col.at(getColNum("代（经）办人证件类型")))||
-            isNotReg(col.at(getColNum("代（经）办人证件号码")))){
+    if(isNotReg(col[agentNameIndex])||isNotReg(col[agentTypeIndex])||
+            isNotReg(col[agentNumIndex])){
         agentNotReg = true;
     }
 
     /* 行业固话用户-单位信息未登记 */
     bool unitNotReg = false;
-    if(isNotReg(col.at(getColNum("单位名称")))||isNotReg(col.at(getColNum("单位证件号码")))||isNotReg(col.at(getColNum("单位证件类型")))||
-            isNotReg(col.at(getColNum("单位证件地址")))){
+    if(isNotReg(col[unitNameIndex])||isNotReg(col[unitNumIndex])||isNotReg(col[unitTypeIndex])||
+            isNotReg(col[unitAddIndex])){
         unitNotReg = true;
     }
 
     /* 行业固话用户-责任人信息未登记 */
     bool liableNotReg = false;
-    if(isNotReg(col.at(getColNum("责任人姓名")))||isNotReg(col.at(getColNum("责任人证件类型")))||isNotReg(col.at(getColNum("责任人证件号码")))||
-            isNotReg(col.at(getColNum("责任人证件地址")))){
+    if(isNotReg(col[liableNameIndex])||isNotReg(col[liableTypeIndex])||isNotReg(col[liableNumIndex])||
+            isNotReg(col[liableAddIndex])){
         liableNotReg = true;
     }
 
     /* 行业固话用户-使用人信息不合规 */
     bool ownerNok = false;
-    if(isPersonNameNok(col.at(getColNum("机主用户姓名")))||isPersonNumNok(col.at(getColNum("机主证件号码")))||isPersonAddNok(col.at(getColNum("机主证件地址")))||
-            isPersonTypeNok(col.at(getColNum("机主证件类型")))||col.at(getColNum("机主用户姓名"))==col.at(getColNum("代（经）办人姓名"))){
+    if(isPersonNameNok(col.at(ownerNameIndex))||isPersonNumNok(col.at(ownerNumIndex))||isPersonAddNok(col.at(ownerAddIndex))||
+            isPersonTypeNok(col.at(ownerTypeIndex))){
         ownerNok = true;
     }
 
     /* 行业固话用户-代办人不合规 */
     bool agentNok = false;
-    if(isPersonNameNok(col.at(getColNum("代（经）办人姓名")))||isPersonTypeNok(col.at(getColNum("代（经）办人证件类型")))||
-            isPersonNumNok(col.at(getColNum("代（经）办人证件号码")))){
+    if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+            isPersonNumNok(col.at(agentNumIndex))){
         agentNok = true;
     }
-    if(col.at(getColNum("机主用户姓名")).compare(col.at(getColNum("代（经）办人姓名")))){
+    if(col.at(getColNum("机主用户姓名")).compare(col.at(agentNameIndex))){
         agentNok = true;
     }
 
     /* 行业固话用户-单位信息不合规 */
     bool unitNok = false;
-    if(isUnitNameNok(col.at(getColNum("单位名称")))||isUnitNumNok(col.at(getColNum("单位证件号码")))||isUnitTypeNok(col.at(getColNum("单位证件类型")))||
-            isUnitNumNok(col.at(getColNum("单位证件地址")))){
+    if(isUnitNameNok(col.at(unitNameIndex))||isUnitNumNok(col.at(unitNumIndex))||isUnitTypeNok(col.at(unitTypeIndex))||
+            isUnitNumNok(col.at(unitAddIndex))){
         unitNok=true;
     }
 
     /* 行业固话用户-责任人信息不合规 */
     bool liableNok = false;
-    if(isPersonNameNok(col.at(getColNum("责任人姓名")))||isPersonTypeNok(col.at(getColNum("责任人证件类型")))||isPersonNumNok(col.at(getColNum("责任人证件号码")))||
-            isPersonAddNok(col.at(getColNum("责任人证件地址")))){
+    if(isPersonNameNok(col.at(liableNameIndex))||isPersonTypeNok(col.at(liableTypeIndex))||isPersonNumNok(col.at(liableNumIndex))||
+            isPersonAddNok(col.at(liableAddIndex))){
 
         liableNok=true;
     }
@@ -2116,73 +2148,73 @@ void UserDb::processTradeFixed(QList<QString> col, QString line){
     int activeDate = getDateForInt(col.at(getColNum("登记激活时间")));
     if( ownerNotReg || ownerNok){
         if(ownerNotReg){
-            saveTradeFixedOwnerNotReg(line);
+            saveTradeFixedOwnerNotReg();
         }
         if(ownerNok){
-            saveTradeFixedOwnerNok(line);
+            saveTradeFixedOwnerNok();
         }
         /* 2013年9月1日之前入网的行业固话用户，需检查责任人、(实际使用人)、经办人和单位信息中任一个条目，该条目中均需包含姓名/单位名称、证件类型、证件号码、地址，
          * 符合完整性和真实性要求。 */
         if(activeDate < 20130901){
             if((!agentNotReg && !agentNok) || (!unitNotReg && !unitNok) || (!liableNotReg && !liableNok)){
-                saveTradeFixedOk(line);
-                saveAllOk(line);
+                saveTradeFixedOk();
+                saveAllOk();
             }
             else {
                 if(liableNotReg && !agentNotReg && !unitNotReg){
-                    saveTradeFixedLiableNotReg(line);
+                    saveTradeFixedLiableNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeFixedAgentNotReg(line);
+                    saveTradeFixedAgentNotReg();
                     return;
                 }
                 if(!liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeFixedUnitNotReg(line);
+                    saveTradeFixedUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeFixedAgentLiableNotReg(line);
+                    saveTradeFixedAgentLiableNotReg();
                     return;
                 }
                 if(liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeFixedLiableUnitNotReg(line);
+                    saveTradeFixedLiableUnitNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeFixedAgentUnitNotReg(line);
+                    saveTradeFixedAgentUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeFixedAgentLiableUnitNotReg(line);
+                    saveTradeFixedAgentLiableUnitNotReg();
                     return;
                 }
                 if(liableNok && !agentNok && !unitNok){
-                    saveTradeFixedLiableNok(line);
+                    saveTradeFixedLiableNok();
                     return;
                 }
                 if(!liableNok && agentNok && !unitNok){
-                    saveTradeFixedAgentNok(line);
+                    saveTradeFixedAgentNok();
                     return;
                 }
                 if(!liableNok && !agentNok && unitNok){
-                    saveTradeFixedUnitNok(line);
+                    saveTradeFixedUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && !unitNok){
-                    saveTradeFixedAgentLiableNok(line);
+                    saveTradeFixedAgentLiableNok();
                     return;
                 }
                 if(liableNok && !agentNok && unitNok){
-                    saveTradeFixedLiableUnitNok(line);
+                    saveTradeFixedLiableUnitNok();
                     return;
                 }
                 if(!liableNok && agentNok && unitNok){
-                    saveTradeFixedAgentUnitNok(line);
+                    saveTradeFixedAgentUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && unitNok){
-                    saveTradeFixedAgentLiableUnitNok(line);
+                    saveTradeFixedAgentLiableUnitNok();
                     return;
                 }
             }
@@ -2193,67 +2225,67 @@ void UserDb::processTradeFixed(QList<QString> col, QString line){
 
             if( (liableNotReg && agentNotReg) || (liableNotReg && unitNotReg) || (agentNotReg && unitNotReg)){
                 if(liableNotReg && !agentNotReg && !unitNotReg){
-                    saveTradeFixedLiableNotReg(line);
+                    saveTradeFixedLiableNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeFixedAgentNotReg(line);
+                    saveTradeFixedAgentNotReg();
                     return;
                 }
                 if(!liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeFixedUnitNotReg(line);
+                    saveTradeFixedUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && !unitNotReg){
-                    saveTradeFixedAgentLiableNotReg(line);
+                    saveTradeFixedAgentLiableNotReg();
                     return;
                 }
                 if(liableNotReg && !agentNotReg && unitNotReg){
-                    saveTradeFixedLiableUnitNotReg(line);
+                    saveTradeFixedLiableUnitNotReg();
                     return;
                 }
                 if(!liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeFixedAgentUnitNotReg(line);
+                    saveTradeFixedAgentUnitNotReg();
                     return;
                 }
                 if(liableNotReg && agentNotReg && unitNotReg){
-                    saveTradeFixedAgentLiableUnitNotReg(line);
+                    saveTradeFixedAgentLiableUnitNotReg();
                     return;
                 }
             }
             if( (liableNok && agentNok) || (liableNok && unitNok) || (agentNok && unitNok)){
                 if(liableNok && !agentNok && !unitNok){
-                    saveTradeFixedLiableNok(line);
+                    saveTradeFixedLiableNok();
                     return;
                 }
                 if(!liableNok && agentNok && !unitNok){
-                    saveTradeFixedAgentNok(line);
+                    saveTradeFixedAgentNok();
                     return;
                 }
                 if(!liableNok && !agentNok && unitNok){
-                    saveTradeFixedUnitNok(line);
+                    saveTradeFixedUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && !unitNok){
-                    saveTradeFixedAgentLiableNok(line);
+                    saveTradeFixedAgentLiableNok();
                     return;
                 }
                 if(liableNok && !agentNok && unitNok){
-                    saveTradeFixedLiableUnitNok(line);
+                    saveTradeFixedLiableUnitNok();
                     return;
                 }
                 if(!liableNok && agentNok && unitNok){
-                    saveTradeFixedAgentUnitNok(line);
+                    saveTradeFixedAgentUnitNok();
                     return;
                 }
                 if(liableNok && agentNok && unitNok){
-                    saveTradeFixedAgentLiableUnitNok(line);
+                    saveTradeFixedAgentLiableUnitNok();
                     return;
                 }
             }
             else{
-                saveTradeFixedOk(line);
-                saveAllOk(line);
+                saveTradeFixedOk();
+                saveAllOk();
                 return;
             }
 
@@ -2262,64 +2294,64 @@ void UserDb::processTradeFixed(QList<QString> col, QString line){
             /* 2015年1月1日之后入网的行业固话用户，需检查责任人(实际使用人，优先)、经办人、单位信息共3个条目，各条目中均需包含姓名/单位名称、证件类型、
              * 证件号码、地址四个字段，并符合完整性和真实性要求。 */
             if(agentNotReg && !unitNotReg && !liableNotReg){
-                saveTradeFixedAgentNotReg(line);
+                saveTradeFixedAgentNotReg();
                 return;
             }
             if(!agentNotReg && unitNotReg && !liableNotReg){
-                saveTradeFixedUnitNotReg(line);
+                saveTradeFixedUnitNotReg();
                 return;
             }
             if(!agentNotReg && !unitNotReg && liableNotReg){
-                saveTradeFixedLiableNotReg(line);
+                saveTradeFixedLiableNotReg();
                 return;
             }
             if(agentNotReg && unitNotReg && !liableNotReg){
-                saveTradeFixedAgentUnitNotReg(line);
+                saveTradeFixedAgentUnitNotReg();
                 return;
             }
             if(!agentNotReg && unitNotReg && liableNotReg){
-                saveTradeFixedLiableUnitNotReg(line);
+                saveTradeFixedLiableUnitNotReg();
                 return;
             }
             if(agentNotReg && !unitNotReg && liableNotReg){
-                saveTradeFixedAgentLiableNotReg(line);
+                saveTradeFixedAgentLiableNotReg();
                 return;
             }
             if(agentNotReg && unitNotReg && liableNotReg){
-                saveTradeFixedAgentLiableUnitNotReg(line);
+                saveTradeFixedAgentLiableUnitNotReg();
                 return;
             }
             if(agentNok && !unitNok && !liableNok){
-                saveTradeFixedAgentNok(line);
+                saveTradeFixedAgentNok();
                 return;
             }
             if(!agentNok && unitNok && !liableNok){
-                saveTradeFixedUnitNok(line);
+                saveTradeFixedUnitNok();
                 return;
             }
             if(!agentNok && !unitNok && liableNok){
-                saveTradeFixedLiableNok(line);
+                saveTradeFixedLiableNok();
                 return;
             }
             if(agentNok && unitNok && !liableNok){
-                saveTradeFixedAgentUnitNok(line);
+                saveTradeFixedAgentUnitNok();
                 return;
             }
             if(!agentNok && unitNok && liableNok){
-                saveTradeFixedAgentUnitNok(line);
+                saveTradeFixedAgentUnitNok();
                 return;
             }
             if(agentNok && !unitNok && liableNok){
-                saveTradeFixedAgentLiableNok(line);
+                saveTradeFixedAgentLiableNok();
                 return;
             }
             if(agentNok && unitNok && liableNok){
-                saveTradeFixedAgentLiableUnitNok(line);
+                saveTradeFixedAgentLiableUnitNok();
                 return;
             }
             if(!(ownerNok&&agentNok&&unitNok)){
-                saveTradeFixedOk(line);
-                saveAllOk(line);
+                saveTradeFixedOk();
+                saveAllOk();
                 return;
             }
 
@@ -2328,8 +2360,8 @@ void UserDb::processTradeFixed(QList<QString> col, QString line){
 
     }
     else {
-        saveTradeFixedOk(line);
-        saveAllOk(line);
+        saveTradeFixedOk();
+        saveAllOk();
     }
 
 }
@@ -2337,31 +2369,31 @@ void UserDb::processTradeFixed(QList<QString> col, QString line){
 /**
  * @brief UserDb::processOneCardFiveNumber 处理一证五号
  */
-void UserDb::processOneCardFiveNumber(QList<QString> col, QString line){
-    if(onecardFiveCode.contains(col.at(getColNum("机主证件号码")))){
-        if(onecardFiveCode.values(col.at(getColNum("机主证件号码"))).size()>5){
-            saveOnecardFiveCode(line);
-        }
-        onecardFiveCode.insertMulti(col.at(getColNum("机主证件号码")), col.at(getColNum("MSISDN号码")));
-    }
-    else{
-        onecardFiveCode.insertMulti(col.at(getColNum("机主证件号码")), col.at(getColNum("MSISDN号码")));
-    }
+void UserDb::processOneCardFiveNumber(){
+//    if(onecardFiveCode.contains(col.at(ownerNumIndex))){
+//        if(onecardFiveCode.values(col.at(ownerNumIndex)).size()>5){
+//            saveOnecardFiveCode();
+//        }
+//        onecardFiveCode.insertMulti(col.at(ownerNumIndex), col.at(msisdnIndex));
+//    }
+//    else{
+//        onecardFiveCode.insertMulti(col.at(ownerNumIndex), col.at(msisdnIndex));
+//    }
 }
 
 /**
  * @brief UserDb::processOneCardMultiName 处理一证多名
- * @param line
+ * @param
  */
-void UserDb::processOneCardMultiName(QList<QString> col, QString line){
+void UserDb::processOneCardMultiName(){
     if(onecardMultiName.size()==0){
-        onecardMultiName.insert(col.at(getColNum("机主姓名")), col.at(getColNum("机主证件号码")));
+        onecardMultiName.insert(col.at(ownerNameIndex), col.at(ownerNumIndex));
     }
     else{
         QMap<QString,QString>::Iterator  it;
         for(it = onecardMultiName.begin();it != onecardMultiName.end();++it){
-            if(!it.key().compare(col.at(getColNum("机主姓名")))&& it.value().compare(col.at(getColNum("机主证件号码")))){
-                  saveOnecardMultiName(line);
+            if(!it.key().compare(col.at(ownerNameIndex))&& it.value().compare(col.at(ownerNumIndex))){
+                  saveOnecardMultiName();
             }
         }
     }

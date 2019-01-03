@@ -175,7 +175,7 @@ void Report::setTableValue(QString reportFileName){
     file.open(QFile::Append);
     QTextStream out(&file);
     out.setCodec("GBK");
-    out<<"统计项,数字"<<endl;
+    out<<QStringLiteral("统计项,数字")<<endl;
     int i=0;
     this->setItem(i, 0, new QTableWidgetItem("总量"));
     this->setItem(i, 1, new QTableWidgetItem(QString::number(this->allData, 10)));
