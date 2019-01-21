@@ -134,10 +134,40 @@ public:
     int tradeFixedAgentLiableNok;
     int tradeFixedLiableUnitNok;
     int tradeFixedAgentLiableUnitNok;
-    int personMobileOneCard= 0;
-    int leaveNet;
+    int personMobileOneCard = 0;
+    int leaveNet = 0;
     int onecardMultiName;
-    int onecardFiveCode;
+    int onecardFiveNumber = 0;
+    int personFixedOneCard = 0;
+    int unitMobileOneCard = 0;
+    int unitFixedOneCard = 0;
+    int tradeMobileOneCard = 0;
+    int tradeFixedOneCard = 0;
+    int nonRealName = 0;
+
+    int errMultiName = 0;
+    int errFiveNumber = 0;
+    int errCardCount = 0;
+
+    int personMobileTotal = 0;
+    int personMobileNotReg = 0;
+    int personMobileNok = 0;
+    int personFixedTotal = 0;
+    int personFixedNotReg = 0;
+    int personFixedNok = 0;
+    int unitMobileTotal = 0;
+    int unitMobileNotReg = 0;
+    int unitMobileNok = 0;
+    int unitFixedTotal = 0;
+    int unitFixedNotReg = 0;
+    int unitFixedNok = 0;
+    int tradeMobileTotal = 0;
+    int tradeMobileNotReg = 0;
+    int tradeMobileNok = 0;
+    int tradeFixedTotal = 0;
+    int tradeFixedNotReg = 0;
+    int tradeFixedNok = 0;
+
 
 
 private:

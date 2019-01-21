@@ -11,7 +11,7 @@ Report::Report(QWidget *parent)
 //    init();
     this->setWindowTitle("测试结果");
     this->resize(900, 750);
-    this->setRowCount(110);
+    this->setRowCount(120);
     this->setColumnCount(3);
     QStringList header;
     header.append("统计项");
@@ -23,29 +23,7 @@ Report::Report(QWidget *parent)
     this->setColumnWidth(0,400);
     this->setColumnWidth(1,100);
     this->setColumnWidth(2,400);
-//    setTableValue();
 
-
-//    QSqlQuery query;
-
-//        query.prepare("select * from report ");
-//        if(!query.exec())
-//        {
-//            qDebug()<<query.lastError();
-//        }
-//        else
-//        {
-//            while(query.next())
-//            {
-////                int id = query.value(0).toInt();
-//                int j=0;//i行j列
-//                for(int i=0;i<100;i++){
-//                    this->setItem(i, j,new QTableWidgetItem(query.value(i+1).toString()));
-//                }
-
-//            }
-//            qDebug()<<"get report data is finished.";
-//        }
 
 }
 
@@ -167,11 +145,51 @@ void Report::init(){
     unitMobileUnitLiableNok = 0;
     tradeFixedLiableNok = 0;
     onecardMultiName = 0;
-    onecardFiveCode = 0;
+    nonRealName = 0;
+
+    errMultiName = 0;
+    errFiveNumber = 0;
+    errCardCount = 0;
+
+    personMobileTotal = 0;
+    personMobileNotReg = 0;
+    personMobileNok = 0;
+    personFixedTotal = 0;
+    personFixedNotReg = 0;
+    personFixedNok = 0;
+    unitMobileTotal = 0;
+    unitMobileNotReg = 0;
+    unitMobileNok = 0;
+    unitFixedTotal = 0;
+    unitFixedNotReg = 0;
+    unitFixedNok = 0;
+    tradeMobileTotal = 0;
+    tradeMobileNotReg = 0;
+    tradeMobileNok = 0;
+    tradeFixedTotal = 0;
+    tradeFixedNotReg = 0;
+    tradeFixedNok = 0;
 }
 
-void Report::setTableValue(QString reportFileName){
-    QFile file(reportFileName);
+void Report::setTableValue(QString path){
+    //输出统计报表
+    QFile report1(path+"report2.csv");
+    report1.open(QFile::Append);
+    QTextStream out1(&report1);
+    out1.setCodec("GBK");
+    out1<<QStringLiteral("用户类型,用户总数,未登记数,不合规数,异常记录")<<endl;
+    out1<<QStringLiteral("个人移动,")<<personMobileTotal<<","<<personMobileNotReg<<","<<personMobileNok<<",-"<<endl;
+    out1<<QStringLiteral("个人固话,")<<personFixedTotal<<","<<personFixedNotReg<<","<<personFixedNok<<",-"<<endl;
+    out1<<QStringLiteral("单位移动,")<<unitMobileTotal<<","<<unitMobileNotReg<<","<<unitMobileNok<<",-"<<endl;
+    out1<<QStringLiteral("单位固话,")<<unitFixedTotal<<","<<unitFixedNotReg<<","<<unitFixedNok<<",-"<<endl;
+    out1<<QStringLiteral("行业移动,")<<tradeMobileTotal<<","<<tradeMobileNotReg<<","<<tradeMobileNok<<",-"<<endl;
+    out1<<QStringLiteral("行业固话,")<<tradeFixedTotal<<","<<tradeFixedNotReg<<","<<tradeFixedNok<<",-"<<endl;
+    out1<<QStringLiteral("总计,")<<personMobileTotal+personFixedTotal+unitMobileTotal+unitFixedTotal+tradeMobileTotal+tradeFixedTotal<<",";
+    out1<<personMobileNotReg+personFixedNotReg+unitMobileNotReg+unitFixedNotReg+tradeMobileNotReg+tradeFixedNotReg<<",";
+    out1<<personMobileNok+personFixedNok+unitMobileNok+unitFixedNok+tradeMobileNok+tradeFixedNok<<","<<formatNok+fieldNok<<endl;
+    report1.close();
+
+    QFile file(path+"report1.csv");
     file.open(QFile::Append);
     QTextStream out(&file);
     out.setCodec("GBK");
@@ -206,7 +224,16 @@ void Report::setTableValue(QString reportFileName){
     this->setItem(i, 2, new QTableWidgetItem("时间等格式异常"));
     out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
     i++;
-
+    this->setItem(i, 0, new QTableWidgetItem("离网"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->leaveNet,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("非实名停机"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->nonRealName,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
     this->setItem(i, 0, new QTableWidgetItem("全量合规"));
     this->setItem(i, 1, new QTableWidgetItem(QString::number(this->allOk,10)));
     this->setItem(i, 2, new QTableWidgetItem(""));
@@ -694,13 +721,53 @@ void Report::setTableValue(QString reportFileName){
     this->setItem(i, 2, new QTableWidgetItem(""));
     out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
     i++;
-    this->setItem(i, 0, new QTableWidgetItem("一证多名不合规"));
-    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->onecardMultiName,10)));
+    this->setItem(i, 0, new QTableWidgetItem("一证超5号不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->onecardFiveNumber,10)));
     this->setItem(i, 2, new QTableWidgetItem(""));
     out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
     i++;
-    this->setItem(i, 0, new QTableWidgetItem("一证超五号不合规"));
-    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->onecardFiveCode,10)));
+    this->setItem(i, 0, new QTableWidgetItem("个人移动一证多名不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personMobileOneCard,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("个人固话一证多名不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->personFixedOneCard,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位移动一证多名不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitMobileOneCard,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("单位固话一证多名不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->unitFixedOneCard,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业移动一证多名不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeMobileOneCard,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("行业固话一证多名不合规"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->tradeFixedOneCard,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("一证多名证件数"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->errMultiName,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("一证五卡证件数"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->errFiveNumber,10)));
+    this->setItem(i, 2, new QTableWidgetItem(""));
+    out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
+    i++;
+    this->setItem(i, 0, new QTableWidgetItem("违规卡数"));
+    this->setItem(i, 1, new QTableWidgetItem(QString::number(this->errCardCount,10)));
     this->setItem(i, 2, new QTableWidgetItem(""));
     out<<this->item(i,0)->text()<<","<<this->item(i,1)->text()<<endl;
     i++;
