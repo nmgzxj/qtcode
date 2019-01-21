@@ -785,6 +785,9 @@ void BizTypePage::valueSave(){
     qDebug()<<"col count is "<<table->columnCount();
     value.clear();
     for(int i=0; i<table->rowCount();i++){
+        if(value.contains(table->item(i,0)->text())){
+            continue;
+        }
         value.append(table->item(i,0)->text());
     }
     xmlConfig->writeValue(currnt_menu,value);

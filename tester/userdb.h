@@ -107,6 +107,7 @@ private:
     QMap<QString, QList<QString>> fileBuffer;
 
     QMap<QString,QString> userType;
+    QMap<QString,QString> systemValue;
     bool needAgent(QString idCardNum, QString activeTime);
     int getDateForInt(QString activeTime);
 

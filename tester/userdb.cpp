@@ -464,8 +464,7 @@ bool UserDb::isUnitTypeNok(QString const &str){
 
 }
 
-bool UserDb::
-isPersonNameNok(QString const & str){
+bool UserDb::isPersonNameNok(QString const & str){
     if(personNameMin!=-1 && str.length()<personNameMin){
 //        qDebug()<<personNameMin<<"姓名字数不够"<<str.length()<<" "<<str;
         return true;
@@ -2934,8 +2933,20 @@ void UserDb::processOneCardFiveNumber(){
     stErrorFiveNum *ptrMulti = nullptr,*pptr;
     unsigned long activeDay ,checkDay;
 
-    activeDay = getDateForInt(col.at(getColNum("登记激活时间")));
-    checkDay = 20170401;
+    activeDay = getDateForInt(col.at(activeTimeIndex));
+    //checkDay = 20170401;
+    QString onecard2five_date = systemValue.key("onecard2five-date");
+    if(onecard2five_date==nullptr){
+       checkDay = 20170401;
+    }
+    else {
+       bool ok;
+       checkDay = onecard2five_date.toLong(&ok,10); //dec=255 ; ok=rue
+       if(!ok){
+           checkDay = 20170401;
+       }
+    }
+
     unsigned long sHashTreev = strHash(col.at(ownerNumIndex).toStdString().c_str(),strlen(col.at(ownerNumIndex).toStdString().c_str()))%MAX_NUMBER_HASH_NODE;
     if(m_pstErrFiveName[sHashTreev] == nullptr)
     {

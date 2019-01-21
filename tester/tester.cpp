@@ -132,7 +132,7 @@ void Tester::showOpenFile()
 
 void Tester::setupModel()
 {//设置列名
-    model = new QStandardItemModel(10,41,this);
+    model = new QStandardItemModel(10,42,this);
     XMLConfigReader *xmlConfig = nullptr;
     QList<QList<QString>> lls = xmlConfig->readAutoid();
     for(int i=0; i<lls.size(); i++){
