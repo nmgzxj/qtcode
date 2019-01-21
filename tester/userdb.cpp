@@ -358,6 +358,10 @@ bool UserDb::countData(){
                 emit message("已处理"+QString::number(line_num)+"行");
             }
         }while(!stopped && !line.isEmpty());
+        report->errFiveNumber = errFiveNumber;
+        report->errCardCount = errCardCount;
+        report->errMultiName = errMultiName;
+
         file.close();
         emit message("已处理完成，文件关闭");
     }
@@ -2990,15 +2994,7 @@ void UserDb::processOneCardFiveNumber(){
         ptrMulti->activeDay = activeDay;
         if(activeDay >= checkDay && ptrMulti->errcount < 0x7f) ptrMulti->errcount ++;
     }
-//    if(onecardFiveCode.contains(col.at(ownerNumIndex))){
-//        if(onecardFiveCode.values(col.at(ownerNumIndex)).size()>5){
-//            saveOnecardFiveCode();
-//        }
-//        onecardFiveCode.insertMulti(col.at(ownerNumIndex), col.at(msisdnIndex));
-//    }
-//    else{
-//        onecardFiveCode.insertMulti(col.at(ownerNumIndex), col.at(msisdnIndex));
-//    }
+
 }
 
 /**
@@ -3067,24 +3063,6 @@ void UserDb::processOneCardMultiName(){
             memcpy(ptrMulti->origName,col.at(ownerNameIndex).toStdString().c_str(),MAX_NAME_LENGTH-1);
        ptrMulti->errflag = id_TypeChar;
     }
-/*
-    if(onecardMultiName.size()==0){
-        onecardMultiName.insert(col.at(ownerNameIndex), col.at(ownerNumIndex));
-    }
-    else{
-        Map<QString,QString>::Iterator  it;
-        for(it = onecardMultiName.begin();it != onecardMultiName.end();++it){
-            if(!it.key().compare(col.at(ownerNameIndex))&& it.value().compare(col.at(ownerNumIndex))){
-                  saveOnecardMultiName();
-            }
-        }
-    }
 
-}
-(ownerNumIndex))){
-                  saveOnecardMultiName();
-            }
-        }
-    }
-*/
+
 }
