@@ -126,10 +126,14 @@ void UserDb::readConfig(){
         personType = readValueToList(personType, "个人证件台湾居民来往大陆通行证",strHashpersonType,cstrHashpersonType);
         personType = readValueToList(personType, "个人证件外国公民护照",strHashpersonType,cstrHashpersonType);
         personType = readValueToList(personType, "个人证件法律、行政法规和国家规定的其他有效身份证件",strHashpersonType,cstrHashpersonType);
+        personType = readValueToList(personType, "个人证件非法律、行政法规和国家规定的有效身份证件",strHashpersonType,cstrHashpersonType);
 
         //初始化单位合规证件类型
         unitType  = readValueToList(unitType, "单位证件组织机构代码证",strHashunitType,cstrHashunitType);
-
+        unitType  = readValueToList(unitType, "单位证件营业执照",strHashunitType,cstrHashunitType);
+        unitType  = readValueToList(unitType, "单位证件事业单位法人证书或者社会团体法人登记证书",strHashunitType,cstrHashunitType);
+        unitType  = readValueToList(unitType, "单位证件法律、行政法规和国家规定的其他有效证件或者证明文件",strHashunitType,cstrHashunitType);
+        unitType  = readValueToList(unitType, "单位证件非法律、行政法规和国家规定的有效身份证件",strHashunitType,cstrHashunitType);
 
         QList<QString> queryList;
         queryList.append("maxlimit");
@@ -568,15 +572,6 @@ bool UserDb::isUnitNumNok(QString const & str){
                 if(0 == strcmp(strHashnumRule[index].sHashContent,str.toStdString().c_str()) )return true;
             }
         }
-    }
-    {
-        if((strlen(str.toStdString().c_str())) < 14) return true;
-        QString str1 = str.mid(6,8);
-        const char* pstr = str1.toStdString().c_str();
-        if(pstr[0]!='1'&&pstr[0]!='2')return true;
-        if((pstr[0]=='1'&&pstr[1]!='9')||(pstr[0]=='2'&&pstr[1]!='0'))return true;
-        if(pstr[2]<'0'||pstr[2]>'9'||pstr[3]<'0'||pstr[3]>'9')return true;
-        if(pstr[4]!='0'&&pstr[4]!='1')return true;
     }
     return false;
 }
@@ -1077,8 +1072,8 @@ void UserDb::saveUnitMobileAgentUnitNok(){
     writeFile("单位移动用户-经办人&单位信息校验不合规.nck",report->unitMobileAgentUnitNok);
 }
 void UserDb::saveUnitMobileOwnerAgentUnitNok(){
-    report->unitMobileAgentUnitNok++;
-    writeFile("单位移动用户-使用人&经办人&单位信息校验不合规.nck",report->unitMobileAgentUnitNok);
+    report->unitMobileOwnerAgentUnitNok++;
+    writeFile("单位移动用户-使用人&经办人&单位信息校验不合规.nck",report->unitMobileOwnerAgentUnitNok);
 }
 void UserDb::saveUnitFixedOk(){
     report->unitFixedOk++;
@@ -1416,6 +1411,15 @@ void UserDb::flushFile(){
  * @return 判断代办人必填规则：2018年9月1日后，16周岁，大约120岁，之前是10周岁，大于120岁，就必须有代办人信息。入网时间-证件号码日期>10年
  */
 bool UserDb::needAgent(QString idCardNum, QString activeTime){
+    {
+        if((strlen(idCardNum.toStdString().c_str())) < 14) return true;
+        QString str1 = idCardNum.mid(6,8);
+        const char* pstr = str1.toStdString().c_str();
+        if(pstr[0]!='1'&&pstr[0]!='2')return true;
+        if((pstr[0]=='1'&&pstr[1]!='9')||(pstr[0]=='2'&&pstr[1]!='0'))return true;
+        if(pstr[2]<'0'||pstr[2]>'9'||pstr[3]<'0'||pstr[3]>'9')return true;
+        if(pstr[4]!='0'&&pstr[4]!='1')return true;
+    }
 
     QDateTime idDate = QDateTime::fromString(idCardNum.trimmed().mid(6,8), "yyyyMMdd");
 //    qDebug()<<"id="<<idCardNum<<" "<<idCardNum.trimmed().mid(6,8);
@@ -1544,7 +1548,7 @@ void UserDb::processPersonFixed(){
        agentNok = true;
 
    }
-   else if(needAgent(col.at(agentNumIndex),col.at(getColNum("登记激活时间")))){
+   else if(isNeedAgent && needAgent(col.at(agentNumIndex),col.at(getColNum("登记激活时间")))){
        //代办人如果不满10岁（2018年9月1日后不满16岁），则判为不合规。
        agentNok = true;
    }
@@ -1852,7 +1856,8 @@ void UserDb::processUnitFixed(){
 
     /* 单位固话用户-代办人信息未登记 */
     bool agentNotReg = false;
-    if(isNotReg(col[agentNameIndex]) || isNotReg(col[agentTypeIndex]) || isNotReg(col[agentNumIndex])){
+    if(isNotReg(col[agentNameIndex]) || isNotReg(col[agentTypeIndex]) || isNotReg(col[agentNumIndex])
+            || isNotReg(col[agentAddIndex]) ){
         agentNotReg = true;
     }
 
@@ -1866,7 +1871,7 @@ void UserDb::processUnitFixed(){
     /* 单位固话用户-代办人信息不合规 */
      bool agentNok = false;
     if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
-            isPersonNumNok(col.at(agentNumIndex))){
+            isPersonNumNok(col.at(agentNumIndex)) || isPersonAddNok(col.at(agentAddIndex))){
         agentNok=true;
     }
 
@@ -1996,7 +2001,7 @@ void UserDb::processUnitMobile(){
 
 
     /* 单位移动用户-代办人信息不合规 */
-    bool agentNok = true;
+    bool agentNok = false;
     if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
             isPersonNumNok(col.at(agentNumIndex))){
         agentNok = true;
@@ -2006,7 +2011,7 @@ void UserDb::processUnitMobile(){
     }
 
     /* 单位移动用户-单位信息不合规 */
-    bool unitNok = true;
+    bool unitNok = false;
     if(isUnitNameNok(col.at(unitNameIndex))||isUnitNumNok(col.at(unitNumIndex))||isUnitTypeNok(col.at(unitTypeIndex))||
             isUnitAddNok(col.at(unitAddIndex))){
         unitNok = true;
