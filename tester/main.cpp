@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
     //注册MessageHandler写log
  //       qInstallMessageHandler(outputMessage);
-    qInstallMessageHandler(0);
+    qInstallMessageHandler(nullptr);
 
 
 //    ProgressDlg w;

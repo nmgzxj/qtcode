@@ -95,8 +95,8 @@ void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QStrin
         *child = QStringLiteral("固定");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
-    else if(QStringLiteral("业务状态非实名制停机")==*var){
-        *child = QStringLiteral("非实名制停机");
+    else if(QStringLiteral("业务状态非实名停机")==*var){
+        *child = QStringLiteral("非实名停机");
         *inputFilePath = getConfigPath()+"/config/config-businesstype.xml";
     }
     else if(QStringLiteral("业务状态不在网")==*var){
@@ -139,10 +139,10 @@ void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QStrin
         *child = QStringLiteral("法律、行政法规和国家规定的其他有效身份证件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if(QStringLiteral("个人证件非法律、行政法规和国家规定的有效身份证件")==*var){
-        *child = QStringLiteral("非法律、行政法规和国家规定的有效身份证件");
-        *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
-    }
+//    else if(QStringLiteral("个人证件非法律、行政法规和国家规定的有效身份证件")==*var){
+//        *child = QStringLiteral("非法律、行政法规和国家规定的有效身份证件");
+//        *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
+//    }
     else if(QStringLiteral("单位证件组织机构代码证")==*var){
         *child = QStringLiteral("组织机构代码证");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
@@ -159,10 +159,10 @@ void XMLConfigReader::processFile(QString* inputFilePath, QString* child, QStrin
         *child = QStringLiteral("法律、行政法规和国家规定的其他有效证件或者证明文件");
         *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
     }
-    else if(QStringLiteral("单位证件非法律、行政法规和国家规定的有效身份证件")==*var){
-        *child = QStringLiteral("非法律、行政法规和国家规定的有效身份证件");
-        *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
-    }
+//    else if(QStringLiteral("单位证件非法律、行政法规和国家规定的有效证件")==*var){
+//        *child = QStringLiteral("非法律、行政法规和国家规定的有效证件");
+//        *inputFilePath = getConfigPath()+"/config/config-cardtype.xml";
+//    }
     else if(QStringLiteral("个人用户姓名comon-rule")==*var){
         *child = QStringLiteral("common-rule");
         *inputFilePath = getConfigPath()+"/rule/rule-name-person.xml";
@@ -596,7 +596,7 @@ void XMLConfigReader::writeValue(QString menu,QList<QString> value){
         item = "type";
     }
     else if("非实名停机"==child){
-        item = "o-realname-stop";
+        item = "no-realname-stop";
     }
     else if("不在网"==child){
         item = "no-in-net";

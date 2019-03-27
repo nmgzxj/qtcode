@@ -13,7 +13,7 @@
 #define COL_NUM 42
 #include "report.h"
 
-#define MAX_STRING_CONTENT_LENGTH   256
+#define MAX_STRING_CONTENT_LENGTH    256
 #define MAX_RULE_HASH_NODE           1024
 
 typedef struct strHashNode{
@@ -41,7 +41,7 @@ static const int MAX_NUMBER_HASH_NODE = 65537;
 typedef struct stErrorMultiName
 {
     char number[MAX_NUMBER_LENGTH];
-    char errflag;//0 normal  0x41 errType_oneCardMultiName
+    char errflag;//0 normal  0x60 errType_oneCardMultiName
     char reserved;
     char origName[MAX_NAME_LENGTH];
     struct stErrorMultiName *next;
@@ -49,14 +49,15 @@ typedef struct stErrorMultiName
 
 typedef struct stErrorFiveNum
 {
-    unsigned long activeDay;//入网时间
     char number[MAX_NUMBER_LENGTH];
-    char errflag;//0 normal  0x40 errType_oneCardFiveNumber  +  phonenumcount 0x01??????
-    char errcount;
+    char errflag;//0 normal  0x40 errType_oneCardFiveNumber
+    char reserved;
+    unsigned short err1count; //before checkDay
+    unsigned short err2count; //after checkDay
     struct stErrorFiveNum *next;
 } stErrorFiveNum;
 
-#define MAX_BCHUNKS 1024
+#define MAX_BCHUNKS 2048
 #define MAX_BCHUNKNODES 10000
 
 typedef struct bchunk_t{
@@ -73,13 +74,11 @@ public:
     UserDb();
     ~UserDb();
     QString mkMutiDir(const QString path);
-    bool fileIsExists(QString filename);
+    void start(){stopped = false;}
+    void stop(){stopped = true;}
     void printMessage();
-    void start();
-    void stop();
-    QString filename;
+    QString m_filename;
     Report* report;
-
 
 private:
     bool isNotReg(QString *str);
@@ -88,36 +87,38 @@ private:
     bool isUnitTypeNok(QString const & str);
     bool isPersonNameNok(QString  const &str);
     bool isUnitNameNok(QString  const &str);
-    bool isPersonNumNok(QString  const &str);
+    bool isPersonNumNok(QString  const &numstr,QString  const &typestr);
     bool isUnitNumNok(QString  const &str);
     bool isPersonAddNok(QString const & str);
     bool isUnitAddNok(QString const & str);
 
-    QString getColName(QString name);
     int getColNum(QString name);
-    QString getCol(QString name);
     QMap<QString,int> col_name_map;
     XMLConfigReader *xmlConfig;
     volatile bool stopped;
-    void writeFile(QString filename, int count);
+    void writeFile(QString filename, int& count,QString qstr = nullptr);
     void flushFile();
     QString readValueToString(QString query);
     QList<QString> readValueToList(QList<QString> inList, QString query,strHashNode *psHNode,int &psHNodeCount);
+    QList<QString> readValueToList1(QList<QString> inList, QString query,strHashNode *psHNode,int &psHNodeCount);
     QString delimeter;
     QMap<QString, QList<QString>> fileBuffer;
 
     QMap<QString,QString> userType;
     QMap<QString,QString> systemValue;
-    bool needAgent(QString idCardNum, QString activeTime);
+    bool needAgent(QString typestr,QString idCardNum, QString activeTime);
     int getDateForInt(QString activeTime);
 
     QString maxlimit;
     QList<QString> bizTypeFixed;
     QList<QString> personType;
+    QList<QString> m18personType;
+    int cstrHashm18personType;
     int cstrHashpersonType;
     int cstrHashbizTypeFixed;
     int cstrHashunitType;
     strHashNode strHashunitType[MAX_RULE_HASH_NODE],strHashpersonType[MAX_RULE_HASH_NODE],strHashbizTypeFixed[MAX_RULE_HASH_NODE];
+    strHashNode strHashm18personType[MAX_RULE_HASH_NODE];
     int personNameMin;
     int personNameMax;
     QString personNamePermit;
@@ -165,132 +166,23 @@ private:
     bchunk_t  bErrMulti,bErrFive;
     QString dateFormat;
     char id_TypeChar;
+    int activeDate;
 
     void bchunkInit(bchunk_t *pchunk,int nsize);
     void bchunkFree(bchunk_t *pchunk);
     void *bchunkAllocNode(bchunk_t *pchunk);
+    char calculateVerifyCode(const char* m_str);
 
     void processOneCardFiveNumber();
     void processOneCardMultiName();
+    void outputSimpleOneCardFiveNumber();
+    void writeOneCardFiveNumberFile();
+    void outputSearch(const QString filename,const char* checkline,const int index);
     /* 文件输出路径 */
     QString path;
     bool countData();
     void processLine();
-    void processLine(int flag);
-    /* 输出文件 */
-    void savePersonMobileOwnerNameNotReg();
-    void savePersonMobileOwnerTypeNotReg();
-    void savePersonMobileOwnerNumNotReg();
-    void savePersonMobileOwnerAddNotReg();
-    void savePersonMobileOwnerNameNumNotReg();
-    void savePersonMobileOwnerNameAddNotReg();
-    void savePersonMobileOwnerNumAddNotReg();
-    void savePersonMobileOwnerNameNumAddNotReg();
-    void savePersonMobileOwnerTyteNok();
-    void savePersonMobileOwnerNameNok();
-    void savePersonMobileOwnerNumNok();
-    void savePersonMobileOwnerAddNok();
-    void savePersonMobileOwnerNameNumNok();
-    void savePersonMobileOwnerNameAddNok();
-    void savePersonMobileOwnerNumAddNok();
-    void savePersonMobileOwnerNameNumAddNok();
-    void savePersonFixedOk();
-    void saveAllNotReg();
-    void saveAllNok();
-    void saveAbnormal();
-    void saveFieldAbnormal();
-    void saveAllOk();
-    void saveWaitData();
-    void savePersonMobileOk();
-    void savePersonFixedOwnerNameNotReg();
-    void savePersonFixedOwnerTypeNotReg();
-    void savePersonFixedOwnerNumNotReg();
-    void savePersonFixedOwnerAddNotReg();
-    void savePersonFixedOwnerNameNumNotReg();
-    void savePersonFixedOwnerNameAddNotReg();
-    void savePersonFixedOwnerNumAddNotReg();
-    void savePersonFixedOwnerNameNumAddNotReg();
-    void savePersonFixedOwnerTypeNok();
-    void savePersonFixedOwnerNameNok();
-    void savePersonFixedOwnerNumNok();
-    void savePersonFixedOwnerAddNok();
-    void savePersonFixedOwnerNameNumNok();
-    void savePersonFixedOwnerNameAddNok();
-    void savePersonFixedOwnerNumAddNok();
-    void savePersonFixedOwnerNameNumAddNok();
-    void savePersonMobileAgentNotReg();
-    void savePersonFixedAgentNotReg();
-    void savePersonMobileAgentNok();
-    void savePersonFixedAgentNok();
-    void saveUnitMobileOk();
-    void saveUnitMobileOwnerNotReg();
-    void saveUnitMobileAgentNotReg();
-    void saveUnitMobileUnitNotReg();
-    void saveUnitMobileOwnerAgentNotReg();
-    void saveUnitMobileOwnerUnitNotReg();
-    void saveUnitMobileAgentUnitNotReg();
-    void saveUnitMobileOwnerAgentUnitNotReg();
-    void saveUnitMobileOwnerNok();
-    void saveUnitMobileAgentNok();
-    void saveUnitMobileUnitNok();
-    void saveUnitMobileOwnerAgentNok();
-    void saveUnitMobileOwnerUnitNok();
-    void saveUnitMobileAgentUnitNok();
-    void saveUnitMobileOwnerAgentUnitNok();
-    void saveUnitFixedOk();
-    void saveUnitFixedOwnerNotReg();
-    void saveUnitFixedAgentNotReg();
-    void saveUnitFixedUnitNotReg();
-    void saveUnitFixedOwnerAgentNotReg();
-    void saveUnitFixedOwnerUnitNotReg();
-    void saveUnitFixedAgentUnitNotReg();
-    void saveUnitFixedOwnerAgentUnitNotReg();
-    void saveUnitFixedAgentNok();
-    void saveUnitFixedUnitNok();
-    void saveUnitFixedAgentUnitNok();
-    void saveTradeMobileOk();
-    void saveTradeMobileOwnerNotReg();
-    void saveTradeMobileAgentNotReg();
-    void saveTradeMobileUnitNotReg();
-    void saveTradeMobileLiableNotReg();
-    void saveTradeMobileAgentUnitNotReg();
-    void saveTradeMobileLiableAgentNotReg();
-    void saveTradeMobileLiableUnitNotReg();
-    void saveTradeMobileLiableAgentUnitNotReg();
-    void saveTradeMobileOwnerNok();
-    void saveTradeMobileAgentNok();
-    void saveTradeMobileAgentUnitNok();
-    void saveTradeMobileLiableAgentNok();
-    void saveTradeMobileLiableAgentUnitNok();
-    void saveTradeMobileUnitNok();
-    void saveTradeMobileLiableNok();
-    void saveTradeMobileLiableUnitNok();
-    void saveTradeFixedOk();
-    void saveTradeFixedOwnerNotReg();
-    void saveTradeFixedOwnerNok();
-    void saveTradeFixedAgentNotReg();
-    void saveTradeFixedUnitNotReg();
-    void saveTradeFixedLiableNotReg();
-    void saveTradeFixedAgentUnitNotReg();
-    void saveTradeFixedAgentNok();
-    void saveTradeFixedAgentUnitNok();
-    void saveTradeFixedUnitNok();
-    void saveTradeFixedLiableNok();
-    void saveTradeFixedAgentLiableNotReg();
-    void saveTradeFixedLiableUnitNotReg();
-    void saveTradeFixedAgentLiableUnitNotReg();
-    void saveTradeFixedAgentLiableNok();
-    void saveTradeFixedLiableUnitNok();
-    void saveTradeFixedAgentLiableUnitNok();
-    void savePersonMobileOneCard();
-    void saveLeaveNet();
-    void saveOnecardMultiName();
-    void saveOnecardFiveNumber();
-    void savePersonFixedOnecard();
-    void saveUnitMobileOnecard();
-    void saveUnitFixedOnecard();
-    void saveTradeMobileOnecard();
-    void saveTradeFixedOnecard();
+    void processLineoutput();
     void readConfig();
 
     QList<QString> col;
@@ -299,28 +191,33 @@ private:
     int ownerNameIndex=0;
     int ownerTypeIndex=0;
     int ownerNumIndex=0;
-    int ownerAddIndex=0;
+    int ownerAddIndex=0; //证件地址
+    int ownerAdd1Index=0;//通讯地址
+    int ownerAdd2Index=0;//装机地址
     int agentNameIndex=0;
     int agentTypeIndex=0;
     int agentNumIndex=0;
     int agentAddIndex=0;
+    int agentAdd1Index=0;//通讯地址
+
     int liableNameIndex=0;
     int liableTypeIndex=0;
     int liableNumIndex=0;
     int liableAddIndex=0;
+    int liableAdd1Index=0;//通讯地址
+
     int unitNameIndex=0;
     int unitNumIndex=0;
     int unitTypeIndex=0;
     int unitAddIndex=0;
+    int unitAdd1Index=0;//通讯地址
+    int unitAdd2Index=0;//装机地址
+
     int msisdnIndex=0;
     int activeTimeIndex=0;
     int codeStatusIndex=0;
     int bizTypeIndex=0;
     int userTypeInex=0;
-
-
-
-
 
 signals:
     void message(const QString& info);

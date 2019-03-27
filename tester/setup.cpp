@@ -85,13 +85,13 @@ Setup::Setup()
     contentsWidget->topLevelItem(menu_index)->child(0)->addChild(new QTreeWidgetItem({ QStringLiteral("台湾居民来往大陆通行证") }));
     contentsWidget->topLevelItem(menu_index)->child(0)->addChild(new QTreeWidgetItem({ QStringLiteral("外国公民护照") }));
     contentsWidget->topLevelItem(menu_index)->child(0)->addChild(new QTreeWidgetItem({ QStringLiteral("法律、行政法规和国家规定的其他有效身份证件") }));
-    contentsWidget->topLevelItem(menu_index)->child(0)->addChild(new QTreeWidgetItem({ QStringLiteral("非法律、行政法规和国家规定的有效身份证件") }));
+//    contentsWidget->topLevelItem(menu_index)->child(0)->addChild(new QTreeWidgetItem({ QStringLiteral("非法律、行政法规和国家规定的有效身份证件") }));
     contentsWidget->topLevelItem(menu_index)->addChild(new QTreeWidgetItem({ QStringLiteral("单位证件") }));
     contentsWidget->topLevelItem(menu_index)->child(1)->addChild(new QTreeWidgetItem({ QStringLiteral("组织机构代码证") }));
     contentsWidget->topLevelItem(menu_index)->child(1)->addChild(new QTreeWidgetItem({ QStringLiteral("营业执照") }));
     contentsWidget->topLevelItem(menu_index)->child(1)->addChild(new QTreeWidgetItem({ QStringLiteral("事业单位法人证书或者社会团体法人登记证书") }));
     contentsWidget->topLevelItem(menu_index)->child(1)->addChild(new QTreeWidgetItem({ QStringLiteral("法律、行政法规和国家规定的其他有效证件或者证明文件") }));
-    contentsWidget->topLevelItem(menu_index)->child(1)->addChild(new QTreeWidgetItem({ QStringLiteral("非法律、行政法规和国家规定的有效身份证件") }));
+//    contentsWidget->topLevelItem(menu_index)->child(1)->addChild(new QTreeWidgetItem({ QStringLiteral("非法律、行政法规和国家规定的有效证件") }));
 
 //        插入孙节点
     if(contentsWidget->topLevelItem(1)->child(0)->child(0)->isSelected()){
@@ -135,12 +135,12 @@ Setup::Setup()
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人证件台湾居民来往大陆通行证")));
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人证件外国公民护照")));
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人证件法律、行政法规和国家规定的其他有效身份证件")));
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人证件非法律、行政法规和国家规定的有效身份证件")));
+//    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人证件非法律、行政法规和国家规定的有效身份证件")));
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位证件组织机构代码证")));
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位证件营业执照")));
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位证件事业单位法人证书或者社会团体法人登记证书")));
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位证件法律、行政法规和国家规定的其他有效证件或者证明文件")));
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位证件非法律、行政法规和国家规定的有效身份证件")));
+//    pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位证件非法律、行政法规和国家规定的有效证件")));
     pagesWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     QPushButton *closeButton = new QPushButton(QStringLiteral("Close"));
@@ -338,39 +338,36 @@ void Setup::slotItemPressed(QTreeWidgetItem *item)
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
-    else if(item->text(0)==QStringLiteral("非法律、行政法规和国家规定的有效身份证件")&&item->parent()->text(0)==QStringLiteral("个人证件")){
+//    else if(item->text(0)==QStringLiteral("非法律、行政法规和国家规定的有效身份证件")&&item->parent()->text(0)==QStringLiteral("个人证件")){
+//        pagesWidget->setCurrentIndex(32);
+//        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
+//
+//    }
+    else if(item->text(0)==QStringLiteral("组织机构代码证")&&item->parent()->text(0)==QStringLiteral("单位证件")){
         pagesWidget->setCurrentIndex(32);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
-    else if(item->text(0)==QStringLiteral("组织机构代码证")&&item->parent()->text(0)==QStringLiteral("单位证件")){
+    else if(item->text(0)==QStringLiteral("营业执照")&&item->parent()->text(0)==QStringLiteral("单位证件")){
         pagesWidget->setCurrentIndex(33);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
-    else if(item->text(0)==QStringLiteral("营业执照")&&item->parent()->text(0)==QStringLiteral("单位证件")){
+    else if(item->text(0)==QStringLiteral("事业单位法人证书或者社会团体法人登记证书")&&item->parent()->text(0)==QStringLiteral("单位证件")){
         pagesWidget->setCurrentIndex(34);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
-    else if(item->text(0)==QStringLiteral("事业单位法人证书或者社会团体法人登记证书")&&item->parent()->text(0)==QStringLiteral("单位证件")){
+    else if(item->text(0)==QStringLiteral("法律、行政法规和国家规定的其他有效证件或者证明文件")&&item->parent()->text(0)==QStringLiteral("单位证件")){
         pagesWidget->setCurrentIndex(35);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
 
     }
-    else if(item->text(0)==QStringLiteral("法律、行政法规和国家规定的其他有效证件或者证明文件")&&item->parent()->text(0)==QStringLiteral("单位证件")){
-        pagesWidget->setCurrentIndex(36);
-        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
-
-    }
-    else if(item->text(0)==QStringLiteral("非法律、行政法规和国家规定的有效身份证件")&&item->parent()->text(0)==QStringLiteral("单位证件")){
-        pagesWidget->setCurrentIndex(37);
-        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
-
-    }
-
-
-
+//    else if(item->text(0)==QStringLiteral("非法律、行政法规和国家规定的有效证件")&&item->parent()->text(0)==QStringLiteral("单位证件")){
+//        pagesWidget->setCurrentIndex(37);
+//        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
+//
+//    }
 
 }
 
