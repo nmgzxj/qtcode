@@ -344,7 +344,7 @@ void DelimiterPage::save(){
 
 ItemnumPage::ItemnumPage(QWidget *parent) : QWidget(parent)
 {
-    itemnumLabel = new QLabel(QStringLiteral("字段个数:"));
+    itemnumLabel = new QLabel(QStringLiteral("文件切割标志:"));
     itemnumEdit = new QLineEdit;
     saveButton = new QPushButton;
     saveButton->setText("save");
@@ -428,6 +428,7 @@ void DateformatPage::save(){
     qDebug()<<" ===================in save==================== ";
     xmlConfig->writeDateformatValue(dateformatEdit->currentText());
 }
+
 
 CommonRulePage::CommonRulePage(QWidget *parent) : QWidget(parent)
 {

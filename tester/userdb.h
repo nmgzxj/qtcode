@@ -57,8 +57,8 @@ typedef struct stErrorFiveNum
     struct stErrorFiveNum *next;
 } stErrorFiveNum;
 
-#define MAX_BCHUNKS 2048
-#define MAX_BCHUNKNODES 10000
+#define MAX_BCHUNKS      1500
+#define MAX_BCHUNKNODES 10240
 
 typedef struct bchunk_t{
   int maxchunks;
@@ -171,22 +171,31 @@ private:
     void bchunkInit(bchunk_t *pchunk,int nsize);
     void bchunkFree(bchunk_t *pchunk);
     void *bchunkAllocNode(bchunk_t *pchunk);
+    void bchunkReset(bchunk_t *pchunk);
     char calculateVerifyCode(const char* m_str);
 
     void processOneCardFiveNumber();
     void processOneCardMultiName();
-    void outputSimpleOneCardFiveNumber();
+    int outputSimpleOneCardFiveNumber();
     void writeOneCardFiveNumberFile();
-    void outputSearch(const QString filename,const char* checkline,const int index);
+    int outputSearch(const QString filename,const char* checkline,const int index,const int icount = -1);
     /* 文件输出路径 */
     QString path;
-    bool countData();
+    bool countData(const QString filename=nullptr);
     void processLine();
     void processLineoutput();
     void readConfig();
+    //切割超大文件
+    bool m_needdivFile = false;
+    void  divFile(int ifileindex = -1);
+    int  m_fileindex  = 0;
+    int  m_leaveindex = -1;
+    bool checkKeyInfo(const QString str);
 
     QList<QString> col;
     QString line  = "";
+    QString m_basename  = "datafile";
+    QString m_leavename = "leavefile";
     void initIndex();
     int ownerNameIndex=0;
     int ownerTypeIndex=0;

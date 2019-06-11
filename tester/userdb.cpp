@@ -1,5 +1,10 @@
 ﻿#include "userdb.h"
 
+#define FILE_DIV_TEST  0
+#if  FILE_DIV_TEST
+#define TEST_LIMIT   1000000
+#endif
+
 /**
  * @brief UserDb::UserDb
  * 数据分析文件
@@ -38,8 +43,6 @@ UserDb::UserDb()
      errFiveNumber = 0;
      errMultiName  = 0;
      errCardCount  = 0;
-     memset(m_pstErrMultiName,0,sizeof(stErrorMultiName *)*MAX_NUMBER_HASH_NODE);
-     memset(m_pstErrFiveName,0,sizeof(stErrorFiveNum *)*MAX_NUMBER_HASH_NODE);
 
      bchunkInit(&bErrMulti,sizeof(stErrorMultiName));
      bchunkInit(&bErrFive,sizeof(stErrorFiveNum));
@@ -58,7 +61,15 @@ void UserDb::bchunkInit(bchunk_t *pchunk,int nsize)
 void UserDb::bchunkFree(bchunk_t *pchunk)
 {
     for(int index = 0;index < pchunk->maxchunks ;index ++)
+    {
         free(pchunk->chunks[index]);
+        pchunk->chunks[index] = nullptr;
+    }
+}
+
+void UserDb::bchunkReset(bchunk_t *pchunk)
+{
+    pchunk->ncount = 0;
 }
 
 void *UserDb::bchunkAllocNode(bchunk_t *pchunk)
@@ -66,8 +77,11 @@ void *UserDb::bchunkAllocNode(bchunk_t *pchunk)
     void *pstr = nullptr;
     if(pchunk->ncount >= MAX_BCHUNKS * MAX_BCHUNKNODES)return pstr;
     //out of memory
-    if(0 == (pchunk->ncount%MAX_BCHUNKNODES)){
-        pchunk->chunks[pchunk->ncount/MAX_BCHUNKNODES]=(char *)malloc(MAX_BCHUNKNODES*pchunk->nsize);
+    if(0 == (pchunk->ncount%MAX_BCHUNKNODES))
+    {
+        if(pchunk->chunks[pchunk->ncount/MAX_BCHUNKNODES] == nullptr)
+            pchunk->chunks[pchunk->ncount/MAX_BCHUNKNODES]=(char *)malloc(MAX_BCHUNKNODES*pchunk->nsize);
+
         if(pchunk->chunks[pchunk->ncount/MAX_BCHUNKNODES] != nullptr)
         {
             memset(pchunk->chunks[pchunk->ncount/MAX_BCHUNKNODES],0,MAX_BCHUNKNODES*pchunk->nsize);
@@ -268,16 +282,43 @@ void UserDb::run()
     QTime    tmpTime;
 //    readConfig();
     report->init();
-    tmpTime.start();
-    countData();
-    flushFile();
+
+    QString m_tmpstr = xmlConfig->readItemnumValue().value("itemnum");
+    int  needdivFile = m_tmpstr.toInt();
+    if(needdivFile > 0)
+        m_needdivFile = true;
+    else
+        m_needdivFile = false;
+
+    if(m_needdivFile == true)
+    {
+        divFile();
+        tmpTime.start();
+        for(int tmpindex = 0;tmpindex <= m_fileindex ; tmpindex ++)
+            countData(path+QDir::separator()+m_basename+QString::number(tmpindex));
+        if(m_leaveindex != -1)
+            countData(path+QDir::separator()+m_leavename+QString::number(m_leaveindex));
+    }
+    else {
+        tmpTime.start();
+        countData();
+    }
+    report->errFiveNumber = errFiveNumber;
+    report->errCardCount = errCardCount;
+    report->errMultiName = errMultiName;
     emit message("waiting...");
 
     report->setTableValue(path+QDir::separator());
     emit message("finished.");
     emit messageWarning("检测完成，用时"+QString::number(tmpTime.elapsed()/1000.0)+"秒");
-    writeOneCardFiveNumberFile();
-    flushFile();
+
+    if(m_needdivFile == true)
+    {
+        for(int tmpindex = 0;tmpindex <= m_fileindex ; tmpindex ++)
+            QFile::remove(path+QDir::separator()+m_basename+QString::number(tmpindex));
+        if(m_leaveindex != -1)
+            QFile::remove(path+QDir::separator()+m_leavename+QString::number(m_leaveindex));
+    }
 }
 
 int UserDb::getColNum(QString name){
@@ -320,44 +361,39 @@ void UserDb::initIndex(){
     msisdnIndex = getColNum("MSISDN号码");
 }
 
-bool UserDb::countData(){
+bool UserDb::countData(const QString filename){
+    QString pname = filename;
+    if(filename == nullptr)
+        pname = m_filename;
+    if(pname.isNull()||pname.isEmpty())return false;
 
-        if(m_filename.isNull()||m_filename.isEmpty()){
-        qDebug()<<QStringLiteral("文件名参数不正确。");
-        return false;
-    }
-        QFile file(m_filename);
-        if(!file.exists())
-        {
-        qDebug()<<"文件不存在。\n当前路径是：";
-        qDebug()<< QDir::currentPath();
-        return false;
-        }
+    QFile file(pname);
+    if(!file.exists())return false;
+    bchunkReset(&bErrFive);
+    bchunkReset(&bErrMulti);
+    memset(m_pstErrMultiName,0,sizeof(stErrorMultiName *)*MAX_NUMBER_HASH_NODE);
+    memset(m_pstErrFiveName,0,sizeof(stErrorFiveNum *)*MAX_NUMBER_HASH_NODE);
 
     QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
-
-    int line_num = 1;
-
-    if(file.open(QFile::ReadOnly | QFile::Text)){
+    int line_num = 0;
+    if(file.open(QFile::ReadOnly | QFile::Text )){
         QTextStream stream(&file);
         stream.setCodec(code);
 
          do {
             line = stream.readLine();
-
             processLine();
             report->allData++;
             line_num++;
-
+#if       FILE_DIV_TEST
+            if(line_num >= TEST_LIMIT)
+                break;
+#endif
             if(line_num%1000==0)
             {
-                emit message("已处理"+QString::number(line_num)+"行");
+                emit message("已处理文件"+pname+","+QString::number(line_num)+"行");
             }
-        }while(!stopped && !line.isEmpty());
-        report->errFiveNumber = errFiveNumber;
-        report->errCardCount = errCardCount;
-        report->errMultiName = errMultiName;
-
+        }while(!stopped && !stream.atEnd());
         file.close();
         emit message("已处理完成，文件关闭");
     }
@@ -365,28 +401,41 @@ bool UserDb::countData(){
         emit messageWarning("文件打开错误。");
     }
 
-    outputSimpleOneCardFiveNumber();
+    int nodecount = outputSimpleOneCardFiveNumber();
     if(file.open(QFile::ReadOnly | QFile::Text)){
         QTextStream stream(&file);
         stream.setCodec(code);
-        line_num = 1;
+        line_num = 0;
 
          do {
             line = stream.readLine();
             processLineoutput();
             line_num++;
-
+#if       FILE_DIV_TEST
+            if(line_num >= TEST_LIMIT)
+                break;
+#endif
             if(line_num%1000==0)
             {
-                emit message("已二次输出"+QString::number(line_num)+"行");
+                emit message("已二次输出"+pname+","+QString::number(line_num)+"行");
             }
-
-        }while(!stopped && !line.isEmpty());
+        }while(!stopped && !stream.atEnd());
         file.close();
         emit message("已二次输出处理完成，文件再次关闭");
     }
     else{
         emit messageWarning("文件打开错误。");
+    }
+    flushFile();
+#define   NODE_LIMIT_ONECARDFIVENUMBER  2500
+    if(nodecount <= NODE_LIMIT_ONECARDFIVENUMBER)
+    {
+        writeOneCardFiveNumberFile();
+        flushFile();
+                QFile::remove(path+QDir::separator()+"一证五号不合规原始.nck"); //超大文件，分段输出合并
+    }
+    else {
+        QFile::rename(path+QDir::separator()+"一证五号不合规原始.nck",path+QDir::separator()+"一证五号不合规.nck");
     }
     return true;
 }
@@ -399,6 +448,7 @@ bool UserDb::countData(){
 bool UserDb::isNotReg(QString *str){
     if(str==nullptr)return true;
     if(str->isEmpty())return true;
+    if(0 == (*str).trimmed().length())return true;
     if(!(*str).trimmed().compare("null", Qt::CaseInsensitive))return true;
     return false;
 }
@@ -406,6 +456,7 @@ bool UserDb::isNotReg(QString *str){
 bool UserDb::isNotReg(QString const str){
     if(str==nullptr)return true;
     if(str.isEmpty())return true;
+    if(0 == str.trimmed().length())return true;
     if(!str.trimmed().compare("null", Qt::CaseInsensitive))return true;
     return false;
 }
@@ -500,8 +551,8 @@ bool UserDb::isPersonNumNok(QString const & numstr,QString const & typestr){
     //长度不是18(15)，不合规
     int plen = strlen(numstr.toStdString().c_str());
     if(plen != 18 && plen != 15) return true;
-    //确保从6~8位取出来的内容可以正确转换为时间：按照yyyyMMDD的方式
-    //还可以持续完善
+    if(plen == 15 && activeDate >= 20130901)//2013年9月1日以后入网采用15位身份证入网要判为“证件号码不合规”
+            return true;
     for(int i = 0; i < plen - 1; i ++ )
         if(numstr.toStdString().at(i)< '0' ||numstr.toStdString().at(i) > '9') return true;
     if(plen == 15 && (numstr.toStdString().at(plen-1)< '0' || numstr.toStdString().at(plen-1) > '9'))return true;
@@ -524,6 +575,8 @@ bool UserDb::isPersonNumNok(QString const & numstr,QString const & typestr){
         {
         mnumstr = numstr.mid(0,6)+"19"+numstr.mid(6,9)+"?";
         }
+
+                //确保从6~8位取出来的内容可以正确转换为时间：按照yyyyMMDD的方式
         const char* pstr = mnumstr.mid(6,8).toStdString().c_str();
         if(pstr[0]!='1'&&pstr[0]!='2')return true;
         if((pstr[0]=='1'&&pstr[1]!='9')||(pstr[0]=='2'&&pstr[1]!='0'))return true;
@@ -601,13 +654,17 @@ void UserDb::processLine(){
         return;
     }
 
-
     /* 字段异常数据.abnormal */
     if(col.at(activeTimeIndex)==nullptr || isNotReg(col[activeTimeIndex])){
         writeFile("字段异常数据.abnormal", report->fieldNok);
         return;
     }
         activeDate = getDateForInt(col.at(activeTimeIndex));
+    if(activeDate == 0)
+    {
+        writeFile("格式异常数据.abnormal", report->formatNok);
+        return;
+    }
 
     id_TypeChar = id_typeknown;
     /* 根据用户类型和用户业务类型进入到具体逻辑规则中判断和输出。 */
@@ -707,7 +764,7 @@ void UserDb::processLineoutput(){
         do{
             if((ptrMulti->errflag&id_TypeMask) == id_TypeChar)
             {
-                if(0 == strcmp(ptrMulti->number,col.at(ownerNumIndex).toStdString().c_str()))
+                if(0 == strncmp(ptrMulti->number,col.at(ownerNumIndex).toStdString().c_str(),strlen(ptrMulti->number)))
                 {
                     if((ptrMulti->errflag&errType_oneCardMultiName) == errType_oneCardMultiName)
                     {
@@ -750,7 +807,7 @@ void UserDb::processLineoutput(){
     ptrFive = m_pstErrFiveName[sHashTreev];
     do
     {
-        if(0 == strcmp(ptrFive->number,col.at(ownerNumIndex).toStdString().c_str()))
+        if(0 == strncmp(ptrFive->number,col.at(ownerNumIndex).toStdString().c_str(),strlen(ptrFive->number)))
         {
             if(ptrFive->errflag&errType_oneCardFiveNumber)
                 writeFile("一证五号不合规原始.nck", report->onecardFiveNumber);
@@ -778,7 +835,7 @@ bool UserDb::makeDir(){
  */
 void UserDb::writeFile(QString filename,  int& count,QString qstr){
     count ++;
-    if(count%10000==0){
+    if(count%500==0){
         QList<QString> lineList = fileBuffer.value(filename);
         QFile file(path+QDir::separator()+filename);
         file.open(QFile::Append);
@@ -834,8 +891,9 @@ bool UserDb::needAgent(QString typestr,QString idCardNum, QString activeTime){
     //使用18位身份证件，如果不合规，均设定需要代理人
     int plen = strlen(idCardNum.toStdString().c_str());
     if(plen != 18 && plen != 15) return true;
+        if(plen == 15 && activeDate >= 20130901)return true;
+
     //确保从6~8位取出来的内容可以正确转换为时间：按照yyyyMMDD的方式
-    //还可以持续完善
     for(int i = 0; i < plen - 1; i ++ )
         if(idCardNum.toStdString().at(i)< '0' || idCardNum.toStdString().at(i) > '9') return true;
     if(plen == 15 && (idCardNum.toStdString().at(plen-1)< '0' || idCardNum.toStdString().at(plen-1) > '9'))return true;
@@ -970,35 +1028,38 @@ void UserDb::processPersonFixed(){
    /* 判断是否需要经办人 */
    bool isNeedAgent = needAgent(col.at(ownerTypeIndex),col.at(ownerNumIndex), col.at(activeTimeIndex));
 
-   /* 个人固定用户-经办人未登记 */
-   if(isNotReg(col[agentNameIndex]) || isNotReg(col[agentTypeIndex]) ||
-       isNotReg(col[agentNumIndex])){
-       if(isNeedAgent){
+   if(isNeedAgent)
+   {
+       /* 个人固定用户-经办人未登记 */
+       if(isNotReg(col[agentNameIndex]) || isNotReg(col[agentTypeIndex]) ||
+           isNotReg(col[agentNumIndex])){
            writeFile("个人固话用户-经办人信息未登记.nreg",report->personFixedAgentNotReg);
            report->personFixedNotReg++;
            return;
        }
-   }
 
-   /* 个人固定用户-经办人信息不合规 */
-   bool agentNok = false;
-   if(!col.at(ownerNameIndex).compare(col.at(agentNameIndex))){
-          agentNok = true;
+        /* 个人固定用户-经办人信息不合规 */
+        bool agentNok = false;
+        if(!col.at(ownerNameIndex).compare(col.at(agentNameIndex)))
+            {
+                    agentNok = true;
+            }
+        else if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+                isPersonNumNok(col.at(agentNumIndex),col.at(agentTypeIndex)))
+        {
+            agentNok = true;
+        }
+        else if(needAgent(col.at(agentTypeIndex),col.at(agentNumIndex),col.at(activeTimeIndex)))
+            {
+        //经办人如果不满10岁（2018年9月1日后不满16岁），则判为不合规。
+            agentNok = true;
+        }
+        if( agentNok){
+            writeFile("个人固话用户-经办人信息校验不合规.nck",report->personFixedAgentNok);
+            report->personFixedNok++;
+            return;
+        }
     }
-    else if(isNeedAgent && (isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
-               isPersonNumNok(col.at(agentNumIndex),col.at(agentTypeIndex)))){
-       agentNok = true;
-
-   }
-   else if(isNeedAgent && needAgent(col.at(agentTypeIndex),col.at(agentNumIndex),col.at(activeTimeIndex))){
-       //经办人如果不满10岁（2018年9月1日后不满16岁），则判为不合规。
-       agentNok = true;
-   }
-   if( agentNok){
-       writeFile("个人固话用户-经办人信息校验不合规.nck",report->personFixedAgentNok);
-       report->personFixedNok++;
-       return;
-   }
 
    /* 个人固定用户-证件类型不合规 */
    bool typeNok = false;
@@ -1053,35 +1114,35 @@ void UserDb::processPersonFixed(){
    }
 
    /* 个人固话用户-用户姓名&证件号码校验不合规 */
-   if(!agentNok && !typeNok && nameNok && numNok && !addNok){
+   if(!typeNok && nameNok && numNok && !addNok){
        writeFile("个人固话用户-用户姓名&证件号码校验不合规.nck",report->personFixedOwnerNameNumNok);
        report->personFixedNok++;
        return;
    }
 
    /* 个人固话用户-用户姓名&证件地址校验不合规 */
-   if(!agentNok && !typeNok && nameNok && !numNok && addNok){
+   if(!typeNok && nameNok && !numNok && addNok){
        writeFile("个人固话用户-用户姓名&证件地址校验不合规.nck",report->personFixedOwnerNameAddNok);
        report->personFixedNok++;
        return;
    }
 
    /* 个人固话用户-证件号码&证件地址校验不合规 */
-   if(!agentNok && !typeNok && !nameNok && numNok && addNok){
+   if(!typeNok && !nameNok && numNok && addNok){
        writeFile("个人固话用户-证件号码&证件地址校验不合规.nck",report->personFixedOwnerNumAddNok);
        report->personFixedNok++;
        return;
    }
 
    /* 个人固话用户-用户姓名&证件号码&证件地址校验不合规 */
-   if(!agentNok && !typeNok && nameNok && numNok && addNok){
+   if(!typeNok && nameNok && numNok && addNok){
        writeFile("个人固话用户-用户姓名&证件号码&证件地址校验不合规.nck",report->personFixedOwnerNameNumAddNok);
        report->personFixedNok++;
        return;
    }
 
    /* 个人固话用户-形式合规数据 */
-   if(!typeNotReg && !nameNotReg && !numNotReg && !addNotReg && !agentNok && !typeNok && !nameNok && !numNok && !addNok){
+   if(!typeNotReg && !nameNotReg && !numNotReg && !addNotReg && !typeNok && !nameNok && !numNok && !addNok){
        writeFile("个人固话用户-形式合规数据.ok",report->personFixedOk);
        writeFile("all.ok(全部合规数据)", report->allOk);
        processOneCardMultiName();
@@ -1254,33 +1315,35 @@ void UserDb::processPersonMobile(){
     /* 判断是否需要经办人 */
     bool isNeedAgent = needAgent(col.at(ownerTypeIndex),col.at(ownerNumIndex), col.at(activeTimeIndex));
 
-    /*个人移动用户-经办人信息未登记*/
-   bool agentNotReg = false;
-   if(isNeedAgent && (isNotReg(col[agentNameIndex])||isNotReg(col[agentTypeIndex])||
-       isNotReg(col[agentNumIndex]) || isNotReg(col[agentAddIndex]))){
-
-           agentNotReg = true;
+    if(isNeedAgent)
+        {
+       /*个人移动用户-经办人信息未登记*/
+       if(isNotReg(col[agentNameIndex])||isNotReg(col[agentTypeIndex])||
+           isNotReg(col[agentNumIndex]) || isNotReg(col[agentAddIndex])){
            writeFile("个人移动用户-经办人信息未登记.nreg",report->personMobileAgentNotReg);
            report->personMobileNotReg++;
            return;
-   }
-
-   /* 个人移动用户-经办人信息不合规 */
-   bool agentNok = false;
-   if(isNeedAgent && !agentNotReg && (isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
+           }
+       /* 个人移动用户-经办人信息不合规 */
+       bool agentNok = false;
+       if(isPersonNameNok(col.at(agentNameIndex))||isPersonTypeNok(col.at(agentTypeIndex))||
                isPersonNumNok(col.at(agentNumIndex),col.at(agentTypeIndex))||
-           isPersonAddNok(col.at(agentAddIndex))|| !col.at(ownerNameIndex).compare(col.at(agentNameIndex)))){
-       agentNok = true;
-   }
-
-   if(isNeedAgent && agentNok){
-       writeFile("个人移动用户-经办人信息校验不合规.nck",report->personMobileAgentNok);
-       report->personMobileNok++;
-       return;
-   }
-
+               isPersonAddNok(col.at(agentAddIndex))|| !col.at(ownerNameIndex).compare(col.at(agentNameIndex))){
+           agentNok = true;
+       }
+       else if(needAgent(col.at(agentTypeIndex),col.at(agentNumIndex),col.at(activeTimeIndex)))
+       {
+       //经办人如果不满10岁（2018年9月1日后不满16岁），则判为不合规。
+             agentNok = true;
+       }
+       if(agentNok){
+           writeFile("个人移动用户-经办人信息校验不合规.nck",report->personMobileAgentNok);
+           report->personMobileNok++;
+           return;
+       }
+        }
     /* 个人移动用户-形式合规数据 */
-    if(!typeNotReg && !nameNotReg && !numNotReg && !addNotReg && !agentNok && !typeNok && !nameNok && !numNok && !addNok){
+    if(!typeNotReg && !nameNotReg && !numNotReg && !typeNok && !nameNok && !numNok && !addNok){
         writeFile("个人移动用户-形式合规数据.ok", report->personMobileOk);
         writeFile("all.ok(全部合规数据)", report->allOk);
         processOneCardMultiName();
@@ -2274,7 +2337,7 @@ void UserDb::processOneCardFiveNumber(){
 
     ptrMulti = m_pstErrFiveName[sHashTreev];
     do{
-        if(0 == strcmp(ptrMulti->number,col.at(ownerNumIndex).toStdString().c_str()))
+        if(0 == strncmp(ptrMulti->number,col.at(ownerNumIndex).toStdString().c_str(),strlen(ptrMulti->number)))
         {
             if(activeDate < checkDay)
             {
@@ -2353,7 +2416,7 @@ void UserDb::processOneCardMultiName(){
     else{
         ptrMulti = m_pstErrMultiName[sHashTreev];
         do{
-            if(0 == strcmp(ptrMulti->number,col.at(ownerNumIndex).toStdString().c_str())
+            if(0 == strncmp(ptrMulti->number,col.at(ownerNumIndex).toStdString().c_str(),strlen(ptrMulti->number))
                     && id_TypeChar == (ptrMulti->errflag&id_TypeMask))
             {
                 if((ptrMulti->errflag&errType_oneCardMultiName) == errType_oneCardMultiName)
@@ -2389,9 +2452,10 @@ void UserDb::processOneCardMultiName(){
 /**
  * @brief UserDb::outputSimpleOneCardFiveNumber 输出一证五号的简要文件
  */
-void UserDb::outputSimpleOneCardFiveNumber(){
+int UserDb::outputSimpleOneCardFiveNumber(){
     stErrorFiveNum *ptrMulti = nullptr,*pptr;
     char myline[512];
+    int  tmpnodecount = 0;
     int  hashindex,myerrcount,ioutconut = 0;
     for(hashindex = 0;hashindex < MAX_NUMBER_HASH_NODE; hashindex ++)
     {
@@ -2401,6 +2465,7 @@ void UserDb::outputSimpleOneCardFiveNumber(){
             pptr = ptrMulti;
             if(ptrMulti->errflag&errType_oneCardFiveNumber)
             {
+                tmpnodecount ++;
                 if(ptrMulti->err1count >= 5)
                     myerrcount = ptrMulti->err2count;
                 else
@@ -2411,6 +2476,7 @@ void UserDb::outputSimpleOneCardFiveNumber(){
             ptrMulti = pptr->next;
         }while(ptrMulti != nullptr);
     }
+    return tmpnodecount;
 }
 
 /**
@@ -2421,8 +2487,7 @@ void UserDb::writeOneCardFiveNumberFile()
     //writeFile("一证五号不合规原始.nck", report->onecardFiveNumber);
     const QString filename="一证五号不合规原始.nck";
     stErrorFiveNum *ptrMulti = nullptr,*pptr;
-    report->onecardFiveNumber = 0;
-    int inode = 0;
+    int inode = 0,iinode;
     for(int hashindex = 0;hashindex < MAX_NUMBER_HASH_NODE; hashindex ++)
     {
         ptrMulti = m_pstErrFiveName[hashindex];
@@ -2432,9 +2497,9 @@ void UserDb::writeOneCardFiveNumberFile()
             //如果需要输出文件，根据  ptrMulti->number 进行检索
             if(ptrMulti->errflag&errType_oneCardFiveNumber)
             {
-                outputSearch(filename,ptrMulti->number,ownerNumIndex);
+                iinode = outputSearch(filename,ptrMulti->number,ownerNumIndex,ptrMulti->err1count+ptrMulti->err2count);
                 inode ++;
-                emit message("二次输出一证五号文件,节点数"+QString::number(inode)+",文件记录数"+QString::number(report->onecardFiveNumber)+"行");
+                emit message("二次输出一证五号文件,节点数"+QString::number(inode)+",文件记录数"+QString::number(iinode)+"行");
             }
             ptrMulti = pptr->next;
         }while(ptrMulti != nullptr);
@@ -2444,10 +2509,11 @@ void UserDb::writeOneCardFiveNumberFile()
 /**
  * @brief UserDb::outputSearch 输出特定文件中匹配的特定行
  */
-void UserDb::outputSearch(const QString filename,const char *checkline,const int index)
+int UserDb::outputSearch(const QString filename,const char *checkline,const int index,const int icount)
 {
     QFile file(path+QDir::separator()+filename);
     QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+    int mcount = 0;
 
     if(file.open(QFile::ReadOnly | QFile::Text))
     {
@@ -2456,13 +2522,134 @@ void UserDb::outputSearch(const QString filename,const char *checkline,const int
          do {
             line = stream.readLine();
             col =  line.split(delimeter);
-            if(col.size() != COL_NUM)//Error
-                break;
-            if(0 == strcmp(checkline,col.at(index).toStdString().c_str()))
-                writeFile("一证五号不合规.nck", report->onecardFiveNumber);
-        }while(!stopped && !line.isEmpty());
+            if(col.size() == COL_NUM)
+            {
+                if(0 == strncmp(checkline,col.at(index).toStdString().c_str(),strlen(checkline)))
+                    writeFile("一证五号不合规.nck", mcount);
+                if(mcount == icount)break;
+            }
+//            if(col.size() != COL_NUM)//Error
+//                break;
+        }while(!stopped && !stream.atEnd());
         file.close();
     }
     else
         emit messageWarning("文件打开错误。");
+
+    return mcount;
+}
+
+#if  FILE_DIV_TEST
+#define   MAX_FILE_NODE_LIMIT_BYNUMBER  100000
+#else
+#define  MAX_FILE_NODE_LIMIT_BYNUMBER (MAX_BCHUNKS*MAX_BCHUNKNODES)/3
+#endif
+
+void UserDb::divFile(int ifileindex)
+{
+    QString origfilename;
+    QString dfname,lfname;
+    int lnodecount = 0,tmpcount = 0;
+    bchunkReset(&bErrFive);
+    if(ifileindex == -1)
+        origfilename = m_filename;
+    else
+        origfilename = path+QDir::separator()+m_leavename+QString::number(ifileindex);
+
+    if(origfilename.isNull()||origfilename.isEmpty())return;
+    QFile file(origfilename);
+    if(!file.exists())  return;
+    QTextCodec *code = QTextCodec::codecForName("GBK");//设置文件编码
+    dfname  =  m_basename + QString::number(ifileindex+1);
+    lfname  =  m_leavename + QString::number(ifileindex+1);
+    m_fileindex = ifileindex+1;
+    bchunkReset(&bErrFive);
+    memset(m_pstErrFiveName,0,sizeof(stErrorFiveNum *)*MAX_NUMBER_HASH_NODE);
+    emit message("扫描文件中，准备切割......");
+
+    if(!file.open(QFile::ReadOnly | QFile::Text))
+        emit messageWarning("文件打开错误。");
+    else
+    {
+        QTextStream stream(&file);
+        stream.setCodec(code);
+        int line_count = 0;
+        do
+        {   //逐行读取
+            line = stream.readLine();
+            col =  line.split(delimeter);
+            if(col.size() != COL_NUM)//Error
+                writeFile(dfname,tmpcount);
+            else {
+                //根据使用者证件号码进行切分
+                //如果证件号码超过限制数，迭代到下一个文件,写入到一个新文件
+                if(checkKeyInfo(col.at(ownerNumIndex)))
+                {
+                    writeFile(dfname,tmpcount);
+                }
+                else
+                    writeFile(lfname,lnodecount);
+            }
+            line_count ++;
+#if       FILE_DIV_TEST
+            if(line_count >= TEST_LIMIT)
+                break;
+#endif
+            if(line_count%10000 == 0)
+                emit message("扫描文件"+ origfilename +"记录数"+QString::number(tmpcount+lnodecount)+"行");
+        }while(!stopped && !stream.atEnd());
+        file.close();
+    }
+    emit message("切割文件"+dfname+",记录数"+QString::number(tmpcount)+"行，剩余"+QString::number(lnodecount)+"行");
+    flushFile();
+
+    if(m_fileindex > 0) //Need Remove leave file  ...... release space
+        QFile::remove(origfilename);
+
+    if(lnodecount > MAX_FILE_NODE_LIMIT_BYNUMBER * 3 )
+        divFile(ifileindex+1);
+    else if(lnodecount )
+        m_leaveindex = m_fileindex;
+    else
+        m_leaveindex = -1;
+}
+
+bool UserDb::checkKeyInfo(const QString str)
+{
+    stErrorFiveNum *ptrMulti = nullptr,*pptr;
+    unsigned long sHashTreev = strHash(str.toStdString().c_str(),strlen(str.toStdString().c_str()))%MAX_NUMBER_HASH_NODE;
+    if(m_pstErrFiveName[sHashTreev] == nullptr)
+    {
+        if(bErrFive.ncount >= MAX_FILE_NODE_LIMIT_BYNUMBER)
+            return false;
+        ptrMulti = (stErrorFiveNum *)bchunkAllocNode(&bErrFive);
+        if(ptrMulti == nullptr) //out of memory
+            return false;
+        if(strlen(str.toStdString().c_str())+1 <= MAX_NUMBER_LENGTH)
+            memcpy(ptrMulti->number,str.toStdString().c_str(),strlen(str.toStdString().c_str())+1);
+        else
+            memcpy(ptrMulti->number,str.toStdString().c_str(),MAX_NUMBER_LENGTH-1);
+        m_pstErrFiveName[sHashTreev] = ptrMulti;
+        return true;
+    }
+    ptrMulti = m_pstErrFiveName[sHashTreev];
+    do{
+        if(0 == strncmp(ptrMulti->number,str.toStdString().c_str(),strlen(ptrMulti->number)))
+            return true;
+        pptr = ptrMulti;
+        ptrMulti = ptrMulti->next;
+    }while(ptrMulti != nullptr);
+
+    ptrMulti = pptr;
+    if(bErrFive.ncount >= MAX_FILE_NODE_LIMIT_BYNUMBER)
+        return false;
+    ptrMulti->next = (stErrorFiveNum *)bchunkAllocNode(&bErrFive);
+    if(ptrMulti->next == nullptr)
+        return false;
+    ptrMulti = ptrMulti->next;
+    if(strlen(str.toStdString().c_str())+1 <= MAX_NUMBER_LENGTH)
+        memcpy(ptrMulti->number,str.toStdString().c_str(),strlen(str.toStdString().c_str())+1);
+    else
+        memcpy(ptrMulti->number,str.toStdString().c_str(),MAX_NUMBER_LENGTH-1);
+     return true;
 }

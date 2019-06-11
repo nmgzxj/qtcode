@@ -27,7 +27,7 @@ Setup::Setup()
     contentsWidget->topLevelItem(menu_index)->setText(0, QStringLiteral("autoid"));
     contentsWidget->topLevelItem(menu_index)->addChild(new QTreeWidgetItem({QStringLiteral("Items")}));
     contentsWidget->topLevelItem(menu_index)->addChild(new QTreeWidgetItem({QStringLiteral("字段分隔符")}));
-    contentsWidget->topLevelItem(menu_index)->addChild(new QTreeWidgetItem({QStringLiteral("字段个数")}));
+    contentsWidget->topLevelItem(menu_index)->addChild(new QTreeWidgetItem({QStringLiteral("文件切割标志")}));
     contentsWidget->topLevelItem(menu_index)->addChild(new QTreeWidgetItem({QStringLiteral("时间格式")}));
 
     menu_index++;
@@ -106,22 +106,22 @@ Setup::Setup()
     pagesWidget->addWidget(new DelimiterPage);//1 字段分隔符
     pagesWidget->addWidget(new ItemnumPage);//2 字段个数
     pagesWidget->addWidget(new DateformatPage);//3 时间格式
-    pagesWidget->addWidget(new SystemPage);//4
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人用户姓名comon-rule")));//5
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人用户姓名match-rule")));//6
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("行业用户姓名comon-rule")));//7
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("行业用户姓名match-rule")));//8
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件号码comon-rule")));//9
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件号码match-rule")));//10
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件地址addr-rule")));//11
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件地址match-rule")));//12
-    pagesWidget->addWidget(new CommonRulePage);//13
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人用户规则")));//14
-    pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位/行业用户规则")));//15
-    pagesWidget->addWidget(new SystemPage);//16
-    pagesWidget->addWidget(new UserTypePage);//17
-//    pagesWidget->addWidget(new BizTypePage(QStringLiteral("用户类型")));//14
-    pagesWidget->addWidget(new WorkPathPage);//18
+    pagesWidget->addWidget(new SystemPage);//5
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人用户姓名comon-rule")));//6
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人用户姓名match-rule")));//7
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("行业用户姓名comon-rule")));//8
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("行业用户姓名match-rule")));//9
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件号码comon-rule")));//10
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件号码match-rule")));//11
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件地址addr-rule")));//12
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("证件地址match-rule")));//13
+    pagesWidget->addWidget(new CommonRulePage);//14
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("个人用户规则")));//15
+    pagesWidget->addWidget(new BizTypePage(QStringLiteral("单位/行业用户规则")));//16
+    pagesWidget->addWidget(new SystemPage);//17
+    pagesWidget->addWidget(new UserTypePage);//18
+//    pagesWidget->addWidget(new BizTypePage(QStringLiteral("用户类型")));//19
+    pagesWidget->addWidget(new WorkPathPage);//20
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("业务类型移动")));//16
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("业务类型固定")));//17
     pagesWidget->addWidget(new BizTypePage(QStringLiteral("业务状态非实名停机")));//18
@@ -198,7 +198,7 @@ void Setup::slotItemPressed(QTreeWidgetItem *item)
         pagesWidget->setCurrentIndex(1);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
-    else if(item->text(0)==QStringLiteral("字段个数")){
+    else if(item->text(0)==QStringLiteral("文件切割标志")){
         pagesWidget->setCurrentIndex(2);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
@@ -206,10 +206,6 @@ void Setup::slotItemPressed(QTreeWidgetItem *item)
         pagesWidget->setCurrentIndex(3);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
     }
-//    else if(item->text(0)==QStringLiteral("检测规则")){
-//        pagesWidget->setCurrentIndex(4);
-//        qDebug()<<QStringLiteral("菜单命中")<<item->text(0);
-//    }
     else if(item->text(0)==QStringLiteral("comon-rule")&&item->parent()->text(0)==QStringLiteral("个人用户姓名")){
         pagesWidget->setCurrentIndex(5);
         qDebug()<<QStringLiteral("菜单命中")<<item->text(0);

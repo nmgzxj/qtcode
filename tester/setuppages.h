@@ -106,7 +106,7 @@ public:
 public slots:
     void save();
 private:
-    QLabel *itemnumLabel;// = new QLabel(tr("字段个数:"));
+    QLabel *itemnumLabel;// = new QLabel(tr("文件切割标志:"));
     QLineEdit *itemnumEdit;// = new QLineEdit;
     QPushButton *saveButton;// = new QPushButton;
     XMLConfigReader *xmlConfig;

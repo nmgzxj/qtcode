@@ -26,8 +26,10 @@ public:
     QMap<QString,QString> readWorkingpathValue();
     void writeDelimiterValue(QString delimiter);
     QString readDelimiterValue();
-    void writeItemnumValue(QString delimiter);
+    void writeItemnumValue(QString itemnum);
     QMap<QString,QString> readItemnumValue();
+    void writedivfileValue(QString divfile);
+    QMap<QString,QString> readdivfileValue();
     void writeDateformatValue(QString dateformat);
     QMap<QString,QString> readDateformatValue();
     void writeCommonRuleValue(QMap<QString,QString> map);

@@ -943,7 +943,7 @@ QString XMLConfigReader::readDelimiterValue(){
 }
 
 /**
- * @brief XMLConfigReader::writeItemnumValue 设置字段个数
+ * @brief XMLConfigReader::writeItemnumValue 设置文件切割标志
  * @param delimiter
  */
 void XMLConfigReader::writeItemnumValue(QString itemnum){
@@ -984,7 +984,7 @@ void XMLConfigReader::writeItemnumValue(QString itemnum){
 }
 
 /**
- * @brief XMLConfigReader::readItemnumValue 读取字段个数
+ * @brief XMLConfigReader::readItemnumValue 读取文件切割标志
  * @return
  */
 QMap<QString,QString> XMLConfigReader::readItemnumValue(){
